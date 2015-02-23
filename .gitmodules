@@ -1,0 +1,6 @@
+[submodule "dep/aieutilities"]
+	path = dep/aieutilities
+	url = https://github.com/AcademyOfInteractiveEntertainment/aieutilities.git
+[submodule "dep/glm"]
+	path = dep/glm
+	url = https://github.com/g-truc/glm.git

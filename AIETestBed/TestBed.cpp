@@ -4,6 +4,8 @@
 #include <GLFW/glfw3.h>
 #include <iostream>
 
+#include "Gizmos.h"
+
 static void errorCallback(int errorCode, const char* errorDesc)
 {
 	std::cerr << "GLFW Error(" << errorCode << "): " << errorDesc << std::endl;
@@ -33,8 +35,8 @@ bool TestBed::Init()
 	isValid = glfwInit() == GL_TRUE;
 	if (!isValid) return false;
 
-	pWindow = glfwCreateWindow(640, 480, "TestBed", NULL, NULL);
-	isValid = pWindow != NULL;
+	pWindow = glfwCreateWindow(640, 480, "TestBed", nullptr, nullptr);
+	isValid = pWindow != nullptr;
 
 	if (!isValid) return false;
 
@@ -52,9 +54,9 @@ bool TestBed::Init()
 
 void TestBed::Stop()
 {
-	if (pWindow != NULL) {
+	if (pWindow != nullptr) {
 		glfwDestroyWindow(pWindow);
-		pWindow = NULL;
+		pWindow = nullptr;
 	}
 	if (isValid) { glfwTerminate(); }
 
@@ -65,7 +67,7 @@ bool TestBed::Update() const
 {
 	if (glfwWindowShouldClose(pWindow)) return false;
 
-	assert(pWindow != NULL);
+	assert(pWindow != nullptr);
 
 	int width, height;
 	float ratio;
