@@ -1,9 +1,10 @@
 #pragma once
 
-#include <aie/gl_core_4_4.h>
 #include <FBXFile.h>
 #include <glm/fwd.hpp>
+
 #include "Camera.h"
+#include "gl_core_4_4.h"
 
 // fwd decls
 struct GLFWwindow;
