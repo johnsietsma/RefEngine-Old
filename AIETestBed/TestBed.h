@@ -33,6 +33,6 @@ private:
 	float m_sphereRotationSpeed;
 	FBXFile m_fbxFile;
 	bool m_isModelLoaded;
-	VertexArrayRenderer m_vertexArrayRenderer;
+	VertexArrayRenderer* m_pVertexArrayRenderer;
 };
 

@@ -25,6 +25,8 @@ public:
 	 */
 	static GLuint LoadShader(const char* shaderFileName, GLenum shaderType);
 
+	static void TurnOnDebugLogging();
+
 private:
 	GLHelpers() {}; // Abstract class
 };

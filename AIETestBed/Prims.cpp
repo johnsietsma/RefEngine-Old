@@ -1,7 +1,14 @@
 #include "Prims.h"
 
+const GLfloat Prims::Triangle[] = {
+	-1.f, -1.f, 0.f,
+	1.f, -1.f, 0.f,
+	0.f, 1.f, 0.f
+};
 
-const GLfloat Prims::CubeArrayVertexBuffer[] = {
+const size_t Prims::TriangleSize = sizeof(Prims::Triangle);
+
+const GLfloat Prims::Cube_Vertices[] = {
 	-1.0f, -1.0f, -1.0f, // triangle 1 : begin
 	-1.0f, -1.0f, 1.0f,
 	-1.0f, 1.0f, 1.0f, // triangle 1 : end
@@ -39,6 +46,10 @@ const GLfloat Prims::CubeArrayVertexBuffer[] = {
 	-1.0f, 1.0f, 1.0f,
 	1.0f, -1.0f, 1.0f
 };
+
+const size_t Prims::Cube_BufferSize = sizeof(Prims::Cube_Vertices);
+const size_t Prims::Cube_NumberOfVerts = 12;
+
 
 const GLfloat Prims::CubeColors[] = {
 	0.583f, 0.771f, 0.014f,

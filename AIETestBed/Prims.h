@@ -5,7 +5,13 @@
 class Prims
 {
 public:
-	static const GLfloat CubeArrayVertexBuffer[];
+	static const GLfloat Triangle[];
+	static const size_t TriangleSize;
+
+	static const GLfloat Cube_Vertices[];
+	static const size_t Cube_BufferSize;
+	static const size_t Cube_NumberOfVerts;
+
 	static const GLfloat CubeColors[];
 
 private:

@@ -10,6 +10,7 @@
 
 #include "Camera.h"
 #include "Color.h"
+#include "GLHelpers.h"
 #include "Prims.h"
 
 using glm::vec3;
@@ -29,11 +30,6 @@ void keyCallback(GLFWwindow* m_pWindow, int key, int scanCode, int action, int m
 	{
 		glfwSetWindowShouldClose(m_pWindow, 1);
 	}
-}
-
-void APIENTRY glDebugCallback(GLenum source, GLenum type, GLuint id, GLenum severity, GLsizei length, const GLchar* message, void* userParam)
-{
-	// TODO
 }
 
 TestBed::TestBed() : 
@@ -58,12 +54,11 @@ bool TestBed::Init( const char* fbxFileName, const char* meshName, const char* v
 	glfwSetErrorCallback(errorCallback);
 	glfwSetKeyCallback(m_pWindow, keyCallback);
 
-	//TODO
-	//glDebugMessageCallback(&glDebugCallback);
-
 	glfwMakeContextCurrent(m_pWindow);
 
 	if (ogl_LoadFunctions() == ogl_LOAD_FAILED) return false;
+
+	GLHelpers::TurnOnDebugLogging();
 	
 	if (!m_fbxFile.load(fbxFileName)) {
 		std::cerr << "Couldn't load fbx file " << fbxFileName << std::endl;
@@ -78,7 +73,8 @@ bool TestBed::Init( const char* fbxFileName, const char* meshName, const char* v
 
 	m_isModelLoaded = true;
 
-	if (!m_vertexArrayRenderer.Init(Prims::CubeArrayVertexBuffer, "data/shaders/default.vert", "data/shaders/red.frag"))
+	m_pVertexArrayRenderer = new VertexArrayRenderer();
+	if (!m_pVertexArrayRenderer->Init(Prims::Cube_BufferSize, Prims::Cube_NumberOfVerts, Prims::Cube_Vertices, "data/shaders/default.vert", "data/shaders/red.frag"))
 	{
 		return false;
 	}
@@ -103,7 +99,7 @@ void TestBed::Stop()
 {
 	if (!m_isValid) return;
 
-	m_vertexArrayRenderer.Destroy();
+	m_pVertexArrayRenderer->Destroy();
 
 	if (m_isModelLoaded) {
 		m_fbxFile.unload();
@@ -116,8 +112,6 @@ void TestBed::Stop()
 	if (m_isValid) { glfwTerminate(); }
 
 	Gizmos::destroy();
-
-	//TODO Clean up vertex buffer and shaders
 
 	m_isValid = false;
 }
@@ -145,7 +139,7 @@ void TestBed::Draw() const
 	//DrawSolarSystem();
 
 
-	m_vertexArrayRenderer.Render( m_camera.GetProjectionView() );
+	m_pVertexArrayRenderer->Render( m_camera.GetProjectionView() );
 
 	//Gizmos::draw(m_camera.GetProjectionView());
 
