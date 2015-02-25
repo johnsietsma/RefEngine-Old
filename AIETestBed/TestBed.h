@@ -4,6 +4,7 @@
 #include <glm/fwd.hpp>
 
 #include "Camera.h"
+#include "VertexArrayRenderer.h"
 #include "gl_core_4_4.h"
 
 // fwd decls
@@ -13,7 +14,6 @@ class TestBed
 {
 public:
 	TestBed();
-	~TestBed();
 
 	bool Init(const char* fbxFileName, const char* meshName, const char* vertexShaderFileName, const char* fragmentShaderFileName);
 	bool Update(double deltaTime);
@@ -21,12 +21,8 @@ public:
 	void Stop();
 
 private:
-	void InitVertexBuffer();
-	bool InitShaders( const char* vertexShaderFileName, const char* fragmentShaderFileName );
-
 	void DrawWorldGrid() const;
 	void DrawSolarSystem() const;
-	void DrawFBXFile() const;
 	void UpdateSolarSystem(double deltaTime);
 
 	bool m_isValid;
@@ -37,9 +33,6 @@ private:
 	float m_sphereRotationSpeed;
 	FBXFile m_fbxFile;
 	bool m_isModelLoaded;
-
-	GLuint m_vertexArrayId;
-	GLuint m_vertexBufferId;
-	GLuint m_programId;
+	VertexArrayRenderer m_vertexArrayRenderer;
 };
 

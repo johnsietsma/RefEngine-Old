@@ -10,7 +10,7 @@ int _tmain(int argc, const char* argv[])
 	std::cout << "Running TestBed: " << glfwGetVersionString() << std::endl;
 
 	TestBed testBed;
-	if (!testBed.Init( "data/dice/dice12.fbx", "Dice", "data/shaders/passthrough.vert", "data/shaders/red.frag" )) { 
+	if (!testBed.Init( "data/dice/dice12.fbx", "Dice", "data/shaders/default.vert", "data/shaders/red.frag" )) { 
 		std::cout << "Init failed" << std::endl;
 		return 1; 
 	}

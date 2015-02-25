@@ -88,17 +88,25 @@
   <ItemGroup>
     <ClInclude Include="Camera.h" />
     <ClInclude Include="Color.h" />
+    <ClInclude Include="GLHelpers.h" />
     <ClInclude Include="gl_core_4_4.h" />
+    <ClInclude Include="MeshRenderer.h" />
+    <ClInclude Include="Prims.h" />
     <ClInclude Include="targetver.h" />
     <ClInclude Include="TestBed.h" />
+    <ClInclude Include="VertexArrayRenderer.h" />
   </ItemGroup>
   <ItemGroup>
     <ClCompile Include="..\dep\aieutilities\aie\Gizmos.cpp" />
     <ClCompile Include="Camera.cpp" />
     <ClCompile Include="Color.cpp" />
+    <ClCompile Include="GLHelpers.cpp" />
     <ClCompile Include="gl_core_4_4.c" />
     <ClCompile Include="Main.cpp" />
+    <ClCompile Include="MeshRenderer.cpp" />
+    <ClCompile Include="Prims.cpp" />
     <ClCompile Include="TestBed.cpp" />
+    <ClCompile Include="VertexArrayRenderer.cpp" />
   </ItemGroup>
   <Import Project="$(VCTargetsPath)\Microsoft.Cpp.targets" />
   <ImportGroup Label="ExtensionTargets">
