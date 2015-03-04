@@ -2,10 +2,9 @@ cmake_minimum_required(VERSION 2.8 FATAL_ERROR)
 
 project("RefEngine")
 
-set(CMAKE_CXX_FLAGS "${CMAKE_CXX_FLAGS} -std=c++11")
 
 include_directories(dep/aieutilities)
-include_directories(dep/glew-1.12.0/include)
+include_directories(dep/glew/include)
 include_directories(dep/glm)
 include_directories(dep/glfw/include)
 include_directories(dep/FBXLoader)
@@ -14,7 +13,11 @@ include_directories(RefEngine)
 
 IF(APPLE)
     include_directories("/Applications/Autodesk/FBX SDK/2015.1/include")
+    SET(GCC_CHAR_IS_UNSIGNED_CHAR "-funsigned-char")
 ENDIF (APPLE)
+
+set(CMAKE_CXX_FLAGS "${CMAKE_CXX_FLAGS} ${GCC_CHAR_IS_UNSIGNED_CHAR} -std=c++11")
+
 
 add_executable(refeng
     RefEngine/Camera.cpp
@@ -36,7 +39,7 @@ add_executable(refeng
 )
 target_link_libraries(refeng ${CMAKE_SOURCE_DIR}/dep/FBXLoader/libfbxsdk.a)
 target_link_libraries(refeng ${CMAKE_SOURCE_DIR}/dep/glfw/lib/libglfw3.a)
-target_link_libraries(refeng ${CMAKE_SOURCE_DIR}/dep/glew-1.12.0/lib/libGLEW.a)
+target_link_libraries(refeng ${CMAKE_SOURCE_DIR}/dep/glew/lib/libGLEW.a)
 #target_link_libraries(refeng ${CMAKE_SOURCE_DIR}/System/Library/Frameworks/OpenGL.framework)
 
 IF(APPLE)
