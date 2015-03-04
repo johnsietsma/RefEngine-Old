@@ -420,8 +420,8 @@ inline bool FBXVertex::operator < (const FBXVertex& a_rhs) const
 }
 
 inline FBXTexture::FBXTexture()
-	: data(nullptr),
-	handle(0),
+	: handle(0),
+    data(nullptr),
 	width(0),
 	height(0),
 	format(0)

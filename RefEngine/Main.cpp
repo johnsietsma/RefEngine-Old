@@ -2,16 +2,20 @@
 
 #include <GLFW/glfw3.h>
 #include <iostream>
+#include <string>
 
 enum class Test { ONE, TWO };
 
 
-int main()
+int main(int argc, char** argv)
 {
 	std::cout << "Running TestBed: " << glfwGetVersionString() << std::endl;
 
 	TestBed testBed;
-	if (!testBed.Init( "data/dice/dice12.fbx", "Dice", "data/shaders/default.vert", "data/shaders/red.frag" )) {
+    //std::string baseDir(argv[0]);
+    std::string vertShader = "data/shaders/default.vert";
+    std::string fragShader = "data/shaders/red.frag";
+	if (!testBed.Init( "Dice", vertShader.c_str(), fragShader.c_str() ) ) {
 		std::cout << "Init failed" << std::endl;
 		return 1;
 	}
@@ -27,8 +31,6 @@ int main()
 		testBed.Draw();
 	}
 	testBed.Stop();
-
-	Test t = Test::ONE;
 
 	std::cout << "Finished running TestBed";
 	return 0;

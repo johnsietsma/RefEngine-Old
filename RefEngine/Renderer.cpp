@@ -18,8 +18,9 @@ void Renderer::Init(int width, int height)
 
 void Renderer::Render(std::shared_ptr<Camera> pCamera, std::shared_ptr<GameObject> pGameObject)
 {
+    auto pMaterial = pGameObject->GetMaterial();
 	glm::mat4 MVP = pCamera->GetProjectionView() * pGameObject->GetTransform();
-	glUseProgram(pGameObject->GetMaterial()->GetProgramId().Value());
+	glUseProgram(pMaterial->GetProgramId().Value());
 
 	pGameObject->GetMaterial()->UpdateMVP(MVP);
 

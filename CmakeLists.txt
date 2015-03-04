@@ -33,7 +33,7 @@ add_executable(refeng
     RefEngine/Material.cpp
     RefEngine/OpenGLTypes.cpp
     RefEngine/Renderer.cpp
-    RefEngine/gl_core_4_4.c
+    RefEngine/gl_core_4_1.c
     dep/FBXLoader/FBXFile.cpp
     dep/aieutilities/aie/Gizmos.cpp
 )

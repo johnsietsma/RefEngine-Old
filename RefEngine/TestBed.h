@@ -18,7 +18,7 @@ class TestBed
 public:
 	TestBed();
 
-	bool Init(const char* fbxFileName, const char* meshName, const char* vertexShaderFileName, const char* fragmentShaderFileName);
+	bool Init(const char* meshName, const char* vertexShaderFileName, const char* fragmentShaderFileName);
 	bool Update(double deltaTime);
 	void Draw() const;
 	void Stop();

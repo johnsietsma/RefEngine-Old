@@ -1,3 +1,4 @@
+#version 410
 in vec3 vertexPosition_modelSpace;
 uniform mat4 MVP;
 

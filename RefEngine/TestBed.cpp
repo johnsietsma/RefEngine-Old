@@ -45,13 +45,17 @@ TestBed::TestBed() :
 	m_sphereTransform = glm::translate(m_sphereTransform, vec3(-20));
 }
 
-bool TestBed::Init( const char* fbxFileName, const char* meshName, const char* vertexShaderFileName, const char* fragmentShaderFileName )
+bool TestBed::Init( const char* meshName, const char* vertexShaderFileName, const char* fragmentShaderFileName )
 {
-	assert(fbxFileName != nullptr);
 	assert(meshName != nullptr);
 
 	m_isValid = glfwInit() == GL_TRUE;
 	if (!m_isValid) return false;
+    
+    glfwWindowHint(GLFW_CONTEXT_VERSION_MAJOR, 3);
+    glfwWindowHint(GLFW_CONTEXT_VERSION_MINOR, 2);
+    glfwWindowHint(GLFW_OPENGL_PROFILE, GLFW_OPENGL_CORE_PROFILE);
+    glfwWindowHint(GLFW_OPENGL_FORWARD_COMPAT, GL_TRUE);
 
 	m_pWindow = glfwCreateWindow(640, 480, "TestBed", nullptr, nullptr);
 	if (m_pWindow == nullptr) return false;
@@ -62,21 +66,23 @@ bool TestBed::Init( const char* fbxFileName, const char* meshName, const char* v
 	glfwMakeContextCurrent(m_pWindow);
 
 	if (ogl_LoadFunctions() == ogl_LOAD_FAILED) return false;
+    
+    printf("Supported GLSL version is %s.\n", (char *)glGetString(GL_SHADING_LANGUAGE_VERSION));
 
 	GLHelpers::TurnOnDebugLogging();
 
-	if (!m_fbxFile.load(fbxFileName)) {
+	/*if (!m_fbxFile.load(fbxFileName)) {
 		std::cerr << "Couldn't load fbx file " << fbxFileName << std::endl;
 		return false;
-	}
+	}*/
 
-	FBXMeshNode* meshNode = m_fbxFile.getMeshByName(meshName);
+	/*FBXMeshNode* meshNode = m_fbxFile.getMeshByName(meshName);
 	if (meshNode == nullptr) {
 		std::cerr << "Couldn't find mesh " << meshName << " in fbx file " << fbxFileName << std::endl;
 		return false;
-	}
+	}*/
 
-	auto programId = ShaderManager::MakeProgram("data/shaders/default.vert", "data/shaders/red.frag");
+	auto programId = ShaderManager::MakeProgram(vertexShaderFileName, fragmentShaderFileName);
 	auto pBuffer = VBO::Create(Prims::Cube_BufferSize, Prims::Cube_NumberOfVerts, Prims::Cube_Vertices);
 	std::shared_ptr<Material> pMaterial( new Material(programId) );
 	m_pSimpleTriVBO = std::shared_ptr<GameObject>(new GameObject(glm::mat4x4(1.f), pMaterial, pBuffer));

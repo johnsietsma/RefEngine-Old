@@ -140,7 +140,8 @@ GLuint GLHelpers::LoadShader(const char* shaderFileName, GLenum shaderType)
 
 void GLHelpers::TurnOnDebugLogging()
 {
-	glEnable(GL_DEBUG_OUTPUT_SYNCHRONOUS);
+#ifdef GL_VERSION_4_4
+    glEnable(GL_DEBUG_OUTPUT_SYNCHRONOUS);
 	glDebugMessageCallback(openglCallbackFunction, nullptr);
 	GLuint unusedIds = 0;
 	glDebugMessageControl(GL_DONT_CARE,
@@ -149,4 +150,5 @@ void GLHelpers::TurnOnDebugLogging()
 		0,
 		&unusedIds,
 		true);
+#endif
 }
