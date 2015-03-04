@@ -10,8 +10,12 @@
 
 #include "Camera.h"
 #include "Color.h"
+#include "GameObject.h"
 #include "GLHelpers.h"
+#include "Material.h"
 #include "Prims.h"
+#include "Renderer.h"
+#include "ShaderManager.h"
 
 using glm::vec3;
 using glm::vec4;
@@ -33,9 +37,10 @@ void keyCallback(GLFWwindow* m_pWindow, int key, int scanCode, int action, int m
 }
 
 TestBed::TestBed() : 
-	m_camera(vec3(4, 3, 3), vec3(0), 45, 16/9.f),
+	m_pCamera( new Camera(vec3(4, 3, 3), vec3(0), 45, 16/9.f) ),
 	m_sphereTransform(mat4(1)),
-	m_sphereRotationSpeed((glm::pi<float>()*2)/60)
+	m_sphereRotationSpeed((glm::pi<float>()*2)/60),
+	m_pRenderer(new Renderer())
 {
 	m_sphereTransform = glm::translate(m_sphereTransform, vec3(-20));
 }
@@ -71,23 +76,18 @@ bool TestBed::Init( const char* fbxFileName, const char* meshName, const char* v
 		return false;
 	}
 
-	m_isModelLoaded = true;
+	auto programId = ShaderManager::MakeProgram("data/shaders/default.vert", "data/shaders/red.frag");
+	auto pBuffer = VBO::Create(Prims::Cube_BufferSize, Prims::Cube_NumberOfVerts, Prims::Cube_Vertices);
+	std::shared_ptr<Material> pMaterial( new Material(programId) );
+	m_pSimpleTriVBO = std::shared_ptr<GameObject>(new GameObject(glm::mat4x4(1.f), pMaterial, pBuffer));
 
-	m_pVertexArrayRenderer = new VertexArrayRenderer();
-	if (!m_pVertexArrayRenderer->Init(Prims::Cube_BufferSize, Prims::Cube_NumberOfVerts, Prims::Cube_Vertices, "data/shaders/default.vert", "data/shaders/red.frag"))
-	{
-		return false;
-	}
+	m_isModelLoaded = true;
 
 	glfwSwapInterval(1);
 
-	glClearColor(0.25f, 0.25f, 0.25f, 1);
-	glEnable(GL_DEPTH_TEST);
-
 	int width, height;
 	glfwGetFramebufferSize(m_pWindow, &width, &height);
-	glViewport(0, 0, width, height);
-
+	m_pRenderer->Init(width, height);
 	Gizmos::create();
 
 	m_isValid = true;
@@ -99,7 +99,7 @@ void TestBed::Stop()
 {
 	if (!m_isValid) return;
 
-	m_pVertexArrayRenderer->Destroy();
+	//m_pVertexArrayRenderer->Destroy();
 
 	if (m_isModelLoaded) {
 		m_fbxFile.unload();
@@ -120,7 +120,6 @@ bool TestBed::Update(double deltaTime)
 {
 	if (glfwWindowShouldClose(m_pWindow)) return false;
 
-	UpdateSolarSystem(deltaTime);
 	glfwPollEvents();
 
 	return true;
@@ -135,24 +134,15 @@ void TestBed::Draw() const
 	//Gizmos::clear();
 	//Gizmos::addTransform(glm::mat4(1));
 
-	//DrawWorldGrid();
-	//DrawSolarSystem();
+	m_pRenderer->Render(m_pCamera, m_pSimpleTriVBO);
 
 
-	m_pVertexArrayRenderer->Render( m_camera.GetProjectionView() );
+	//m_pVertexArrayRenderer->Render( m_camera.GetProjectionView() );
 
 	//Gizmos::draw(m_camera.GetProjectionView());
 
 	glfwSwapBuffers(m_pWindow);
 }
-
-void TestBed::UpdateSolarSystem(double deltaTime)
-{
-	const vec3 up = vec3(0, 1, 0);
-	mat4 rot = glm::rotate(m_sphereRotationSpeed*(float)deltaTime, up);
-	m_sphereTransform *= rot;
-}
-
 
 void TestBed::DrawWorldGrid() const
 {
@@ -165,9 +155,4 @@ void TestBed::DrawWorldGrid() const
 			vec3(-10, 0, -10 + i),
 			i == 10 ? Color::White : Color::Black);
 	}
-}
-
-void TestBed::DrawSolarSystem() const
-{
-	Gizmos::addSphere(vec3(-5), 2, 15, 15, Color::Red, &m_sphereTransform);
 }

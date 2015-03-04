@@ -4,6 +4,8 @@
 #include <iostream>
 #include <tchar.h>
 
+enum class Test { ONE, TWO };
+
 
 int _tmain(int argc, const char* argv[])
 {
@@ -27,6 +29,9 @@ int _tmain(int argc, const char* argv[])
 	}
 	testBed.Stop();
 
+	Test t = Test::ONE;
+
 	std::cout << "Finished running TestBed";
 	return 0;
 }
+

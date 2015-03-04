@@ -2,13 +2,16 @@
 
 #include <FBXFile.h>
 #include <glm/fwd.hpp>
+#include <memory>
 
 #include "Camera.h"
-#include "VertexArrayRenderer.h"
-#include "gl_core_4_4.h"
+#include "OpenGLTypes.h"
 
 // fwd decls
 struct GLFWwindow;
+class Renderer;
+
+class GameObject;
 
 class TestBed
 {
@@ -27,12 +30,13 @@ private:
 
 	bool m_isValid;
 	GLFWwindow* m_pWindow;
-	Camera m_camera;
+	std::shared_ptr<Camera> m_pCamera;
 
 	glm::mat4 m_sphereTransform;
 	float m_sphereRotationSpeed;
 	FBXFile m_fbxFile;
 	bool m_isModelLoaded;
-	VertexArrayRenderer* m_pVertexArrayRenderer;
+	std::shared_ptr<Renderer> m_pRenderer;
+	std::shared_ptr<GameObject> m_pSimpleTriVBO;
 };
 

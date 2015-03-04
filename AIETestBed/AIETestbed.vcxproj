@@ -88,10 +88,18 @@
   <ItemGroup>
     <ClInclude Include="Camera.h" />
     <ClInclude Include="Color.h" />
+    <ClInclude Include="GameObject.h" />
     <ClInclude Include="GLHelpers.h" />
+    <ClInclude Include="Material.h" />
+    <ClInclude Include="OpenGLOperators.h" />
+    <ClInclude Include="OpenGLTypes.h" />
     <ClInclude Include="gl_core_4_4.h" />
     <ClInclude Include="MeshRenderer.h" />
     <ClInclude Include="Prims.h" />
+    <ClInclude Include="Renderable.h" />
+    <ClInclude Include="Renderer.h" />
+    <ClInclude Include="ShaderManager.h" />
+    <ClInclude Include="StronglyTyped.h" />
     <ClInclude Include="targetver.h" />
     <ClInclude Include="TestBed.h" />
     <ClInclude Include="VertexArrayRenderer.h" />
@@ -100,11 +108,18 @@
     <ClCompile Include="..\dep\aieutilities\aie\Gizmos.cpp" />
     <ClCompile Include="Camera.cpp" />
     <ClCompile Include="Color.cpp" />
+    <ClCompile Include="GameObject.cpp" />
     <ClCompile Include="GLHelpers.cpp" />
     <ClCompile Include="gl_core_4_4.c" />
     <ClCompile Include="Main.cpp" />
+    <ClCompile Include="Material.cpp" />
     <ClCompile Include="MeshRenderer.cpp" />
+    <ClCompile Include="OpenGLOperators.cpp" />
+    <ClCompile Include="OpenGLTypes.cpp" />
     <ClCompile Include="Prims.cpp" />
+    <ClCompile Include="Renderable.cpp" />
+    <ClCompile Include="Renderer.cpp" />
+    <ClCompile Include="ShaderManager.cpp" />
     <ClCompile Include="TestBed.cpp" />
     <ClCompile Include="VertexArrayRenderer.cpp" />
   </ItemGroup>

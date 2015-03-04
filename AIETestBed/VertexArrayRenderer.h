@@ -19,7 +19,6 @@ private:
 
 	bool m_isValid;
 	glm::mat4 m_transform;
-	GLuint m_vertexArrayId;
 	GLuint m_vertexBufferId;
 	GLuint m_numberOfVerts;
 	GLuint m_programId;
