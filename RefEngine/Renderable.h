@@ -8,11 +8,12 @@ class Material;
 class Renderable
 {
 public:
-	Renderable(ProgramId programId, std::shared_ptr<Material>, std::shared_ptr<Buffer> buffer);
-	void Init();
-	void Render();
+	Renderable(std::shared_ptr<Material> material, std::shared_ptr<Buffer> buffer);
+
+	std::shared_ptr<Material> GetMaterial() const { return m_pMaterial;  }
+	std::shared_ptr<Buffer> GetBuffer() const { return m_pBuffer;  }
+
 private:
-	ProgramId m_programId;
-	std::shared_ptr<Material> m_material;
-	std::shared_ptr<Buffer> m_buffer;
+	std::shared_ptr<Material> m_pMaterial;
+	std::shared_ptr<Buffer> m_pBuffer;
 };

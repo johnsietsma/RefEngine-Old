@@ -3,6 +3,11 @@
 #include "OpenGLTypes.h"
 
 #include <glm/glm.hpp>
+#include <memory>
+
+//fwd decls
+class Camera;
+class GameObject;
 
 class Material
 {
@@ -11,9 +16,10 @@ public:
 
 	ProgramId GetProgramId() const { return m_programId;  }
 
-	void UpdateMVP( const glm::mat4x4& newMVP );
-
+	void UpdateUniforms( const Camera* pCamera, const GameObject* pGameObject );
 private:
+	void UpdateProjectionView(const glm::mat4x4& projectionView);
+
 	ProgramId m_programId;
 	UniformLocationId m_mvpLocation;
 };

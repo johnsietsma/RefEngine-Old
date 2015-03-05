@@ -16,5 +16,5 @@ class Renderer
 {
 public:
 	void Init( int width, int height );
-	void Render(std::shared_ptr<Camera> pCamera, std::vector<GameObject*> gameObjects);
+	void Render(Camera* pCamera, std::vector<GameObject*> pGameObjects);
 };

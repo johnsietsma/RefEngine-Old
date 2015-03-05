@@ -1,4 +1,7 @@
 #include "Material.h"
+
+#include "Camera.h"
+#include "GameObject.h"
 #include "pow2assert.h"
 
 #include <glm/gtc/type_ptr.hpp>
@@ -11,6 +14,14 @@ Material::Material( ProgramId programId )
 	POW2_ASSERT(m_mvpLocation != UniformLocationId_Invalid);
 }
 
-void Material::UpdateMVP(const glm::mat4x4& newMVP) {
-	glUniformMatrix4fv(m_mvpLocation.Value(), 1, GL_FALSE, glm::value_ptr(newMVP));
+void Material::UpdateUniforms(const Camera* pCamera, const GameObject* pGameObject)
+{
+	glm::mat4 MVP = pCamera->GetProjectionView() * pGameObject->GetTransform();
+	UpdateProjectionView(MVP);
+}
+
+
+void Material::UpdateProjectionView(const glm::mat4x4& projectionView) 
+{
+	glUniformMatrix4fv(m_mvpLocation.Value(), 1, GL_FALSE, glm::value_ptr(projectionView));
 }

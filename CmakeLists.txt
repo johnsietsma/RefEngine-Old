@@ -28,6 +28,8 @@ add_executable(refeng
     RefEngine/Camera.h
     RefEngine/Color.cpp
     RefEngine/Color.h
+    RefEngine/Controller.cpp
+    RefEngine/Controller.h
     RefEngine/GameObject.cpp
     RefEngine/GameObject.h
     RefEngine/gl_core_4_1.c
@@ -45,14 +47,16 @@ add_executable(refeng
     RefEngine/Material.h
     RefEngine/OpenGLTypes.cpp
     RefEngine/OpenGLTypes.h
+    RefEngine/RefEngine.h
+    RefEngine/RefEngine.cpp
     RefEngine/Renderable.cpp
     RefEngine/Renderable.h
     RefEngine/Renderer.cpp
     RefEngine/Renderer.h
-    RefEngine/TestBed.cpp
-    RefEngine/TestBed.h
     RefEngine/pow2assert.cpp
     RefEngine/pow2assert.h
+    RefEngine/SpinController.cpp
+    RefEngine/SpinController.h
     ${FBX_FILE}
     dep/aieutilities/aie/Gizmos.cpp
 )
