@@ -23,7 +23,7 @@ public:
 	~VertexBuffer();
 
 	// Factory method
-	static std::shared_ptr<Buffer> Create(GLuint bufferSize, GLuint numberOfVerts, const GLfloat verts[]);
+	static Buffer* Create(GLuint bufferSize, GLuint numberOfVerts, const GLfloat verts[]);
 
 	GLenum GetBufferType() const { return m_bufferType; }
 	VBOId GetBufferId() { return m_vboId; }

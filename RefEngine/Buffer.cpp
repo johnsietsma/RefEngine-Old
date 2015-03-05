@@ -18,7 +18,7 @@ VertexBuffer::~VertexBuffer()
 }
 
 // Creation must happen through the factory, keeps buffer ownership internal
-std::shared_ptr<Buffer> VertexBuffer::Create(GLuint bufferSize, GLuint numberOfVerts, const GLfloat verts[])
+Buffer* VertexBuffer::Create(GLuint bufferSize, GLuint numberOfVerts, const GLfloat verts[])
 {
 	GLuint vertexArrayObject;
 	glGenVertexArrays(1, &vertexArrayObject);
@@ -29,7 +29,7 @@ std::shared_ptr<Buffer> VertexBuffer::Create(GLuint bufferSize, GLuint numberOfV
 	glBindBuffer(GL_ARRAY_BUFFER, vertexBufferId);
 	glBufferData(GL_ARRAY_BUFFER, bufferSize, verts, GL_STATIC_DRAW);
 	glBindBuffer(GL_ARRAY_BUFFER, 0);
-	return std::shared_ptr<Buffer>((Buffer*)new VertexBuffer(GL_ARRAY_BUFFER, vertexArrayObject, vertexBufferId, numberOfVerts));
+	return new VertexBuffer(GL_ARRAY_BUFFER, vertexArrayObject, vertexBufferId, numberOfVerts);
 }
 
 void VertexBuffer::Bind()

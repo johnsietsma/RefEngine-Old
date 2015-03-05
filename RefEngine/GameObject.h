@@ -9,7 +9,7 @@ class Renderable;
 class GameObject
 {
 public:
-	GameObject(const glm::vec3& position, std::shared_ptr<Controller> pController, std::shared_ptr<Renderable> pRenderable);
+	GameObject(const glm::vec3& position, Controller* pController, Renderable* pRenderable);
 
 	const glm::mat4x4& GetTransform() const { return m_transform;  }
 	void SetTransform(const glm::mat4& transform) { m_transform = transform;  }

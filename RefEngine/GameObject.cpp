@@ -6,7 +6,7 @@
 #include "pow2assert.h"
 
 
-GameObject::GameObject(const glm::vec3& position, std::shared_ptr<Controller> pController, std::shared_ptr<Renderable> pRenderable) :
+GameObject::GameObject(const glm::vec3& position, Controller* pController, Renderable* pRenderable) :
 m_pController(pController),
 m_pRenderable(pRenderable)
 {

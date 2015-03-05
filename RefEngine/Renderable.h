@@ -8,7 +8,7 @@ class Material;
 class Renderable
 {
 public:
-	Renderable(std::shared_ptr<Material> material, std::shared_ptr<Buffer> buffer);
+	Renderable(Material* pMaterial, Buffer* pBuffer);
 
 	std::shared_ptr<Material> GetMaterial() const { return m_pMaterial;  }
 	std::shared_ptr<Buffer> GetBuffer() const { return m_pBuffer;  }

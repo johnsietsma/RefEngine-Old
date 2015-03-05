@@ -114,10 +114,10 @@ bool RefEngine::Init()
 	if (programId == ProgramId_Invalid) return false;
 
 	auto pBuffer = VertexBuffer::Create(Prims::TriangleSize, Prims::TriangleSize, Prims::Triangle);
-	std::shared_ptr<Material> pMaterial(new Material(programId));
-	shared_ptr<Renderable> triRenderable(new Renderable(pMaterial, pBuffer));
+	Material* pMaterial = new Material(programId);
+	Renderable* triRenderable = new Renderable(pMaterial, pBuffer);
 
-	m_gameObjects.push_back(new GameObject(glm::vec3(0), shared_ptr<Controller>(new SpinController()), triRenderable));
+	m_gameObjects.push_back(new GameObject(glm::vec3(0), new SpinController(), triRenderable));
 	m_gameObjects.push_back(new GameObject(glm::vec3(1,0,0), nullptr, triRenderable));
 	// -----
 
