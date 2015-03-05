@@ -26,7 +26,7 @@ Buffer* VertexBuffer::Create(size_t vertexSize, GLuint numberOfVerts, const GLfl
 	return Create(vertexSize, numberOfVerts, verts, 0, nullptr);
 }
 
-// Indexed array creator
+// Element array creator
 Buffer* VertexBuffer::Create(size_t vertexSize, GLuint numberOfVerts, const GLfloat verts[], GLuint numberOfIndices, const GLushort indices[])
 {
 	POW2_ASSERT(vertexSize != 0 || vertexSize != (size_t)-1);
@@ -86,5 +86,6 @@ void VertexBuffer::Draw()
 void VertexBuffer::Unbind()
 {
 	glBindBuffer(GL_ARRAY_BUFFER, 0);
+	glBindBuffer(GL_ELEMENT_ARRAY_BUFFER, 0);
 	glBindVertexArray(0);
 }
