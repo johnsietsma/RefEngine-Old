@@ -5,9 +5,15 @@
 
 struct PhantomType_VAO {};
 typedef StronglyTyped<GLuint, PhantomType_VAO> VAOId;
+const VAOId VAOId_Invalid;
 
 struct PhantomType_VBO {};
 typedef StronglyTyped<GLuint, PhantomType_VBO> VBOId;
+const VBOId VBOId_Invalid;
+
+struct PhantomType_IBO {};
+typedef StronglyTyped<GLuint, PhantomType_IBO> IBOId;
+const IBOId IBOId_Invalid;
 
 struct PhantomType_Shader {};
 typedef StronglyTyped<GLuint, PhantomType_Shader> ShaderId;

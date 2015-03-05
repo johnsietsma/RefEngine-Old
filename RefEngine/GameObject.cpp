@@ -1,5 +1,6 @@
 #include "GameObject.h"
 
+#include "Controller.h"
 #include "OpenGLTypes.h"
 #include "Material.h"
 #include "Renderable.h"

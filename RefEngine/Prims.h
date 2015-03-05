@@ -5,16 +5,17 @@
 class Prims
 {
 public:
-	static const GLfloat Triangle[];
-	static const size_t TriangleSize;
+	Prims() = delete;
+
+	static const GLfloat Triangle_Vertices[];
+	static const GLuint Triangle_NumberOfVerts;
 
 	static const GLfloat Cube_Vertices[];
-	static const size_t Cube_BufferSize;
-	static const size_t Cube_NumberOfVerts;
+	static const GLuint Cube_NumberOfVerts;
+
+	static const GLushort Cube_Indices[];
+	static const GLuint Cube_NumberOfIndices;
 
 	static const GLfloat CubeColors[];
-
-private:
-	Prims(); // Abstract class
 };
 

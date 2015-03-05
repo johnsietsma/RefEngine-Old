@@ -113,12 +113,19 @@ bool RefEngine::Init()
 	auto programId = ShaderManager::MakeProgram("data/shaders/default.vert", "data/shaders/red.frag");
 	if (programId == ProgramId_Invalid) return false;
 
-	auto pBuffer = VertexBuffer::Create(Prims::TriangleSize, Prims::TriangleSize, Prims::Triangle);
 	Material* pMaterial = new Material(programId);
-	Renderable* triRenderable = new Renderable(pMaterial, pBuffer);
 
-	m_gameObjects.push_back(new GameObject(glm::vec3(0), new SpinController(), triRenderable));
-	m_gameObjects.push_back(new GameObject(glm::vec3(1,0,0), nullptr, triRenderable));
+	// Put in a couple of tris
+	auto pTriBuffer = VertexBuffer::Create(sizeof(GLfloat), Prims::Triangle_NumberOfVerts, Prims::Triangle_Vertices);
+	Renderable* triRenderable = new Renderable(pMaterial, pTriBuffer);
+	m_gameObjects.push_back(new GameObject(glm::vec3(-2, 0, 0), new SpinController(), triRenderable));
+	m_gameObjects.push_back(new GameObject(glm::vec3(2, 0, 0), new SpinController(), triRenderable));
+
+	// Add a cube
+	auto pCubeBuffer = VertexBuffer::Create(sizeof(GLfloat), Prims::Cube_NumberOfVerts, Prims::Cube_Vertices, Prims::Cube_NumberOfIndices, Prims::Cube_Indices);
+	Renderable* cubeRenderable = new Renderable(pMaterial, pCubeBuffer);
+	m_gameObjects.push_back(new GameObject(glm::vec3(0), nullptr, cubeRenderable));
+
 	// -----
 
 	m_isValid = true;

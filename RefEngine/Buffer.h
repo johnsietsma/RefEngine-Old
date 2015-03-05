@@ -22,8 +22,14 @@ class VertexBuffer : public Buffer {
 public:
 	~VertexBuffer();
 
-	// Factory method
-	static Buffer* Create(GLuint bufferSize, GLuint numberOfVerts, const GLfloat verts[]);
+	// Factory methods
+	// Creation must happen through the factory, keeps buffer ownership internal
+
+	static Buffer* Create(size_t vertexSize, GLuint numberOfVerts, const GLfloat verts[]);
+
+	// Create indexed array object
+	static Buffer* Create(size_t vertexSize, GLuint numberOfVerts, const GLfloat verts[], GLuint numIndices, const GLushort indices[]);
+
 
 	GLenum GetBufferType() const { return m_bufferType; }
 	VBOId GetBufferId() { return m_vboId; }
@@ -34,10 +40,13 @@ public:
 
 private:
 	// Takes ownership of the buffers
-	VertexBuffer(GLenum bufferType, VAOId vaoId, VBOId vboId, GLuint numberOfVerts);
+	VertexBuffer(IBOId iboId, VAOId vaoId, VBOId vboId, GLuint numberOfVerts, GLuint numberOfIndices);
 
 	GLenum m_bufferType;
 	VBOId m_vboId;
 	VAOId m_vaoId;
+	IBOId m_iboId;
+
 	GLuint m_numberOfVerts;
+	GLuint m_numberOfIndices;
 };

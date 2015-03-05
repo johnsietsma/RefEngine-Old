@@ -13,6 +13,7 @@ public:
 	StronglyTyped() : m_value(T()) { }
 	StronglyTyped(T value) : m_value(value) { }
 	inline const T& Value() const { return m_value; }
+	inline T& Get() { return m_value; }
 
 private:
 	T m_value;
