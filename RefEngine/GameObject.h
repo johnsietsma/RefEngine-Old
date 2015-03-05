@@ -9,7 +9,7 @@ class Material;
 class GameObject
 {
 public:
-	GameObject( const glm::mat4x4& transform, std::shared_ptr<Material> pMaterial, std::shared_ptr<Buffer> pBuffer );
+	GameObject( const glm::vec3& transform, std::shared_ptr<Material> pMaterial, std::shared_ptr<Buffer> pBuffer );
 
 	const glm::mat4x4& GetTransform() const { return m_transform;  }
 	const std::shared_ptr<Material> GetMaterial() const { return m_pMaterial; }

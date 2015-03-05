@@ -87,10 +87,11 @@ bool TestBed::Init( const char* meshName, const char* vertexShaderFileName, cons
 	auto programId = ShaderManager::MakeProgram(vertexShaderFileName, fragmentShaderFileName);
 	if (programId == ProgramId_Invalid) return false;
 
-	auto pBuffer = VBO::Create(Prims::TriangleSize, Prims::TriangleSize, Prims::Triangle);
+	auto pBuffer = VertexBuffer::Create(Prims::TriangleSize, Prims::TriangleSize, Prims::Triangle);
 	std::shared_ptr<Material> pMaterial( new Material(programId) );
 
-	m_pSimpleTriVBO = std::shared_ptr<GameObject>(new GameObject(glm::mat4x4(1.f), pMaterial, pBuffer));
+	m_gameObjects.push_back(new GameObject(glm::vec3(0), pMaterial, pBuffer));
+	m_gameObjects.push_back(new GameObject(glm::vec3(1,0,0), pMaterial, pBuffer));
 
 	m_isModelLoaded = true;
 
@@ -147,7 +148,7 @@ void TestBed::Draw() const
 
 	DrawWorldGrid();
 
-	m_pRenderer->Render(m_pCamera, m_pSimpleTriVBO);
+	m_pRenderer->Render(m_pCamera, m_gameObjects);
 	Gizmos::draw(m_pCamera->GetProjectionView());
 
 	glfwSwapBuffers(m_pWindow);

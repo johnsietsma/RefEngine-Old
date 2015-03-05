@@ -37,6 +37,6 @@ private:
 	FBXFile m_fbxFile;
 	bool m_isModelLoaded;
 	std::shared_ptr<Renderer> m_pRenderer;
-	std::shared_ptr<GameObject> m_pSimpleTriVBO;
+	std::vector<GameObject*> m_gameObjects;
 };
 

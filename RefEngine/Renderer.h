@@ -2,13 +2,13 @@
 
 #include <glm/glm.hpp>
 #include <memory>
+#include <vector>
 
 
 #include "OpenGLTypes.h"
 
 class Camera;
 class GameObject;
-class OpenGLOperators;
 class Renderable;
 class ShaderManager;
 
@@ -16,8 +16,5 @@ class Renderer
 {
 public:
 	void Init( int width, int height );
-	void Render(std::shared_ptr<Camera> pCamera, std::shared_ptr<GameObject> pGameObject);
-
-private:
-	std::shared_ptr<OpenGLOperators> m_openGLOperators;
+	void Render(std::shared_ptr<Camera> pCamera, std::vector<GameObject*> gameObjects);
 };

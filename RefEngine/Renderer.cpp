@@ -21,21 +21,24 @@ void Renderer::Init(int width, int height)
 
 }
 
-void Renderer::Render(std::shared_ptr<Camera> pCamera, std::shared_ptr<GameObject> pGameObject)
+void Renderer::Render(shared_ptr<Camera> pCamera, vector<GameObject*> gameObjects)
 {
-    auto pMaterial = pGameObject->GetMaterial();
-	glm::mat4 MVP = pCamera->GetProjectionView() * pGameObject->GetTransform();
+	for (auto pGameObject : gameObjects) {
+		auto pMaterial = pGameObject->GetMaterial();
+		glm::mat4 MVP = pCamera->GetProjectionView() * pGameObject->GetTransform();
 
-	GLuint programId = pMaterial->GetProgramId().Value();
-	glUseProgram(programId);
+		GLuint programId = pMaterial->GetProgramId().Value();
+		glUseProgram(programId);
 
-	pGameObject->GetMaterial()->UpdateMVP(MVP);
+		pGameObject->GetMaterial()->UpdateMVP(MVP);
 
-	auto pBuffer = pGameObject->GetBuffer();
-	//cout << "Rendering buffer: " << pBuffer->GetBufferId() << endl;
+		auto pBuffer = pGameObject->GetBuffer();
+		//cout << "Rendering buffer: " << pBuffer->GetBufferId() << endl;
 
-	pBuffer->Bind();
-	pBuffer->Draw();
+		pBuffer->Bind();
+		pBuffer->Draw();
+		pBuffer->Unbind();
 
-	glUseProgram(0);
+		glUseProgram(0);
+	}
 }

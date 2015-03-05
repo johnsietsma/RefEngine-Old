@@ -2,7 +2,23 @@
 
 #include <memory>
 
-std::shared_ptr<Buffer> VBO::Create(GLuint bufferSize, GLuint numberOfVerts, const GLfloat verts[])
+VertexBuffer::VertexBuffer(GLenum bufferType, VAOId vaoId, VBOId vboId, GLuint numberOfVerts)
+: m_bufferType(bufferType)
+, m_vaoId(vaoId)
+, m_vboId(vboId)
+, m_numberOfVerts(numberOfVerts) 
+{
+}
+
+VertexBuffer::~VertexBuffer()
+{
+	// Cleanup
+	glDeleteBuffers(1, &m_vboId.Value());
+	glDeleteVertexArrays(1, &m_vaoId.Value());
+}
+
+// Creation must happen through the factory, keeps buffer ownership internal
+std::shared_ptr<Buffer> VertexBuffer::Create(GLuint bufferSize, GLuint numberOfVerts, const GLfloat verts[])
 {
 	GLuint vertexArrayObject;
 	glGenVertexArrays(1, &vertexArrayObject);
@@ -13,26 +29,25 @@ std::shared_ptr<Buffer> VBO::Create(GLuint bufferSize, GLuint numberOfVerts, con
 	glBindBuffer(GL_ARRAY_BUFFER, vertexBufferId);
 	glBufferData(GL_ARRAY_BUFFER, bufferSize, verts, GL_STATIC_DRAW);
 	glBindBuffer(GL_ARRAY_BUFFER, 0);
-	return std::shared_ptr<Buffer>((Buffer*)new VBO(GL_ARRAY_BUFFER, vertexArrayObject, vertexBufferId, numberOfVerts));
+	return std::shared_ptr<Buffer>((Buffer*)new VertexBuffer(GL_ARRAY_BUFFER, vertexArrayObject, vertexBufferId, numberOfVerts));
 }
 
-void VBO::Destroy(VAOId vaoId, VBOId vboId)
+void VertexBuffer::Bind()
 {
-	glDeleteBuffers(1, &vboId.Value());
-	glDeleteVertexArrays(1, &vaoId.Value());
-}
-
-
-void VBO::Bind()
-{
-	glBindBuffer(GL_ARRAY_BUFFER, m_vboId.Value());
 	glBindVertexArray(m_vaoId.Value());
+	glBindBuffer(GL_ARRAY_BUFFER, m_vboId.Value());
 	glEnableVertexAttribArray(0);
 	glVertexAttribPointer(0, 3, GL_FLOAT, GL_FALSE, 0, 0);
 }
 
-void VBO::Draw()
+void VertexBuffer::Draw()
 {
 	glDrawArrays(GL_TRIANGLES, 0, 3 * m_numberOfVerts);
+	glDisableVertexAttribArray(0);
+}
+
+void VertexBuffer::Unbind()
+{
+	glBindBuffer(GL_ARRAY_BUFFER, 0);
 	glDisableVertexAttribArray(0);
 }
