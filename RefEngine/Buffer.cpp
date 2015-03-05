@@ -44,17 +44,18 @@ Buffer* VertexBuffer::Create(size_t vertexSize, GLuint numberOfVerts, const GLfl
 	glBindVertexArray(vertexArrayObjectId.Value());
 	glBindBuffer(GL_ARRAY_BUFFER, vertexBufferId.Value());
 	glBufferData(GL_ARRAY_BUFFER, numberOfVerts*vertexSize, verts, GL_STATIC_DRAW);
-	//glBindBuffer(GL_ARRAY_BUFFER, 0);
 
 	if (numberOfIndices > 0) {
 		glGenBuffers(1, &indexBufferObjectId.Get());
 		glBindBuffer(GL_ELEMENT_ARRAY_BUFFER, indexBufferObjectId.Value());
 		glBufferData(GL_ELEMENT_ARRAY_BUFFER, numberOfIndices*sizeof(GLushort), indices, GL_STATIC_DRAW);
-		//glBindBuffer(GL_ELEMENT_ARRAY_BUFFER, 0);
 	}
 
 	glEnableVertexAttribArray(0);
 	glVertexAttribPointer(0, 3, GL_FLOAT, GL_FALSE, 0, 0);
+
+	glBindBuffer(GL_ARRAY_BUFFER, 0);
+	glBindBuffer(GL_ELEMENT_ARRAY_BUFFER, 0);
 
 	return new VertexBuffer(indexBufferObjectId, vertexArrayObjectId, vertexBufferId, numberOfVerts, numberOfIndices);
 }
@@ -66,6 +67,9 @@ void VertexBuffer::Bind()
 
 	if (m_iboId == IBOId_Invalid) {
 		glBindBuffer(GL_ARRAY_BUFFER, m_vboId.Value());
+	}
+	else {
+		glBindBuffer(GL_ELEMENT_ARRAY_BUFFER, m_iboId.Value());
 	}
 }
 
