@@ -8,6 +8,7 @@
 #include <glm/gtc/matrix_transform.hpp>
 #include <iostream>
 
+#include "Buffer.h"
 #include "Camera.h"
 #include "Color.h"
 #include "GameObject.h"
@@ -52,6 +53,7 @@ bool TestBed::Init( const char* meshName, const char* vertexShaderFileName, cons
 	m_isValid = glfwInit() == GL_TRUE;
 	if (!m_isValid) return false;
     
+	// Required to get MacOS out of compatiblity mode
     glfwWindowHint(GLFW_CONTEXT_VERSION_MAJOR, 3);
     glfwWindowHint(GLFW_CONTEXT_VERSION_MINOR, 2);
     glfwWindowHint(GLFW_OPENGL_PROFILE, GLFW_OPENGL_CORE_PROFILE);
@@ -83,8 +85,11 @@ bool TestBed::Init( const char* meshName, const char* vertexShaderFileName, cons
 	}*/
 
 	auto programId = ShaderManager::MakeProgram(vertexShaderFileName, fragmentShaderFileName);
-	auto pBuffer = VBO::Create(Prims::Cube_BufferSize, Prims::Cube_NumberOfVerts, Prims::Cube_Vertices);
+	if (programId == ProgramId_Invalid) return false;
+
+	auto pBuffer = VBO::Create(Prims::TriangleSize, Prims::TriangleSize, Prims::Triangle);
 	std::shared_ptr<Material> pMaterial( new Material(programId) );
+
 	m_pSimpleTriVBO = std::shared_ptr<GameObject>(new GameObject(glm::mat4x4(1.f), pMaterial, pBuffer));
 
 	m_isModelLoaded = true;
@@ -137,15 +142,13 @@ void TestBed::Draw() const
 
 	glClear(GL_COLOR_BUFFER_BIT | GL_DEPTH_BUFFER_BIT);
 
-	//Gizmos::clear();
-	//Gizmos::addTransform(glm::mat4(1));
+	Gizmos::clear();
+	Gizmos::addTransform(glm::mat4(1));
+
+	DrawWorldGrid();
 
 	m_pRenderer->Render(m_pCamera, m_pSimpleTriVBO);
-
-
-	//m_pVertexArrayRenderer->Render( m_camera.GetProjectionView() );
-
-	//Gizmos::draw(m_camera.GetProjectionView());
+	Gizmos::draw(m_pCamera->GetProjectionView());
 
 	glfwSwapBuffers(m_pWindow);
 }

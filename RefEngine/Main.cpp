@@ -2,14 +2,27 @@
 
 #include <GLFW/glfw3.h>
 #include <iostream>
+#include <stdio.h>
 #include <string>
 
-enum class Test { ONE, TWO };
+#ifdef _WINDOWS
+#include <direct.h>
+#define GetCurrentDir _getcwd
+#else
+#include <unistd.h>
+#define GetCurrentDir getcwd
+#endif
 
 
 int main(int argc, char** argv)
 {
 	std::cout << "Running TestBed: " << glfwGetVersionString() << std::endl;
+
+	char cCurrentPath[FILENAME_MAX];
+	if (GetCurrentDir(cCurrentPath, sizeof(cCurrentPath)))
+	{
+		printf("The current working directory is %s", cCurrentPath);
+	}
 
 	TestBed testBed;
     //std::string baseDir(argv[0]);

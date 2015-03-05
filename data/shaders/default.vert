@@ -1,9 +1,8 @@
 #version 410
-in vec3 vertexPosition_modelSpace;
-uniform mat4 MVP;
+in vec4 Position;
+uniform mat4 ProjectionView;
 
 void main()
 {
-	vec4 v = vec4(vertexPosition_modelSpace,1);
-    gl_Position = MVP * v;
+    gl_Position = ProjectionView * Position;
 }

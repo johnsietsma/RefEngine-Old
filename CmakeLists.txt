@@ -14,33 +14,49 @@ include_directories(RefEngine)
 IF(APPLE)
     include_directories("/Applications/Autodesk/FBX SDK/2015.1/include")
     SET(GCC_CHAR_IS_UNSIGNED_CHAR "-funsigned-char")
+    SET(STD_C11 "-std=c++11")
+    SET(FBX_FILE dep/fbx/FBXFile.cpp)
 ENDIF (APPLE)
 
-set(CMAKE_CXX_FLAGS "${CMAKE_CXX_FLAGS} ${GCC_CHAR_IS_UNSIGNED_CHAR} -std=c++11")
+set(CMAKE_CXX_FLAGS "${CMAKE_CXX_FLAGS} ${GCC_CHAR_IS_UNSIGNED_CHAR} ${STD_C11}")
 
 
 add_executable(refeng
+    RefEngine/Buffer.cpp
+    RefEngine/Buffer.h
     RefEngine/Camera.cpp
-    RefEngine/GameObject.cpp
-    RefEngine/MeshRenderer.cpp
-    RefEngine/Prims.cpp
-    RefEngine/ShaderManager.cpp
+    RefEngine/Camera.h
     RefEngine/Color.cpp
-    RefEngine/Main.cpp
-    RefEngine/Renderable.cpp
-    RefEngine/TestBed.cpp
-    RefEngine/GLHelpers.cpp
-    RefEngine/Material.cpp
-    RefEngine/OpenGLTypes.cpp
-    RefEngine/Renderer.cpp
+    RefEngine/Color.h
+    RefEngine/GameObject.cpp
+    RefEngine/GameObject.h
     RefEngine/gl_core_4_1.c
-    dep/FBXLoader/FBXFile.cpp
+    RefEngine/gl_core_4_1.h
+    RefEngine/GLHelpers.cpp
+    RefEngine/GLHelpers.h
+    RefEngine/MeshRenderer.cpp
+    RefEngine/MeshRenderer.h
+    RefEngine/Prims.cpp
+    RefEngine/Prims.h
+    RefEngine/ShaderManager.cpp
+    RefEngine/ShaderManager.h
+    RefEngine/Main.cpp
+    RefEngine/Material.cpp
+    RefEngine/Material.h
+    RefEngine/OpenGLTypes.cpp
+    RefEngine/OpenGLTypes.h
+    RefEngine/Renderable.cpp
+    RefEngine/Renderable.h
+    RefEngine/Renderer.cpp
+    RefEngine/Renderer.h
+    RefEngine/TestBed.cpp
+    RefEngine/TestBed.h
+    RefEngine/pow2assert.cpp
+    RefEngine/pow2assert.h
+    ${FBX_FILE}
     dep/aieutilities/aie/Gizmos.cpp
 )
-target_link_libraries(refeng ${CMAKE_SOURCE_DIR}/dep/FBXLoader/libfbxsdk.a)
-target_link_libraries(refeng ${CMAKE_SOURCE_DIR}/dep/glfw/lib/libglfw3.a)
-target_link_libraries(refeng ${CMAKE_SOURCE_DIR}/dep/glew/lib/libGLEW.a)
-#target_link_libraries(refeng ${CMAKE_SOURCE_DIR}/System/Library/Frameworks/OpenGL.framework)
+
 
 IF(APPLE)
    INCLUDE_DIRECTORIES ( /System/Library/Frameworks )
@@ -51,6 +67,15 @@ IF(APPLE)
    FIND_LIBRARY(IOKIT_LIBRARY IOKit)
    MARK_AS_ADVANCED (CARBON_LIBRARY CORE_VIDEO_LIBRARY COCOA_LIBRARY OpenGL_LIBRARY IOKIT_LIBRARY)
    SET(EXTRA_LIBS ${CARBON_LIBRARY} ${CORE_VIDEO_LIBRARY} ${COCOA_LIBRARY} ${OpenGL_LIBRARY} ${IOKIT_LIBRARY})
+
+   target_link_libraries(refeng ${CMAKE_SOURCE_DIR}/dep/fbx/libfbxsdk.a)
+   target_link_libraries(refeng ${CMAKE_SOURCE_DIR}/dep/glfw/lib/libglfw3.a)
+   target_link_libraries(refeng ${CMAKE_SOURCE_DIR}/dep/glew/lib/libGLEW.a)
+ELSE(APPLE)
+   target_link_libraries(refeng opengl32.lib)
+   target_link_libraries(refeng ${CMAKE_SOURCE_DIR}/dep/glfw/lib-vc2013/glfw3.lib)
+   target_link_libraries(refeng optimized ${CMAKE_SOURCE_DIR}/dep/FBXLoader/FBXLoader.lib)
+   target_link_libraries(refeng debug ${CMAKE_SOURCE_DIR}/dep/FBXLoader/FBXLoader_d.lib)
 ENDIF (APPLE)
 
 target_link_libraries(refeng ${EXTRA_LIBS})

@@ -1,10 +1,15 @@
 #include "Renderer.h"
 
+#include "Buffer.h"
 #include "Camera.h"
 #include "GameObject.h"
-#include "gl_core_4_4.h"
+#include "gl_core_4_1.h"
 #include "Material.h"
 #include "Renderable.h"
+
+#include <iostream>
+
+using namespace std;
 
 void Renderer::Init(int width, int height)
 {
@@ -20,11 +25,17 @@ void Renderer::Render(std::shared_ptr<Camera> pCamera, std::shared_ptr<GameObjec
 {
     auto pMaterial = pGameObject->GetMaterial();
 	glm::mat4 MVP = pCamera->GetProjectionView() * pGameObject->GetTransform();
-	glUseProgram(pMaterial->GetProgramId().Value());
+
+	GLuint programId = pMaterial->GetProgramId().Value();
+	glUseProgram(programId);
 
 	pGameObject->GetMaterial()->UpdateMVP(MVP);
 
 	auto pBuffer = pGameObject->GetBuffer();
+	//cout << "Rendering buffer: " << pBuffer->GetBufferId() << endl;
+
 	pBuffer->Bind();
 	pBuffer->Draw();
+
+	glUseProgram(0);
 }

@@ -1,44 +1,23 @@
 #pragma once
 
 #include "StronglyTyped.h"
-#include "gl_core_4_4.h"
-#include "Prims.h"
+#include "gl_core_4_1.h"
 
-#include <memory>
+struct PhantomType_VAO {};
+typedef StronglyTyped<GLuint, PhantomType_VAO> VAOId;
 
-struct VBOType {};
-typedef StronglyTyped<GLuint, VBOType> VBOId;
+struct PhantomType_VBO {};
+typedef StronglyTyped<GLuint, PhantomType_VBO> VBOId;
 
-struct ProgramType {};
-typedef StronglyTyped<GLuint, ProgramType> ProgramId;
+struct PhantomType_Shader {};
+typedef StronglyTyped<GLuint, PhantomType_Shader> ShaderId;
+const ShaderId ShaderId_Invalid = -1;
 
-struct UniformLocationType {};
-typedef StronglyTyped<GLuint, UniformLocationType> UniformLocationId;
+struct PhantomType_Program {};
+typedef StronglyTyped<GLuint, PhantomType_Program> ProgramId;
+const ProgramId ProgramId_Invalid = -1;
 
-class Buffer {
-public:
-	virtual GLenum GetBufferType() const = 0;
-	virtual VBOId GetBufferId() = 0;
+struct PhantomType_UniformLocation {};
+typedef StronglyTyped<GLuint, PhantomType_UniformLocation> UniformLocationId;
+const UniformLocationId UniformLocationId_Invalid = -1;
 
-    virtual void Bind() = 0;
-    virtual void Draw() = 0;
-};
-
-class VBO : public Buffer {
-public:
-	VBO(GLenum bufferType, VBOId vboId, GLuint numberOfVerts) : m_bufferType(bufferType), m_vboId(vboId), m_numberOfVerts(numberOfVerts) {}
-
-	static std::shared_ptr<Buffer> Create(GLuint bufferSize, GLuint numberOfVerts, const GLfloat verts[]);
-    static void Destroy(VBOId);
-
-	GLenum GetBufferType() const { return m_bufferType; }
-	VBOId GetBufferId() { return m_vboId; }
-
-    void Bind();
-    void Draw();
-
-private:
-	GLenum m_bufferType;
-	VBOId m_vboId;
-	GLuint m_numberOfVerts;
-};
