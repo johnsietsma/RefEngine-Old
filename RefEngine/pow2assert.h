@@ -38,21 +38,28 @@ namespace pow2 { namespace Assert
 		Continue,
 	};
 
-	typedef FailBehavior (*Handler)(const char* condition, 
-									const char* msg, 
-									const char* file, 
+	typedef FailBehavior (*Handler)(const char* condition,
+									const char* msg,
+									const char* file,
 									int line);
 
 	Handler GetHandler();
 	void SetHandler(Handler newHandler);
 
-	FailBehavior ReportFailure(const char* condition, 
-							   const char* file, 
-							   int line, 
+	FailBehavior ReportFailure(const char* condition,
+							   const char* file,
+							   int line,
 							   const char* msg, ...);
 }}
 
+#if defined _WINDOWS
 #define POW2_HALT() __debugbreak()
+#elif defined _MACH_
+#define POW2_HALT() Debugger()
+#else
+#define POW2_HALT() abort()
+#endif
+
 #define POW2_UNUSED(x) do { (void)sizeof(x); } while(0)
 
 #ifdef POW2_ASSERTS_ENABLED
@@ -72,7 +79,7 @@ namespace pow2 { namespace Assert
 		{ \
 			if (!(cond)) \
 			{ \
-				if (pow2::Assert::ReportFailure(#cond, __FILE__, __LINE__, (msg), __VA_ARGS__) == \
+				if (pow2::Assert::ReportFailure(#cond, __FILE__, __LINE__, (msg), ##__VA_ARGS__) == \
 					pow2::Assert::Halt) \
 					POW2_HALT(); \
 			} \

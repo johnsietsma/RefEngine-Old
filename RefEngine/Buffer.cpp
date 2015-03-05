@@ -5,8 +5,8 @@
 #include "pow2assert.h"
 
 VertexBuffer::VertexBuffer(IBOId iboId, VAOId vaoId, VBOId vboId, GLuint numberOfVerts, GLuint numberOfIndices) :
-m_vaoId(vaoId),
 m_vboId(vboId),
+m_vaoId(vaoId),
 m_iboId(iboId),
 m_numberOfVerts(numberOfVerts) ,
 m_numberOfIndices(numberOfIndices)

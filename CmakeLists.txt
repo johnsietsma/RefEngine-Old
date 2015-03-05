@@ -15,7 +15,7 @@ IF(APPLE)
     include_directories("/Applications/Autodesk/FBX SDK/2015.1/include")
     SET(GCC_CHAR_IS_UNSIGNED_CHAR "-funsigned-char")
     SET(STD_C11 "-std=c++11")
-    SET(FBX_FILE dep/fbx/FBXFile.cpp)
+    SET(FBX_FILE dep/FBXLoader/FBXFile.cpp)
 ENDIF (APPLE)
 
 set(CMAKE_CXX_FLAGS "${CMAKE_CXX_FLAGS} ${GCC_CHAR_IS_UNSIGNED_CHAR} ${STD_C11}")
@@ -36,6 +36,8 @@ add_executable(refeng
     RefEngine/gl_core_4_1.h
     RefEngine/GLHelpers.cpp
     RefEngine/GLHelpers.h
+    RefEngine/memaligned.c
+    RefEngine/memaligned.h
     RefEngine/MeshRenderer.cpp
     RefEngine/MeshRenderer.h
     RefEngine/Prims.cpp
@@ -72,7 +74,7 @@ IF(APPLE)
    MARK_AS_ADVANCED (CARBON_LIBRARY CORE_VIDEO_LIBRARY COCOA_LIBRARY OpenGL_LIBRARY IOKIT_LIBRARY)
    SET(EXTRA_LIBS ${CARBON_LIBRARY} ${CORE_VIDEO_LIBRARY} ${COCOA_LIBRARY} ${OpenGL_LIBRARY} ${IOKIT_LIBRARY})
 
-   target_link_libraries(refeng ${CMAKE_SOURCE_DIR}/dep/fbx/libfbxsdk.a)
+   target_link_libraries(refeng ${CMAKE_SOURCE_DIR}/dep/FBXLoader/libfbxsdk.a)
    target_link_libraries(refeng ${CMAKE_SOURCE_DIR}/dep/glfw/lib/libglfw3.a)
    target_link_libraries(refeng ${CMAKE_SOURCE_DIR}/dep/glew/lib/libGLEW.a)
 ELSE(APPLE)
