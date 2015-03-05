@@ -59,6 +59,7 @@ add_executable(refeng
     RefEngine/pow2assert.h
     RefEngine/SpinController.cpp
     RefEngine/SpinController.h
+	RefEngine/types.h
     ${FBX_FILE}
     dep/aieutilities/aie/Gizmos.cpp
 )

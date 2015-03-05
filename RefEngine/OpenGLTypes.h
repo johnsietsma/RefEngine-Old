@@ -3,6 +3,9 @@
 #include "StronglyTyped.h"
 #include "gl_core_4_1.h"
 
+//-----------------------------------------------------------------------------
+// Create strong types for various OpenGL ids
+
 struct PhantomType_VAO {};
 typedef StronglyTyped<GLuint, PhantomType_VAO> VAOId;
 const VAOId VAOId_Invalid;
@@ -27,3 +30,32 @@ struct PhantomType_UniformLocation {};
 typedef StronglyTyped<GLuint, PhantomType_UniformLocation> UniformLocationId;
 const UniformLocationId UniformLocationId_Invalid = -1;
 
+
+
+//-----------------------------------------------------------------------------
+// Map a C numeric type to a GLenum value at compile time
+
+template<typename T> struct GLEnumValue {
+	static const int value = -1;
+};
+
+
+template<> struct GLEnumValue<float> {
+	static const int value = GL_FLOAT;
+};
+
+template<> struct GLEnumValue<short> {
+	static const int value = GL_SHORT;
+};
+
+template<> struct GLEnumValue<int> {
+	static const int value = GL_INT;
+};
+
+template<> struct GLEnumValue<unsigned short> {
+	static const int value = GL_UNSIGNED_SHORT;
+};
+
+template<> struct GLEnumValue<unsigned int> {
+	static const int value = GL_UNSIGNED_INT;
+};

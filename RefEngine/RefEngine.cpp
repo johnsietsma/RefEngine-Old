@@ -6,6 +6,7 @@
 #include "Color.h"
 #include "Controller.h"
 #include <aie/Gizmos.h>
+#include "FBXFile.h"
 #include "GameObject.h"
 #include "gl_core_4_1.h"
 #include "GLHelpers.h"
@@ -20,7 +21,6 @@
 #include <glm/glm.hpp>
 #include <iostream>
 
-using namespace glm;
 using namespace std;
 
 static void errorCallback(int errorCode, const char* errorDesc)
@@ -39,7 +39,7 @@ void keyCallback(GLFWwindow* m_pWindow, int key, int scanCode, int action, int m
 
 RefEngine::RefEngine() :
 	m_isValid(false),
-	m_pCamera(new Camera(vec3(4, 3, 3), vec3(0), 45, 16 / 9.f)),
+	m_pCamera(new Camera(glm::vec3(4, 3, 3), glm::vec3(0), 45, 16 / 9.f)),
 	m_pRenderer(new Renderer())
 {}
 
@@ -116,15 +116,27 @@ bool RefEngine::Init()
 	Material* pMaterial = new Material(programId);
 
 	// Put in a couple of tris
-	auto pTriBuffer = VertexBuffer::Create(sizeof(GLfloat), Prims::Triangle_NumberOfVerts, Prims::Triangle_Vertices);
+	auto pTriBuffer = VertexBuffer::Create<>(Prims::Triangle_NumberOfVerts, Prims::Triangle_Vertices);
 	Renderable* triRenderable = new Renderable(pMaterial, pTriBuffer);
 	m_gameObjects.push_back(new GameObject(glm::vec3(-2, 0, 0), new SpinController(), triRenderable));
 	m_gameObjects.push_back(new GameObject(glm::vec3(2, 0, 0), new SpinController(), triRenderable));
 
 	// Add a cube
-	auto pCubeBuffer = VertexBuffer::Create(sizeof(GLfloat), Prims::Cube_NumberOfVerts, Prims::Cube_Vertices, Prims::Cube_NumberOfIndices, Prims::Cube_Indices);
+	auto pCubeBuffer = VertexBuffer::Create(Prims::Cube_NumberOfVerts, Prims::Cube_Vertices, Prims::Cube_NumberOfIndices, Prims::Cube_Indices);
 	Renderable* cubeRenderable = new Renderable(pMaterial, pCubeBuffer);
 	m_gameObjects.push_back(new GameObject(glm::vec3(0), nullptr, cubeRenderable));
+
+	/*
+	// Add a fbx model
+	FBXFile fbx;
+	fbx.load("data/models/puppy-r1-ad.FBX");
+	for (uint i = 0; i < fbx.getMeshCount(); i++) {
+		FBXMeshNode* pMesh = fbx.getMeshByIndex(i);
+		auto pMeshBuffer = VertexBuffer::Create( pMesh->m_vertices.size(), &(pMesh->m_vertices[0]), pMesh->m_indices.size(), &(pMesh->m_indices[0]));
+		Renderable* cubeRenderable = new Renderable(pMaterial, pCubeBuffer);
+		m_gameObjects.push_back(new GameObject(glm::vec3(0), nullptr, cubeRenderable));
+	}
+	*/
 
 	// -----
 
@@ -171,12 +183,12 @@ void RefEngine::Draw()
 void RefEngine::DrawWorldGrid() const
 {
 	for (int i = 0; i < 21; ++i) {
-		Gizmos::addLine(vec3(-10 + i, 0, 10),
-			vec3(-10 + i, 0, -10),
+		Gizmos::addLine(glm::vec3(-10 + i, 0, 10),
+			glm::vec3(-10 + i, 0, -10),
 			i == 10 ? Color::White : Color::Black);
 
-		Gizmos::addLine(vec3(10, 0, -10 + i),
-			vec3(-10, 0, -10 + i),
+		Gizmos::addLine(glm::vec3(10, 0, -10 + i),
+			glm::vec3(-10, 0, -10 + i),
 			i == 10 ? Color::White : Color::Black);
 	}
 }

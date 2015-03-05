@@ -4,12 +4,13 @@
 
 #include "pow2assert.h"
 
-VertexBuffer::VertexBuffer(IBOId iboId, VAOId vaoId, VBOId vboId, GLuint numberOfVerts, GLuint numberOfIndices) :
+VertexBuffer::VertexBuffer(IBOId iboId, VAOId vaoId, VBOId vboId, GLuint numberOfVerts, GLuint numberOfIndices, GLenum indexType) :
 m_vboId(vboId),
 m_vaoId(vaoId),
 m_iboId(iboId),
 m_numberOfVerts(numberOfVerts) ,
-m_numberOfIndices(numberOfIndices)
+m_numberOfIndices(numberOfIndices),
+m_indexType(indexType)
 {
 }
 
@@ -20,19 +21,13 @@ VertexBuffer::~VertexBuffer()
 	glDeleteVertexArrays(1, &m_vaoId.Value());
 }
 
-// Array object creator
-Buffer* VertexBuffer::Create(size_t vertexSize, GLuint numberOfVerts, const GLfloat verts[])
-{
-	return Create(vertexSize, numberOfVerts, verts, 0, nullptr);
-}
-
 // Element array creator
-Buffer* VertexBuffer::Create(size_t vertexSize, GLuint numberOfVerts, const GLfloat verts[], GLuint numberOfIndices, const GLushort indices[])
+Buffer* VertexBuffer::Create(size_t vertexSize, uint numberOfVerts, const void* verts, size_t indexSize, GLenum indexType, uint numberOfIndices, const void* indices)
 {
-	POW2_ASSERT(vertexSize != 0 || vertexSize != (size_t)-1);
 	POW2_ASSERT(numberOfVerts != 0 || numberOfVerts != (GLuint)-1);
 	POW2_ASSERT(verts != nullptr);
 	POW2_ASSERT(numberOfIndices<=0 || indices!= nullptr);
+	POW2_ASSERT(indexType >= 0);
 
 	VAOId vertexArrayObjectId = VAOId_Invalid;
 	VBOId vertexBufferId = VBOId_Invalid;
@@ -48,7 +43,7 @@ Buffer* VertexBuffer::Create(size_t vertexSize, GLuint numberOfVerts, const GLfl
 	if (numberOfIndices > 0) {
 		glGenBuffers(1, &indexBufferObjectId.Get());
 		glBindBuffer(GL_ELEMENT_ARRAY_BUFFER, indexBufferObjectId.Value());
-		glBufferData(GL_ELEMENT_ARRAY_BUFFER, numberOfIndices*sizeof(GLushort), indices, GL_STATIC_DRAW);
+		glBufferData(GL_ELEMENT_ARRAY_BUFFER, numberOfIndices*indexSize, indices, GL_STATIC_DRAW);
 	}
 
 	glEnableVertexAttribArray(0);
@@ -57,7 +52,7 @@ Buffer* VertexBuffer::Create(size_t vertexSize, GLuint numberOfVerts, const GLfl
 	glBindBuffer(GL_ARRAY_BUFFER, 0);
 	glBindBuffer(GL_ELEMENT_ARRAY_BUFFER, 0);
 
-	return new VertexBuffer(indexBufferObjectId, vertexArrayObjectId, vertexBufferId, numberOfVerts, numberOfIndices);
+	return new VertexBuffer(indexBufferObjectId, vertexArrayObjectId, vertexBufferId, numberOfVerts, numberOfIndices, indexType);
 }
 
 
@@ -79,7 +74,7 @@ void VertexBuffer::Draw()
 		glDrawArrays(GL_TRIANGLES, 0, 3 * m_numberOfVerts);
 	}
 	else {
-		glDrawElements(GL_TRIANGLES, m_numberOfIndices, GL_UNSIGNED_SHORT, 0);
+		glDrawElements(GL_TRIANGLES, m_numberOfIndices, m_indexType, 0);
 	}
 }
 

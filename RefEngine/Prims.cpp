@@ -1,14 +1,14 @@
 #include "Prims.h"
 
-const GLfloat Prims::Triangle_Vertices[] = {
+const float Prims::Triangle_Vertices[] = {
 	-1.f, -1.f, 0.f,
 	1.f, -1.f, 0.f,
 	0.f, 1.f, 0.f
 };
 
-const GLuint Prims::Triangle_NumberOfVerts = sizeof(Prims::Triangle_Vertices) / sizeof(GLfloat);
+const uint Prims::Triangle_NumberOfVerts = sizeof(Prims::Triangle_Vertices) / sizeof(float);
 
-const GLfloat Prims::Cube_Vertices[] = {
+const float Prims::Cube_Vertices[] = {
 	// front
 	-1.0, -1.0, 1.0,
 	1.0, -1.0, 1.0,
@@ -22,7 +22,7 @@ const GLfloat Prims::Cube_Vertices[] = {
 };
 
 
-const GLushort Prims::Cube_Indices[] = {
+const uint Prims::Cube_Indices[] = {
 	// front
 	0, 1, 2,
 	2, 3, 0,
@@ -43,7 +43,7 @@ const GLushort Prims::Cube_Indices[] = {
 	6, 2, 1,
 };
 
-const GLfloat Prims::Cube_Colors[] = {
+const float Prims::Cube_Colors[] = {
 	// front colors
 	1.0, 0.0, 0.0,
 	0.0, 1.0, 0.0,
@@ -56,5 +56,5 @@ const GLfloat Prims::Cube_Colors[] = {
 	1.0, 1.0, 1.0,
 };
 
-const GLuint Prims::Cube_NumberOfVerts = sizeof(Prims::Cube_Vertices) / sizeof(GLfloat);
-const GLuint Prims::Cube_NumberOfIndices = sizeof(Prims::Cube_Indices) / sizeof(GLshort);
+const uint Prims::Cube_NumberOfVerts = sizeof(Prims::Cube_Vertices) / sizeof(float);
+const uint Prims::Cube_NumberOfIndices = sizeof(Prims::Cube_Indices) / sizeof(uint);
