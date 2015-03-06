@@ -12,6 +12,8 @@
 #include "glm/gtc/quaternion.hpp"
 #include "glm/gtc/epsilon.hpp"
 
+#include "memaligned.h"
+
 struct ImportAssistor;
 
 // A complete vertex structure with all the data needed from the FBX file
@@ -341,6 +343,9 @@ public:
 	FBXAnimation*	getAnimationByIndex(unsigned int a_index);
 	FBXTexture*		getTextureByIndex(unsigned int a_index);
 
+	void* operator new(size_t size){ return malloc_aligned(size, 16); }
+	void operator delete(void* mem) { return free_aligned(mem); }
+
 private:
 
 	void	extractObject(FBXNode* a_parent, void* a_object);
@@ -464,7 +469,8 @@ inline FBXNode::~FBXNode()
 
 inline FBXMeshNode::FBXMeshNode()
 	: m_vertexAttributes(0),
-	m_material(nullptr)
+	m_material(nullptr),
+	m_indices()
 {
 	m_nodeType = MESH;
 }

@@ -3,8 +3,6 @@
 #include <memory>
 #include <vector>
 
-#define alignas(N) __declspec(align(N))
-
 class Camera;
 class Renderer;
 class GameObject;
@@ -20,7 +18,6 @@ public:
 	bool Init();
 	bool Update(float deltaTime);
 	void Draw();
-
 private:
 	void DrawWorldGrid() const;
 

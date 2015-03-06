@@ -7,6 +7,7 @@ include_directories(dep/aieutilities)
 include_directories(dep/glew/include)
 include_directories(dep/glm)
 include_directories(dep/glfw/include)
+include_directories(dep/fbx)
 include_directories(dep/FBXLoader)
 include_directories(dep/stb)
 include_directories(RefEngine)
@@ -15,8 +16,10 @@ IF(APPLE)
     include_directories("/Applications/Autodesk/FBX SDK/2015.1/include")
     SET(GCC_CHAR_IS_UNSIGNED_CHAR "-funsigned-char")
     SET(STD_C11 "-std=c++11")
-    SET(FBX_FILE dep/FBXLoader/FBXFile.cpp)
+ELSE(APPLE)
+	add_definitions(-DGLEW_STATIC)
 ENDIF (APPLE)
+
 
 set(CMAKE_CXX_FLAGS "${CMAKE_CXX_FLAGS} ${GCC_CHAR_IS_UNSIGNED_CHAR} ${STD_C11}")
 
@@ -60,7 +63,7 @@ add_executable(refeng
     RefEngine/SpinController.cpp
     RefEngine/SpinController.h
 	RefEngine/types.h
-    ${FBX_FILE}
+    dep/FBXLoader/FBXFile.cpp
     dep/aieutilities/aie/Gizmos.cpp
 )
 
@@ -81,8 +84,10 @@ IF(APPLE)
 ELSE(APPLE)
    target_link_libraries(refeng opengl32.lib)
    target_link_libraries(refeng ${CMAKE_SOURCE_DIR}/dep/glfw/lib-vc2013/glfw3.lib)
-   target_link_libraries(refeng optimized ${CMAKE_SOURCE_DIR}/dep/FBXLoader/FBXLoader.lib)
-   target_link_libraries(refeng debug ${CMAKE_SOURCE_DIR}/dep/FBXLoader/FBXLoader_d.lib)
+   target_link_libraries(refeng optimized ${CMAKE_SOURCE_DIR}/dep/glew/lib/Release/Win32/glew32s.lib)
+   target_link_libraries(refeng debug ${CMAKE_SOURCE_DIR}/dep/glew/lib/Debug/Win32/glew32sd.lib)
+   target_link_libraries(refeng optimized ${CMAKE_SOURCE_DIR}/dep/fbx/vs2013/x86/release/libfbxsdk-md.lib)
+   target_link_libraries(refeng debug ${CMAKE_SOURCE_DIR}/dep/fbx/vs2013/x86/debug/libfbxsdk-md.lib)
 ENDIF (APPLE)
 
 target_link_libraries(refeng ${EXTRA_LIBS})

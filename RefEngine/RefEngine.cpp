@@ -1,17 +1,20 @@
 #include "RefEngine.h"
 
+#include "Camera.h"
+#include "Renderer.h"
+
+#include "FBXFile.h"
+
+
 #include "pow2assert.h"
 #include "Buffer.h"
-#include "Camera.h"
 #include "Color.h"
 #include "Controller.h"
 #include <aie/Gizmos.h>
-#include "FBXFile.h"
 #include "GameObject.h"
 #include "gl_core_4_1.h"
 #include "GLHelpers.h"
 #include "Material.h"
-#include "Renderer.h"
 #include "Renderable.h"
 #include "Prims.h"
 #include "ShaderManager.h"
@@ -54,7 +57,6 @@ RefEngine::~RefEngine()
 	Gizmos::destroy();
 
 	m_isValid = false;
-
 }
 
 void RefEngine::Run()
@@ -126,18 +128,23 @@ bool RefEngine::Init()
 	Renderable* cubeRenderable = new Renderable(pMaterial, pCubeBuffer);
 	m_gameObjects.push_back(new GameObject(glm::vec3(0), nullptr, cubeRenderable));
 
-	/*
 	// Add a fbx model
-	FBXFile fbx;
-	fbx.load("data/models/puppy-r1-ad.FBX");
-	for (uint i = 0; i < fbx.getMeshCount(); i++) {
-		FBXMeshNode* pMesh = fbx.getMeshByIndex(i);
-		auto pMeshBuffer = VertexBuffer::Create( pMesh->m_vertices.size(), &(pMesh->m_vertices[0]), pMesh->m_indices.size(), &(pMesh->m_indices[0]));
-		Renderable* cubeRenderable = new Renderable(pMaterial, pCubeBuffer);
-		m_gameObjects.push_back(new GameObject(glm::vec3(0), nullptr, cubeRenderable));
+	FBXFile* fbx = new FBXFile();
+	fbx->load("data/models/stanford/Bunny.fbx");
+	for (uint i = 0; i < fbx->getMeshCount(); i++) {
+		FBXMeshNode* pMesh = fbx->getMeshByIndex(i);
+		if (pMesh->m_vertices.size() >  0) {
+			uint numIndices = 0;
+			uint* pIndices = nullptr;
+			if (pMesh->m_indices.size() > 0) {
+				numIndices = pMesh->m_indices.size();
+				pIndices = &(pMesh->m_indices[0]);
+			}
+			auto pMeshBuffer = VertexBuffer::Create(pMesh->m_vertices.size(), &(pMesh->m_vertices[0]), numIndices, pIndices);
+			Renderable* cubeRenderable = new Renderable(pMaterial, pMeshBuffer);
+			m_gameObjects.push_back(new GameObject(glm::vec3(0), nullptr, cubeRenderable));
+		}
 	}
-	*/
-
 	// -----
 
 	m_isValid = true;

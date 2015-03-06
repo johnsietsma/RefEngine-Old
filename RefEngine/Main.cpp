@@ -2,6 +2,10 @@
 
 #include "RefEngine.h"
 
+#include "types.h"
+
+#include <vector>
+
 #ifdef _WINDOWS
 #include <direct.h>
 #define GetCurrentDir _getcwd
@@ -19,9 +23,9 @@ int main(int argc, char** argv)
 		printf("The current working directory is %s", cCurrentPath);
 	}
 
-	auto refEng = new RefEngine();
-	if (!refEng->Init()) return 1;
-	refEng->Run();
+	RefEngine* pRefEng = new RefEngine();
+	if (!pRefEng->Init()) return 1;
+//	pRefEng->Run();
 
 	return 0;
 }

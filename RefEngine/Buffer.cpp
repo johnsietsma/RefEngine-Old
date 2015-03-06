@@ -26,8 +26,8 @@ Buffer* VertexBuffer::Create(size_t vertexSize, uint numberOfVerts, const void* 
 {
 	POW2_ASSERT(numberOfVerts != 0 || numberOfVerts != (GLuint)-1);
 	POW2_ASSERT(verts != nullptr);
-	POW2_ASSERT(numberOfIndices<=0 || indices!= nullptr);
-	POW2_ASSERT(indexType >= 0);
+	POW2_ASSERT((((int)numberOfIndices)==-1 || numberOfIndices == 0) || indices != nullptr);
+ 	POW2_ASSERT(indexType >= 0);
 
 	VAOId vertexArrayObjectId = VAOId_Invalid;
 	VBOId vertexBufferId = VBOId_Invalid;
