@@ -78,7 +78,7 @@ IF(APPLE)
    MARK_AS_ADVANCED (CARBON_LIBRARY CORE_VIDEO_LIBRARY COCOA_LIBRARY OpenGL_LIBRARY IOKIT_LIBRARY)
    SET(EXTRA_LIBS ${CARBON_LIBRARY} ${CORE_VIDEO_LIBRARY} ${COCOA_LIBRARY} ${OpenGL_LIBRARY} ${IOKIT_LIBRARY})
 
-   target_link_libraries(refeng ${CMAKE_SOURCE_DIR}/dep/FBXLoader/libfbxsdk.a)
+   target_link_libraries(refeng ${CMAKE_SOURCE_DIR}/dep/fbx/libfbxsdk.a)
    target_link_libraries(refeng ${CMAKE_SOURCE_DIR}/dep/glfw/lib/libglfw3.a)
    target_link_libraries(refeng ${CMAKE_SOURCE_DIR}/dep/glew/lib/libGLEW.a)
 ELSE(APPLE)
