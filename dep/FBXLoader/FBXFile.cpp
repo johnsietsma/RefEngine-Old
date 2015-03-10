@@ -1,11 +1,10 @@
 #include "FBXFile.h"
+
+#include "gl_core_4_1.h"
+
 #include <fbxsdk.h>
 #include <algorithm>
 #include <set>
-
-// only needed for texture cleanup
-#define GLEW_NO_GLU
-#include <GL/glew.h>
 
 #define STB_IMAGE_IMPLEMENTATION
 #include <stb_image.h>
@@ -1326,8 +1325,8 @@ void FBXFile::initialiseOpenGLTextures()
     //      SOIL_CREATE_NEW_ID, SOIL_FLAG_MIPMAPS | SOIL_FLAG_INVERT_Y | SOIL_FLAG_TEXTURE_REPEATS);
         switch (texture.second->format)
         {
-        case STBI_grey: texture.second->format = GL_LUMINANCE; break;
-        case STBI_grey_alpha: texture.second->format = GL_LUMINANCE_ALPHA; break;
+        case STBI_grey: texture.second->format = GL_RED; break;
+		case STBI_grey_alpha: texture.second->format = GL_RG; break;
         case STBI_rgb: texture.second->format = GL_RGB; break;
         case STBI_rgb_alpha: texture.second->format = GL_RGBA; break;
         };

@@ -130,7 +130,7 @@ bool RefEngine::Init()
 
 	// Add a fbx model
 	FBXFile* fbx = new FBXFile();
-	fbx->load("data/models/stanford/Bunny.fbx");
+	fbx->load("data/models/cube.fbx");
 	for (uint i = 0; i < fbx->getMeshCount(); i++) {
 		FBXMeshNode* pMesh = fbx->getMeshByIndex(i);
 		if (pMesh->m_vertices.size() >  0) {

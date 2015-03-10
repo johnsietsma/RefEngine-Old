@@ -4,7 +4,6 @@ project("RefEngine")
 
 
 include_directories(dep/aieutilities)
-include_directories(dep/glew/include)
 include_directories(dep/glm)
 include_directories(dep/glfw/include)
 include_directories(dep/fbx)
@@ -17,7 +16,6 @@ IF(APPLE)
     SET(GCC_CHAR_IS_UNSIGNED_CHAR "-funsigned-char")
     SET(STD_C11 "-std=c++11")
 ELSE(APPLE)
-	add_definitions(-DGLEW_STATIC)
 ENDIF (APPLE)
 
 
@@ -80,12 +78,9 @@ IF(APPLE)
 
    target_link_libraries(refeng ${CMAKE_SOURCE_DIR}/dep/FBXLoader/libfbxsdk.a)
    target_link_libraries(refeng ${CMAKE_SOURCE_DIR}/dep/glfw/lib/libglfw3.a)
-   target_link_libraries(refeng ${CMAKE_SOURCE_DIR}/dep/glew/lib/libGLEW.a)
 ELSE(APPLE)
    target_link_libraries(refeng opengl32.lib)
    target_link_libraries(refeng ${CMAKE_SOURCE_DIR}/dep/glfw/lib-vc2013/glfw3.lib)
-   target_link_libraries(refeng optimized ${CMAKE_SOURCE_DIR}/dep/glew/lib/Release/Win32/glew32s.lib)
-   target_link_libraries(refeng debug ${CMAKE_SOURCE_DIR}/dep/glew/lib/Debug/Win32/glew32sd.lib)
    target_link_libraries(refeng optimized ${CMAKE_SOURCE_DIR}/dep/fbx/vs2013/x86/release/libfbxsdk-md.lib)
    target_link_libraries(refeng debug ${CMAKE_SOURCE_DIR}/dep/fbx/vs2013/x86/debug/libfbxsdk-md.lib)
 ENDIF (APPLE)
