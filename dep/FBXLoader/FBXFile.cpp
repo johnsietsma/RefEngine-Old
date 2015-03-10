@@ -577,7 +577,7 @@ void FBXFile::extractMeshes(void* a_object, void* a_aieNode)
             meshes[j]->m_vertexAttributes = 0;
         }
 
-    unsigned int vertexIndex[4] = {};
+    //unsigned int vertexIndex[4] = {};
     FBXVertex vertexQuad[4];
 
     unsigned int* nextIndex = new unsigned int[ materialCount ];

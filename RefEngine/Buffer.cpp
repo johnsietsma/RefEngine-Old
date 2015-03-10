@@ -8,9 +8,9 @@ VertexBuffer::VertexBuffer(IBOId iboId, VAOId vaoId, VBOId vboId, GLuint numberO
 m_vboId(vboId),
 m_vaoId(vaoId),
 m_iboId(iboId),
-m_numberOfVerts(numberOfVerts) ,
-m_numberOfIndices(numberOfIndices),
-m_indexType(indexType)
+m_indexType(indexType),
+m_numberOfVerts(numberOfVerts),
+m_numberOfIndices(numberOfIndices)
 {
 }
 
