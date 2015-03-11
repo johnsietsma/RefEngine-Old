@@ -17,7 +17,7 @@
 #include "Material.h"
 #include "Renderable.h"
 #include "Prims.h"
-#include "ShaderManager.h"
+#include "ProgramManager.h"
 #include "SpinController.h"
 
 #include <GLFW/glfw3.h>
@@ -56,7 +56,8 @@ void keyCallback(GLFWwindow* m_pWindow, int key, int scanCode, int action, int m
 RefEngine::RefEngine() :
 	m_isValid(false),
 	m_pCamera(new Camera(glm::vec3(4, 3, 3), glm::vec3(0), 45, 16 / 9.f)),
-	m_pRenderer(new Renderer())
+	m_pRenderer(new Renderer()),
+	m_pProgramManager(new ProgramManager())
 {}
 
 RefEngine::~RefEngine()
@@ -125,7 +126,7 @@ bool RefEngine::Init()
 
 	//-----
 	// TODO Move into external init section
-	auto programId = ShaderManager::MakeProgram("data/shaders/default.vert", "data/shaders/red.frag");
+	auto programId = m_pProgramManager->GetOrCreateProgram("data/shaders/default.vert", "data/shaders/red.frag");
 	if (programId == ProgramId_Invalid) return false;
 
 	Material* pMaterial = new Material(programId);
@@ -157,7 +158,7 @@ bool RefEngine::Init()
 
 
 			auto pMeshBuffer = VertexBuffer::Create(
-				pMesh->m_vertices.size(), &(pMesh->m_vertices[0]), 
+				pMesh->m_vertices.size(), &(pMesh->m_vertices[0]),
 				numIndices, pIndices,
 				sizeof(FBXVertexAttributes)/sizeof(VertexAttribute), FBXVertexAttributes
 				);
@@ -204,7 +205,7 @@ void RefEngine::Draw()
 
 	DrawWorldGrid();
 
-	m_pRenderer->Render(m_pCamera.get(), m_gameObjects);
+	m_pRenderer->Render(m_pCamera, m_gameObjects);
 	Gizmos::draw(m_pCamera->GetProjectionView());
 
 	glfwSwapBuffers(m_pWindow);

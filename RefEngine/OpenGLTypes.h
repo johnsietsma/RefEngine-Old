@@ -34,8 +34,6 @@ struct PhantomType_Texture {};
 typedef StronglyTyped<GLuint, PhantomType_Texture> TextureId;
 const TextureId TextureId_Invalid = -1;
 
-
-
 //-----------------------------------------------------------------------------
 // Map a C numeric type to a GLenum value at compile time
 

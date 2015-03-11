@@ -1,6 +1,7 @@
 #pragma once
 
 #include "gl_core_4_4.h"
+#include "OpenGLTypes.h"
 
 class GLHelpers
 {
@@ -23,7 +24,7 @@ public:
 	 * Load a shader from the given file name, compile it and check for compile errors.
 	 * Returns the shader id.
 	 */
-	static GLuint LoadShader(const char* shaderFileName, GLenum shaderType);
+	static ShaderId LoadShader(const char* shaderFileName, GLenum shaderType);
 
 	static void TurnOnDebugLogging();
 

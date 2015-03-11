@@ -8,6 +8,7 @@ class FBXFile;
 class Renderer;
 class GameObject;
 struct GLFWwindow;
+class ProgramManager;
 
 class RefEngine
 {
@@ -15,7 +16,11 @@ public:
 	RefEngine();
 	~RefEngine();
 
+	// Disallow copying and moving
 	RefEngine( const RefEngine& ) = delete;
+	RefEngine( RefEngine&& ) = delete;
+	RefEngine& operator=( const RefEngine& ) = delete;
+	RefEngine& operator=( RefEngine&& ) = delete;
 
 	void Run();
 	bool Init();
@@ -26,8 +31,9 @@ private:
 
 	bool m_isValid;
 	GLFWwindow* m_pWindow;
-	std::shared_ptr<Camera> m_pCamera;
-	std::shared_ptr<Renderer> m_pRenderer;
+	Camera* m_pCamera;
+	Renderer* m_pRenderer;
+	ProgramManager* m_pProgramManager;
 	std::vector<GameObject*> m_gameObjects;
 
 	FBXFile* m_fbx;

@@ -43,30 +43,32 @@ add_executable(refeng
     RefEngine/memaligned.h
     RefEngine/MeshRenderer.cpp
     RefEngine/MeshRenderer.h
-    RefEngine/Prims.cpp
-    RefEngine/Prims.h
-    RefEngine/ShaderManager.cpp
-    RefEngine/ShaderManager.h
     RefEngine/Main.cpp
     RefEngine/Material.cpp
     RefEngine/Material.h
     RefEngine/OpenGLTypes.cpp
     RefEngine/OpenGLTypes.h
+    RefEngine/pow2assert.cpp
+    RefEngine/pow2assert.h
+    RefEngine/Prims.cpp
+    RefEngine/Prims.h
+    RefEngine/ProgramManager.cpp
+    RefEngine/ProgramManager.h
     RefEngine/RefEngine.h
     RefEngine/RefEngine.cpp
     RefEngine/Renderable.cpp
     RefEngine/Renderable.h
     RefEngine/Renderer.cpp
     RefEngine/Renderer.h
-    RefEngine/pow2assert.cpp
-    RefEngine/pow2assert.h
     RefEngine/SpinController.cpp
     RefEngine/SpinController.h
+    RefEngine/TextureManager.cpp
+    RefEngine/TextureManager.h
 	RefEngine/types.h
     dep/FBXLoader/FBXFile.cpp
     dep/aieutilities/aie/Gizmos.cpp
 	data/shaders/default.vert
-	data/shaders/passthrough.vert
+  data/shaders/passthrough.vert
 	data/shaders/diffuse.frag
 	data/shaders/red.frag
 	data/shaders/white.frag

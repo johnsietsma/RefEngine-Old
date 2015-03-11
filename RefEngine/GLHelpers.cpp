@@ -111,7 +111,7 @@ bool GLHelpers::CheckLinkStatus(GLuint programId)
 	return true;
 }
 
-GLuint GLHelpers::LoadShader(const char* shaderFileName, GLenum shaderType)
+ShaderId GLHelpers::LoadShader(const char* shaderFileName, GLenum shaderType)
 {
 	GLuint shaderId = glCreateShader(shaderType);
 	string shaderSource = readFile(shaderFileName);
@@ -123,7 +123,7 @@ GLuint GLHelpers::LoadShader(const char* shaderFileName, GLenum shaderType)
 		default: cerr << shaderType; break;
 		}
 		cerr << " shader : " << shaderFileName << endl;
-		return -1;
+		return ShaderId_Invalid;
 	}
 
 	const char* shaderSourceBuffer = shaderSource.c_str();
@@ -131,7 +131,7 @@ GLuint GLHelpers::LoadShader(const char* shaderFileName, GLenum shaderType)
 	glCompileShader(shaderId);
 
 	if (!CheckCompileStatus(shaderId)) {
-		return -1;
+		return ShaderId_Invalid;
 	}
 
 	return shaderId;
