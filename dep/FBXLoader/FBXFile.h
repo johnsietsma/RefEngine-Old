@@ -7,7 +7,6 @@
 #include <mutex>
 
 #define GLM_SWIZZLE
-#define GLM_FORCE_PURE
 #include "glm/glm.hpp"
 #include "glm/gtc/quaternion.hpp"
 #include "glm/gtc/epsilon.hpp"
@@ -65,6 +64,10 @@ public:
 
 	// internal use only!
 	unsigned int	index[4];
+
+	void* operator new(size_t size){ return aligned_new(size, 16); }
+	void operator delete(void* mem) { return aligned_delete(mem); }
+
 };
 
 struct FBXTexture
@@ -111,6 +114,9 @@ struct FBXMaterial
 	glm::vec2		textureOffsets[TextureTypes_Count];			// Texture coordinate offset
 	glm::vec2		textureTiling[TextureTypes_Count];			// Texture repeat count
 	float			textureRotation[TextureTypes_Count];		// Texture rotation around Z (2D rotation)
+
+	void* operator new(size_t size){ return aligned_new(size, 16); }
+	void operator delete(void* mem) { return aligned_delete(mem); }
 };
 
 // Simple tree node with local/global transforms and children
@@ -145,6 +151,9 @@ public:
 	std::vector<FBXNode*>	m_children;
 
 	void*					m_userData;
+
+	void* operator new(size_t size){ return aligned_new(size, 16); }
+	void operator delete(void* mem) { return aligned_delete(mem); }
 };
 
 // A simple mesh node that contains an array of vertices and indices used
@@ -161,6 +170,9 @@ public:
 	FBXMaterial*				m_material;
 	std::vector<FBXVertex>		m_vertices;
 	std::vector<unsigned int>	m_indices;
+
+	void* operator new(size_t size) { return aligned_new(size, 16); }
+	void operator delete(void* mem) { return aligned_delete(mem); }
 };
 
 // A light node that can represent a point, directional, or spot light
@@ -185,6 +197,9 @@ public:
 	glm::vec4	m_attenuation;	// (constant,linear,quadratic,0)
 	float		m_innerAngle;	// spotlight inner cone angle (if a spotlight)
 	float		m_outerAngle;	// spotlight outer cone angle (if a spotlight)
+
+	void* operator new(size_t size){ return aligned_new(size, 16); }
+	void operator delete(void* mem) { return aligned_delete(mem); }
 };
 
 // A camera node with information to create projection matrix
@@ -204,6 +219,9 @@ public:
 	float		m_far;
 
 	glm::mat4	m_viewMatrix;	// inverse matrix of node's m_globalTransform
+
+	void* operator new(size_t size){ return aligned_new(size, 16); }
+	void operator delete(void* mem) { return aligned_delete(mem); }
 };
 
 // A single frame for a bone in an animation
@@ -218,6 +236,9 @@ public:
 	glm::quat		m_rotation;
 	glm::vec3		m_translation;
 	glm::vec3		m_scale;
+
+	void* operator new(size_t size){ return aligned_new(size, 16); }
+	void operator delete(void* mem) { return aligned_delete(mem); }
 };
 
 // A collection of frames for a single bone in an animation
@@ -273,6 +294,9 @@ public:
 	glm::mat4*		m_bindPoses;
 
 	void*			m_userData;
+
+	void* operator new(size_t size){ return aligned_new(size, 16); }
+	void operator delete(void* mem) { return aligned_delete(mem); }
 };
 
 // An FBX scene representing the contents on an FBX file.
@@ -343,8 +367,8 @@ public:
 	FBXAnimation*	getAnimationByIndex(unsigned int a_index);
 	FBXTexture*		getTextureByIndex(unsigned int a_index);
 
-	void* operator new(size_t size){ return malloc_aligned(size, 16); }
-	void operator delete(void* mem) { return free_aligned(mem); }
+	void* operator new(size_t size) { return aligned_new(size, 16); }
+	void operator delete(void* mem) { return aligned_delete(mem); }
 
 private:
 
@@ -470,7 +494,8 @@ inline FBXNode::~FBXNode()
 inline FBXMeshNode::FBXMeshNode()
 	: m_vertexAttributes(0),
 	m_material(nullptr),
-	m_indices()
+	m_vertices(0),
+	m_indices(0)
 {
 	m_nodeType = MESH;
 }

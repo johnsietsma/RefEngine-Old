@@ -19,8 +19,8 @@ public:
 	const std::shared_ptr<Controller> GetController() const { return m_pController; }
 	const std::shared_ptr<Renderable> GetRenderable() const { return m_pRenderable; }
 
-	void* operator new(size_t size){ return malloc_aligned(size, 16); }
-	void operator delete(void* mem) { return free_aligned(mem); }
+	void* operator new(size_t size){ return aligned_malloc(size, 16); }
+	void operator delete(void* mem) { return aligned_free(mem); }
 private:
 	glm::mat4x4 m_transform;
 	std::shared_ptr<Controller> m_pController;

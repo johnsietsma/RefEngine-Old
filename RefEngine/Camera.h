@@ -11,9 +11,9 @@ public:
 
 	glm::mat4 GetProjectionView() const;
 
-	void* operator new(size_t size){ return malloc_aligned(size, 16); }
-	void operator delete(void* mem) { return free_aligned(mem); }
-    
+	void* operator new(size_t size){ return aligned_new(size, 16); }
+	void operator delete(void* mem) { return aligned_delete(mem); }
+
 private:
 	glm::mat4 m_view;
 	glm::mat4 m_projection;

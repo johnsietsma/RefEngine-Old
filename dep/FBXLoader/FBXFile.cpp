@@ -215,9 +215,14 @@ bool FBXFile::load(const char* a_filename, UNIT_SCALE a_scale /* = FBXFile::UNIT
         {
             FBXSkeleton* skeleton = new FBXSkeleton();
             skeleton->m_boneCount = (unsigned int)m_importAssistor->bones.size();
+
             skeleton->m_nodes = new FBXNode * [ skeleton->m_boneCount ];
-            skeleton->m_bones = new glm::mat4[ skeleton->m_boneCount ];
-            skeleton->m_bindPoses = new glm::mat4[ skeleton->m_boneCount ];
+
+			void* pBonesBuffer = aligned_malloc(sizeof(FBXSkeleton*)*skeleton->m_boneCount, 16);
+			skeleton->m_bones = new(pBonesBuffer) glm::mat4[ skeleton->m_boneCount ];
+
+			void* pBindPosesBuffer = aligned_malloc(sizeof(FBXSkeleton*)*skeleton->m_boneCount, 16);
+			skeleton->m_bindPoses = new(pBindPosesBuffer) glm::mat4[skeleton->m_boneCount];
 
             skeleton->m_parentIndex = new int[ skeleton->m_boneCount ];
 
@@ -409,9 +414,14 @@ bool FBXFile::loadAnimationsOnly(const char* a_filename, UNIT_SCALE a_scale /* =
             FBXSkeleton* skeleton = new FBXSkeleton();
             skeleton->m_boneCount = (unsigned int)m_importAssistor->bones.size();
             skeleton->m_nodes = new FBXNode * [ skeleton->m_boneCount ];
-            skeleton->m_bones = new glm::mat4[ skeleton->m_boneCount ];
-            skeleton->m_bindPoses = new glm::mat4[ skeleton->m_boneCount ];
-            skeleton->m_parentIndex = new int[ skeleton->m_boneCount ];
+
+			void* pBonesBuffer = aligned_malloc(sizeof(FBXSkeleton*)*skeleton->m_boneCount, 16);
+            skeleton->m_bones = new(pBonesBuffer) glm::mat4[ skeleton->m_boneCount ];
+
+			void* pBindPoseBuffer = aligned_malloc(sizeof(FBXSkeleton*)*skeleton->m_boneCount, 16);
+            skeleton->m_bindPoses = new(pBindPoseBuffer) glm::mat4[ skeleton->m_boneCount ];
+
+			skeleton->m_parentIndex = new int[skeleton->m_boneCount];
 
             for ( i = 0 ; i < skeleton->m_boneCount ; ++i )
             {

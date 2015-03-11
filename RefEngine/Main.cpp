@@ -20,12 +20,12 @@ int main(int argc, char** argv)
 	char cCurrentPath[FILENAME_MAX];
 	if (GetCurrentDir(cCurrentPath, sizeof(cCurrentPath)))
 	{
-		printf("The current working directory is %s", cCurrentPath);
+		printf("The current working directory is %s\n", cCurrentPath);
 	}
 
 	RefEngine* pRefEng = new RefEngine();
 	if (!pRefEng->Init()) return 1;
-//	pRefEng->Run();
+	pRefEng->Run();
 
 	return 0;
 }
