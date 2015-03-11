@@ -26,6 +26,19 @@
 
 using namespace std;
 
+static const VertexAttribute FBXVertexAttributes[9] = {
+	VertexAttribute::Create<glm::vec4>(4, offsetof(FBXVertex, FBXVertex::position), GL_FLOAT),
+	VertexAttribute::Create<glm::vec4>(4, offsetof(FBXVertex, FBXVertex::colour), GL_FLOAT),
+	VertexAttribute::Create<glm::vec4>(4, offsetof(FBXVertex, FBXVertex::normal), GL_FLOAT),
+	VertexAttribute::Create<glm::vec4>(4, offsetof(FBXVertex, FBXVertex::tangent), GL_FLOAT),
+	VertexAttribute::Create<glm::vec4>(4, offsetof(FBXVertex, FBXVertex::binormal), GL_FLOAT),
+	VertexAttribute::Create<glm::vec4>(4, offsetof(FBXVertex, FBXVertex::indices), GL_FLOAT),
+	VertexAttribute::Create<glm::vec4>(4, offsetof(FBXVertex, FBXVertex::weights), GL_FLOAT),
+	VertexAttribute::Create<glm::vec2>(2, offsetof(FBXVertex, FBXVertex::texCoord1), GL_FLOAT),
+	VertexAttribute::Create<glm::vec2>(2, offsetof(FBXVertex, FBXVertex::texCoord2), GL_FLOAT)
+};
+
+
 static void errorCallback(int errorCode, const char* errorDesc)
 {
 	cerr << "GLFW Error(" << errorCode << "): " << errorDesc << endl;
@@ -126,13 +139,18 @@ bool RefEngine::Init()
 	// Add a cube
 	auto pCubeBuffer = VertexBuffer::Create(Prims::Cube_NumberOfVerts, Prims::Cube_Vertices, Prims::Cube_NumberOfIndices, Prims::Cube_Indices);
 	Renderable* cubeRenderable = new Renderable(pMaterial, pCubeBuffer);
-	m_gameObjects.push_back(new GameObject(glm::vec3(0), nullptr, cubeRenderable));
+	m_gameObjects.push_back(new GameObject(glm::vec3(0,0,-5), nullptr, cubeRenderable));
 
 	// Add a fbx model
 	FBXFile* fbx = new FBXFile();
 	fbx->load("data/models/cube.fbx");
+
+	FBXVertex::Offsets offset1 = FBXVertex::Offsets::TexCoord2Offset;
+	Offsets1 offsets2 = Offsets1::TexCoord2Offset;
+
 	for (uint i = 0; i < fbx->getMeshCount(); i++) {
 		FBXMeshNode* pMesh = fbx->getMeshByIndex(i);
+		int numVerts = pMesh->m_vertices.size();
 		if (pMesh->m_vertices.size() >  0) {
 			uint numIndices = 0;
 			uint* pIndices = nullptr;
@@ -140,9 +158,15 @@ bool RefEngine::Init()
 				numIndices = pMesh->m_indices.size();
 				pIndices = &(pMesh->m_indices[0]);
 			}
-			auto pMeshBuffer = VertexBuffer::Create(pMesh->m_vertices.size(), &(pMesh->m_vertices[0]), numIndices, pIndices);
-			Renderable* cubeRenderable = new Renderable(pMaterial, pMeshBuffer);
-			m_gameObjects.push_back(new GameObject(glm::vec3(0), nullptr, cubeRenderable));
+
+
+			auto pMeshBuffer = VertexBuffer::Create(
+				pMesh->m_vertices.size(), &(pMesh->m_vertices[0]), 
+				numIndices, pIndices,
+				sizeof(FBXVertexAttributes)/sizeof(VertexAttribute), FBXVertexAttributes
+				);
+			Renderable* fbxRenderable = new Renderable(pMaterial, pMeshBuffer);
+			m_gameObjects.push_back(new GameObject(glm::vec3(0,0,3), nullptr, fbxRenderable));
 		}
 	}
 	// -----

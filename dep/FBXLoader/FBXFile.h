@@ -33,7 +33,7 @@ public:
 		eTEXCOORD2 = (1 << 8),
 	};
 
-	enum Offsets
+	enum class Offsets
 	{
 		PositionOffset = 0,
 		ColourOffset = PositionOffset + sizeof(glm::vec4),
@@ -63,12 +63,26 @@ public:
 	bool operator < (const FBXVertex& a_rhs) const;
 
 	// internal use only!
-	unsigned int	index[4];
+	unsigned int index[4];
 
 	void* operator new(size_t size){ return aligned_new(size, 16); }
 	void operator delete(void* mem) { return aligned_delete(mem); }
 
 };
+
+enum class Offsets1
+{
+	PositionOffset = 0,
+	ColourOffset = offsetof(class FBXVertex, colour),
+	NormalOffset = offsetof(class FBXVertex, normal),
+	TangentOffset = offsetof(class FBXVertex, tangent),
+	BiNormalOffset = offsetof(class FBXVertex, binormal),
+	IndicesOffset = offsetof(class FBXVertex, indices),
+	WeightsOffset = offsetof(class FBXVertex, weights),
+	TexCoord1Offset = offsetof(class FBXVertex, texCoord1),
+	TexCoord2Offset = offsetof(class FBXVertex, texCoord2)
+};
+
 
 struct FBXTexture
 {

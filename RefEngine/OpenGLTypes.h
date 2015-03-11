@@ -37,6 +37,7 @@ const UniformLocationId UniformLocationId_Invalid = -1;
 
 template<typename T> struct GLEnumValue {
 	static const int value = -1;
+	//static_assert(false, "Unknown OpenGL type");
 };
 
 

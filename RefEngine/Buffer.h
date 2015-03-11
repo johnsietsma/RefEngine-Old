@@ -10,9 +10,15 @@
 #define STR_EXPAND(tok) #tok
 #define STR(tok) STR_EXPAND(tok)
 
-struct VertexOffset {
-	size_t position;
-	size_t color;
+struct VertexAttribute {
+	size_t size;
+	size_t offset;
+	GLenum type;
+
+	template<typename T>
+	static VertexAttribute Create(size_t size, size_t offset, GLenum type) {
+		return VertexAttribute { size, offset, type };
+	}
 };
 
 class Buffer {
@@ -32,14 +38,41 @@ public:
 	// Factory methods
 	// Creation must happen through the factory, keeps buffer ownership internal
 
+	// Create vertex only buffers
 	template<typename VertT>
 	static Buffer* Create(uint numberOfVerts, const VertT verts[]) {
-		return Create(sizeof(VertT), numberOfVerts, verts, 0, 0, 0, nullptr);
+		return Create(
+			sizeof(VertT), numberOfVerts, verts, 
+			0, 0, 0, nullptr, 
+			0, nullptr
+			);
 	}
 
+	// Create indexed vertex buffers, each vertex has a position attribute
 	template<typename VertT, typename IndexT>
-	static Buffer* Create(uint numberOfVerts, const VertT verts[], uint numberOfIndices, const IndexT indices[]) {
-		return Create(sizeof(VertT), numberOfVerts, verts, sizeof(IndexT), GLEnumValue<IndexT>::value, numberOfIndices, indices);
+	static Buffer* Create(
+		uint numberOfVerts, const VertT verts[], 
+		uint numberOfIndices, const IndexT indices[]
+		) {
+		return Create(
+			sizeof(VertT), numberOfVerts, verts, 
+			sizeof(IndexT), GLEnumValue<IndexT>::value, numberOfIndices, indices, 
+			0, nullptr
+			);
+	}
+
+	// Create indexed vertex buffers, each vertex has a number of attributes.
+	template<typename VertT, typename IndexT>
+	static Buffer* Create(
+		uint numberOfVerts, const VertT verts[], 
+		uint numberOfIndices, const IndexT indices[], 
+		size_t numberOfVertexAttributes, const VertexAttribute vertexAttributes[]
+		) {
+		return Create(
+			sizeof(VertT), numberOfVerts, verts, 
+			sizeof(IndexT), GLEnumValue<IndexT>::value, numberOfIndices, indices,
+			numberOfVertexAttributes, vertexAttributes 
+			);
 	}
 
 
@@ -54,7 +87,11 @@ private:
 	// Takes ownership of the buffers
 	VertexBuffer(IBOId iboId, VAOId vaoId, VBOId vboId, GLuint numberOfVerts, GLuint numberOfIndices, GLenum indexType);
 
-	static Buffer* Create(size_t vertexSize, uint numberOfVerts, const void* verts, size_t indexSize, GLenum indexType, uint numberOfIndices, const void* indices);
+	static Buffer* Create(
+		size_t vertexSize, uint numberOfVerts, const void* verts, 
+		size_t indexSize, GLenum indexType, uint numberOfIndices, const void* indices, 
+		size_t numberOfVertexAttributes, const  VertexAttribute vertexAttributes[]
+		);
 
 	GLenum m_bufferType;
 	VBOId m_vboId;

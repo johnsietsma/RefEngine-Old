@@ -65,6 +65,10 @@ add_executable(refeng
 	RefEngine/types.h
     dep/FBXLoader/FBXFile.cpp
     dep/aieutilities/aie/Gizmos.cpp
+	data/shaders/default.vert
+	data/shaders/passthrough.vert
+	data/shaders/red.frag
+	data/shaders/white.frag
 )
 
 
