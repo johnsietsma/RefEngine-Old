@@ -7,8 +7,9 @@
 #include <glm/gtc/type_ptr.hpp>
 
 
-Material::Material( ProgramId programId )
-:m_programId(programId)
+Material::Material( ProgramId programId, TextureId textureId /* = TextureId_Invalid */ ) : 
+m_programId(programId),
+m_textureId(textureId)
 {
 	m_mvpLocation = glGetUniformLocation(m_programId.Value(), "ProjectionView");
 	POW2_ASSERT(m_mvpLocation != UniformLocationId_Invalid);

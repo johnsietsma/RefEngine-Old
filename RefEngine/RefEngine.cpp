@@ -142,14 +142,14 @@ bool RefEngine::Init()
 	m_gameObjects.push_back(new GameObject(glm::vec3(0,0,-5), nullptr, cubeRenderable));
 
 	// Add a fbx model
-	FBXFile* fbx = new FBXFile();
-	fbx->load("data/models/cube.fbx");
+	m_fbx = new FBXFile();
+	m_fbx->load("data/models/cube.fbx");
 
 	FBXVertex::Offsets offset1 = FBXVertex::Offsets::TexCoord2Offset;
 	Offsets1 offsets2 = Offsets1::TexCoord2Offset;
 
-	for (uint i = 0; i < fbx->getMeshCount(); i++) {
-		FBXMeshNode* pMesh = fbx->getMeshByIndex(i);
+	for (uint i = 0; i < m_fbx->getMeshCount(); i++) {
+		FBXMeshNode* pMesh = m_fbx->getMeshByIndex(i);
 		int numVerts = pMesh->m_vertices.size();
 		if (pMesh->m_vertices.size() >  0) {
 			uint numIndices = 0;
@@ -165,10 +165,14 @@ bool RefEngine::Init()
 				numIndices, pIndices,
 				sizeof(FBXVertexAttributes)/sizeof(VertexAttribute), FBXVertexAttributes
 				);
+
 			Renderable* fbxRenderable = new Renderable(pMaterial, pMeshBuffer);
 			m_gameObjects.push_back(new GameObject(glm::vec3(0,0,3), nullptr, fbxRenderable));
 		}
 	}
+
+	m_fbx->initialiseOpenGLTextures();
+
 	// -----
 
 	m_isValid = true;

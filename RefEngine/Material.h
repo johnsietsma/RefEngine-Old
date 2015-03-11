@@ -12,7 +12,7 @@ class GameObject;
 class Material
 {
 public:
-	Material(ProgramId programId);
+	Material(ProgramId programId, TextureId=TextureId_Invalid);
 
 	ProgramId GetProgramId() const { return m_programId;  }
 
@@ -22,4 +22,5 @@ private:
 
 	ProgramId m_programId;
 	UniformLocationId m_mvpLocation;
+	TextureId m_textureId;
 };

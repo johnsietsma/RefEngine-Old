@@ -30,6 +30,10 @@ struct PhantomType_UniformLocation {};
 typedef StronglyTyped<GLuint, PhantomType_UniformLocation> UniformLocationId;
 const UniformLocationId UniformLocationId_Invalid = -1;
 
+struct PhantomType_Texture {};
+typedef StronglyTyped<GLuint, PhantomType_Texture> TextureId;
+const TextureId TextureId_Invalid = -1;
+
 
 
 //-----------------------------------------------------------------------------
