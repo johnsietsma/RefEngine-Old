@@ -27,15 +27,15 @@
 using namespace std;
 
 static const VertexAttribute FBXVertexAttributes[9] = {
-	VertexAttribute::Create<glm::vec4>(4, offsetof(FBXVertex, FBXVertex::position), GL_FLOAT),
-	VertexAttribute::Create<glm::vec4>(4, offsetof(FBXVertex, FBXVertex::colour), GL_FLOAT),
-	VertexAttribute::Create<glm::vec4>(4, offsetof(FBXVertex, FBXVertex::normal), GL_FLOAT),
-	VertexAttribute::Create<glm::vec4>(4, offsetof(FBXVertex, FBXVertex::tangent), GL_FLOAT),
-	VertexAttribute::Create<glm::vec4>(4, offsetof(FBXVertex, FBXVertex::binormal), GL_FLOAT),
-	VertexAttribute::Create<glm::vec4>(4, offsetof(FBXVertex, FBXVertex::indices), GL_FLOAT),
-	VertexAttribute::Create<glm::vec4>(4, offsetof(FBXVertex, FBXVertex::weights), GL_FLOAT),
-	VertexAttribute::Create<glm::vec2>(2, offsetof(FBXVertex, FBXVertex::texCoord1), GL_FLOAT),
-	VertexAttribute::Create<glm::vec2>(2, offsetof(FBXVertex, FBXVertex::texCoord2), GL_FLOAT)
+	VertexAttribute::Create<glm::vec4>(4, offsetof(FBXVertex, position), GL_FLOAT),
+	VertexAttribute::Create<glm::vec4>(4, offsetof(FBXVertex, colour), GL_FLOAT),
+	VertexAttribute::Create<glm::vec4>(4, offsetof(FBXVertex, normal), GL_FLOAT),
+	VertexAttribute::Create<glm::vec4>(4, offsetof(FBXVertex, tangent), GL_FLOAT),
+	VertexAttribute::Create<glm::vec4>(4, offsetof(FBXVertex, binormal), GL_FLOAT),
+	VertexAttribute::Create<glm::vec4>(4, offsetof(FBXVertex, indices), GL_FLOAT),
+	VertexAttribute::Create<glm::vec4>(4, offsetof(FBXVertex, weights), GL_FLOAT),
+	VertexAttribute::Create<glm::vec2>(2, offsetof(FBXVertex, texCoord1), GL_FLOAT),
+	VertexAttribute::Create<glm::vec2>(2, offsetof(FBXVertex, texCoord2), GL_FLOAT)
 };
 
 
@@ -145,12 +145,8 @@ bool RefEngine::Init()
 	m_fbx = new FBXFile();
 	m_fbx->load("data/models/cube.fbx");
 
-	FBXVertex::Offsets offset1 = FBXVertex::Offsets::TexCoord2Offset;
-	Offsets1 offsets2 = Offsets1::TexCoord2Offset;
-
 	for (uint i = 0; i < m_fbx->getMeshCount(); i++) {
 		FBXMeshNode* pMesh = m_fbx->getMeshByIndex(i);
-		int numVerts = pMesh->m_vertices.size();
 		if (pMesh->m_vertices.size() >  0) {
 			uint numIndices = 0;
 			uint* pIndices = nullptr;

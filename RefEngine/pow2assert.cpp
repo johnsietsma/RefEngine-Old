@@ -30,6 +30,10 @@
 #include <cstdio>
 #include <cstdarg>
 
+#if defined _WINDOWS
+#define vsnprintf vsnprintf_s
+#endif
+
 namespace pow2
 {
 
@@ -84,7 +88,7 @@ Assert::FailBehavior Assert::ReportFailure(const char* condition,
 		{
 			va_list args;
 			va_start(args, msg);
-			vsnprintf_s(messageBuffer, 1024, msg, args);
+			vsnprintf(messageBuffer, 1024, msg, args);
 			va_end(args);
 		}
 
