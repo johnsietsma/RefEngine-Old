@@ -2,6 +2,7 @@ cmake_minimum_required(VERSION 2.8 FATAL_ERROR)
 
 project("RefEngine")
 
+add_subdirectory(dep/glfw)
 
 include_directories(dep/aieutilities)
 include_directories(dep/glm)
@@ -10,6 +11,7 @@ include_directories(dep/fbx)
 include_directories(dep/FBXLoader)
 include_directories(dep/stb)
 include_directories(RefEngine)
+
 
 IF(APPLE)
     include_directories("/Applications/Autodesk/FBX SDK/2015.1/include")
@@ -37,7 +39,7 @@ add_executable(refeng
     RefEngine/gl_core_4_1.h
     RefEngine/GLHelpers.cpp
     RefEngine/GLHelpers.h
-    RefEngine/memaligned.c
+    RefEngine/memaligned.cpp
     RefEngine/memaligned.h
     RefEngine/MeshRenderer.cpp
     RefEngine/MeshRenderer.h
@@ -80,7 +82,7 @@ IF(APPLE)
    target_link_libraries(refeng ${CMAKE_SOURCE_DIR}/dep/glfw/lib/libglfw3.a)
 ELSE(APPLE)
    target_link_libraries(refeng opengl32.lib)
-   target_link_libraries(refeng ${CMAKE_SOURCE_DIR}/dep/glfw/lib-vc2013/glfw3.lib)
+   target_link_libraries(refeng glfw ${GLFW_LIBRARIES})
    target_link_libraries(refeng optimized ${CMAKE_SOURCE_DIR}/dep/fbx/vs2013/x86/release/libfbxsdk-md.lib)
    target_link_libraries(refeng debug ${CMAKE_SOURCE_DIR}/dep/fbx/vs2013/x86/debug/libfbxsdk-md.lib)
 ENDIF (APPLE)
