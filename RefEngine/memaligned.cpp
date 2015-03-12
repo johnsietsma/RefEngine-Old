@@ -23,6 +23,7 @@ void * aligned_malloc(const size_t size, const size_t alignment)
 #elif defined __linux__     // Linux
     return memalign(alignment, size);
 #elif defined __MACH__      // Mac OS X
+	// TODO Add alignment
     return malloc(size);
 #else                       // other (use valloc for page-aligned memory)
     return valloc(size);
