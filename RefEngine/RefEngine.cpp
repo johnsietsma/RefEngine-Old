@@ -144,7 +144,7 @@ bool RefEngine::Init()
 
 	// Add a fbx model
 	m_fbx = new FBXFile();
-	m_fbx->load("data/models/cube.fbx");
+	m_fbx->load("data/models/Pyro/pyro.fbx");
 
 	for (uint i = 0; i < m_fbx->getMeshCount(); i++) {
 		FBXMeshNode* pMesh = m_fbx->getMeshByIndex(i);
