@@ -13,7 +13,7 @@ m_pProgramFactory(new ProgramFactory(GLHelpers::LinkProgram)),
 m_pTextureFactory(new TextureFactory(GLHelpers::LoadTexture))
 {}
 
-ShaderId AssetContainer::LoadShader(std::string shaderFileName, ShaderType shaderType)
+ShaderId AssetContainer::LoadShader(const char* shaderFileName, ShaderType shaderType)
 {
 	return m_pShaderFactory->Get(shaderFileName, shaderType);
 }

@@ -116,10 +116,10 @@ bool GLHelpers::CheckLinkStatus(ProgramId programId)
 	return true;
 }
 
-ShaderId GLHelpers::LoadShader(std::string shaderFileName, ShaderType shaderType)
+ShaderId GLHelpers::LoadShader(const char* shaderFileName, ShaderType shaderType)
 {
 	GLuint shaderId = glCreateShader(shaderType.Value());
-	string shaderSource = readFile(shaderFileName.c_str());
+	string shaderSource = readFile(shaderFileName);
 	if (shaderSource.length() == 0) {
 		cerr << "Can't load ";
 		if (shaderType == VertexShader) { cerr << "vertex"; }

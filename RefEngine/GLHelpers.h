@@ -3,8 +3,6 @@
 #include "gl_core_4_4.h"
 #include "OpenGLTypes.h"
 
-#include <string>
-
 namespace reng {
 
 class Texture
@@ -38,7 +36,7 @@ public:
 	 * Load a shader from the given file name, compile it and check for compile errors.
 	 * Returns the shader id.
 	 */
-	static ShaderId LoadShader(std::string shaderFileName, ShaderType shaderType);
+	static ShaderId LoadShader(const char* shaderFileName, ShaderType shaderType);
 
 	/**
 	 * Link a program with the given shaders and check for link errors.

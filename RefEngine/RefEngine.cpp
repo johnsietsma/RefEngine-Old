@@ -127,8 +127,8 @@ bool RefEngine::Init()
 
 	//-----
 	// TODO Move into external init section
-	ShaderId vertShader = m_pAssetContainer->LoadShader( std::string("data/shaders/default.vert"), VertexShader);
-	ShaderId fragShader = m_pAssetContainer->LoadShader( std::string("data/shaders/red.frag"), FragmentShader);
+	ShaderId vertShader = m_pAssetContainer->LoadShader( "data/shaders/default.vert", VertexShader);
+	ShaderId fragShader = m_pAssetContainer->LoadShader( "data/shaders/red.frag", FragmentShader);
 	ProgramId programId = m_pAssetContainer ->LinkProgram(vertShader, fragShader);
 	if (programId == ProgramId_Invalid) return false;
 

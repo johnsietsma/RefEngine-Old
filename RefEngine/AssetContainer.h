@@ -12,7 +12,7 @@ class Texture;
 template<typename TMake, typename...TArgs>
 class CachingFactory;
 
-typedef CachingFactory<ShaderId, std::string, ShaderType> ShaderFactory;
+typedef CachingFactory<ShaderId, const char*, ShaderType> ShaderFactory;
 typedef CachingFactory<ProgramId, ShaderId, ShaderId> ProgramFactory;
 typedef CachingFactory<Texture, const char*> TextureFactory;
 
@@ -25,7 +25,7 @@ class AssetContainer
 public:
 	AssetContainer();
 
-	ShaderId LoadShader(std::string shaderFileName, ShaderType shaderType);
+	ShaderId LoadShader(const char* shaderFileName, ShaderType shaderType);
 	ProgramId LinkProgram(ShaderId fragmentShaderId, ShaderId vertexShaderId);
 	Texture LoadTexture(const char* fileName);
 
