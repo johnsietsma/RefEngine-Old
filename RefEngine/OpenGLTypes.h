@@ -3,26 +3,6 @@
 #include "StronglyTyped.h"
 #include "gl_core_4_1.h"
 
-// Macro to create strong types
-// Params:
-//    - A primitve type that will become a strong type.
-//    - The name of the new strong type.
-//    - A value that is invalid for that type. A invalid const value is created.
-#define STRONG_TYPE(PrimitiveType, StrongType, InvalidValue) \
-struct PhantomType_##StrongType{}; \
-typedef StronglyTyped<GLuint, PhantomType_##StrongType> StrongType; \
-const StrongType StrongType##_Invalid = InvalidValue;
-
-
-// Macro to create a hash specialization for a string type, allows use if std::hash with the strong type
-#define HASH_TYPE(PrimitiveType, StrongType) \
-namespace std \
-{ \
-	template<> \
-    struct hash<StrongType>	{ size_t operator()(StrongType const& s) const { return hash<PrimitiveType>()(s.Value()); } }; \
-} 
-
-
 //-----------------------------------------------------------------------------
 // Create strong types for various OpenGL ids
 
@@ -40,6 +20,9 @@ STRONG_TYPE(GLuint, TextureId, -1)
 
 STRONG_TYPE(GLenum, ShaderType, -1)
 HASH_TYPE(GLenum, ShaderType)
+
+namespace reng {
+
 
 const ShaderType FragmentShader = GL_FRAGMENT_SHADER;
 const ShaderType VertexShader = GL_VERTEX_SHADER;
@@ -73,3 +56,5 @@ template<> struct GLEnumValue<unsigned short> {
 template<> struct GLEnumValue<unsigned int> {
 	static const int value = GL_UNSIGNED_INT;
 };
+
+}

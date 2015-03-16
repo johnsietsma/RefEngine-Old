@@ -35,6 +35,12 @@ add_executable(refeng
 	RefEngine/CachingFactory.h
     RefEngine/Controller.cpp
     RefEngine/Controller.h
+    RefEngine/ComponentContainer.cpp
+    RefEngine/ComponentContainer.h
+	RefEngine/Components.cpp
+    RefEngine/Components.h
+	RefEngine/EntityManager.cpp
+	RefEngine/EntityManager.h
     RefEngine/GameObject.cpp
     RefEngine/GameObject.h
     RefEngine/gl_core_4_1.c
