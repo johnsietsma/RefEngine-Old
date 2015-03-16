@@ -23,7 +23,7 @@ int main(int argc, char** argv)
 		printf("The current working directory is %s\n", cCurrentPath);
 	}
 
-	RefEngine* pRefEng = new RefEngine();
+	reng::RefEngine* pRefEng = new reng::RefEngine();
 	if (!pRefEng->Init()) return 1;
 	pRefEng->Run();
 

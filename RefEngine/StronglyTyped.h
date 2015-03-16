@@ -3,9 +3,8 @@
 #include <iostream>
 
 /**
- * A simple template to create new types.
+ * A simple template to create new types from primitive types.
 */
-
 template <typename T, typename PHANTOM_TYPE>
 struct StronglyTyped
 {

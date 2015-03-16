@@ -3,36 +3,48 @@
 #include "StronglyTyped.h"
 #include "gl_core_4_1.h"
 
+// Macro to create strong types
+// Params:
+//    - A primitve type that will become a strong type.
+//    - The name of the new strong type.
+//    - A value that is invalid for that type. A invalid const value is created.
+#define STRONG_TYPE(PrimitiveType, StrongType, InvalidValue) \
+struct PhantomType_##StrongType{}; \
+typedef StronglyTyped<GLuint, PhantomType_##StrongType> StrongType; \
+const StrongType StrongType##_Invalid = InvalidValue;
+
+
+// Macro to create a hash specialization for a string type, allows use if std::hash with the strong type
+#define HASH_TYPE(PrimitiveType, StrongType) \
+namespace std \
+{ \
+	template<> \
+    struct hash<StrongType>	{ size_t operator()(StrongType const& s) const { return hash<PrimitiveType>()(s.Value()); } }; \
+} 
+
+
 //-----------------------------------------------------------------------------
 // Create strong types for various OpenGL ids
 
-struct PhantomType_VAO {};
-typedef StronglyTyped<GLuint, PhantomType_VAO> VAOId;
-const VAOId VAOId_Invalid;
+STRONG_TYPE(GLuint, VAOId, -1)
+STRONG_TYPE(GLuint, VBOId, -1)
+STRONG_TYPE(GLuint, IBOId, -1)
 
-struct PhantomType_VBO {};
-typedef StronglyTyped<GLuint, PhantomType_VBO> VBOId;
-const VBOId VBOId_Invalid;
+STRONG_TYPE(GLuint, ShaderId, -1)
+HASH_TYPE(GLuint, ShaderId)
 
-struct PhantomType_IBO {};
-typedef StronglyTyped<GLuint, PhantomType_IBO> IBOId;
-const IBOId IBOId_Invalid;
+STRONG_TYPE(GLuint, ProgramId, -1)
+STRONG_TYPE(GLuint, UniformLocationId, -1)
 
-struct PhantomType_Shader {};
-typedef StronglyTyped<GLuint, PhantomType_Shader> ShaderId;
-const ShaderId ShaderId_Invalid = -1;
+STRONG_TYPE(GLuint, TextureId, -1)
 
-struct PhantomType_Program {};
-typedef StronglyTyped<GLuint, PhantomType_Program> ProgramId;
-const ProgramId ProgramId_Invalid = -1;
+STRONG_TYPE(GLenum, ShaderType, -1)
+HASH_TYPE(GLenum, ShaderType)
 
-struct PhantomType_UniformLocation {};
-typedef StronglyTyped<GLuint, PhantomType_UniformLocation> UniformLocationId;
-const UniformLocationId UniformLocationId_Invalid = -1;
+const ShaderType FragmentShader = GL_FRAGMENT_SHADER;
+const ShaderType VertexShader = GL_VERTEX_SHADER;
 
-struct PhantomType_Texture {};
-typedef StronglyTyped<GLuint, PhantomType_Texture> TextureId;
-const TextureId TextureId_Invalid = -1;
+
 
 //-----------------------------------------------------------------------------
 // Map a C numeric type to a GLenum value at compile time
@@ -41,7 +53,6 @@ template<typename T> struct GLEnumValue {
 	static const int value = -1;
 	//static_assert(false, "Unknown OpenGL type");
 };
-
 
 template<> struct GLEnumValue<float> {
 	static const int value = GL_FLOAT;

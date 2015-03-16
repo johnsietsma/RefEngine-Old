@@ -1,11 +1,16 @@
 #include "GLHelpers.h"
 
+#include "pow2assert.h"
+
+//#define STB_IMAGE_IMPLEMENTATION
+#include <stb_image.h>
+
 #include <fstream>
 #include <iostream>
 #include <vector>
 
 using namespace std;
-
+using namespace reng;
 
 // ---- Local helpers ----
 
@@ -77,16 +82,16 @@ string readFile(const char* fileName)
 
 // ---- Member functions ----
 
-bool GLHelpers::CheckCompileStatus(GLuint shaderId)
+bool GLHelpers::CheckCompileStatus(ShaderId shaderId)
 {
 	GLint result = GL_FALSE;
 	int logLength;
-	glGetShaderiv(shaderId, GL_COMPILE_STATUS, &result);
+	glGetShaderiv(shaderId.Get(), GL_COMPILE_STATUS, &result);
 	if (result != GL_TRUE) {
 		char* logBuffer = NULL;
-		glGetShaderiv(shaderId, GL_INFO_LOG_LENGTH, &logLength);
+		glGetShaderiv(shaderId.Value(), GL_INFO_LOG_LENGTH, &logLength);
 		logBuffer = new char[logLength];
-		glGetShaderInfoLog(shaderId, logLength, NULL, logBuffer);
+		glGetShaderInfoLog(shaderId.Value(), logLength, NULL, logBuffer);
 		cerr << "Compile Error: " << logBuffer << endl;
 		delete[] logBuffer;
 		return false;
@@ -94,16 +99,16 @@ bool GLHelpers::CheckCompileStatus(GLuint shaderId)
 	return true;
 }
 
-bool GLHelpers::CheckLinkStatus(GLuint programId)
+bool GLHelpers::CheckLinkStatus(ProgramId programId)
 {
 	GLint result = GL_FALSE;
 	int logLength;
-	glGetProgramiv(programId, GL_LINK_STATUS, &result);
+	glGetProgramiv(programId.Get(), GL_LINK_STATUS, &result);
 	if (result != GL_TRUE) {
 		char* logBuffer = NULL;
-		glGetProgramiv(programId, GL_INFO_LOG_LENGTH, &logLength);
+		glGetProgramiv(programId.Value(), GL_INFO_LOG_LENGTH, &logLength);
 		logBuffer = new char[logLength];
-		glGetProgramInfoLog(programId, logLength, NULL, logBuffer);
+		glGetProgramInfoLog(programId.Value(), logLength, NULL, logBuffer);
 		cerr << "Link Error: " << logBuffer << endl;
 		delete[] logBuffer;
 		return false;
@@ -111,17 +116,15 @@ bool GLHelpers::CheckLinkStatus(GLuint programId)
 	return true;
 }
 
-ShaderId GLHelpers::LoadShader(const char* shaderFileName, GLenum shaderType)
+ShaderId GLHelpers::LoadShader(std::string shaderFileName, ShaderType shaderType)
 {
-	GLuint shaderId = glCreateShader(shaderType);
-	string shaderSource = readFile(shaderFileName);
+	GLuint shaderId = glCreateShader(shaderType.Value());
+	string shaderSource = readFile(shaderFileName.c_str());
 	if (shaderSource.length() == 0) {
 		cerr << "Can't load ";
-		switch (shaderType) {
-		case GL_VERTEX_SHADER: cerr << "vertex"; break;
-		case GL_FRAGMENT_SHADER: cerr << "fragment"; break;
-		default: cerr << shaderType; break;
-		}
+		if (shaderType == VertexShader) { cerr << "vertex"; }
+		else if (shaderType == FragmentShader) { cerr << "fragment"; }
+		else { cerr << "unknown"; }
 		cerr << " shader : " << shaderFileName << endl;
 		return ShaderId_Invalid;
 	}
@@ -136,6 +139,51 @@ ShaderId GLHelpers::LoadShader(const char* shaderFileName, GLenum shaderType)
 
 	return shaderId;
 
+}
+
+ProgramId GLHelpers::LinkProgram(ShaderId fragmentShaderId, ShaderId vertexShaderId)
+{
+
+	if (vertexShaderId == ShaderId_Invalid || fragmentShaderId == ShaderId_Invalid) { return ProgramId_Invalid; }
+
+	// Create the program
+	ProgramId programId = glCreateProgram();
+	glAttachShader(programId.Value(), vertexShaderId.Value());
+	glAttachShader(programId.Value(), fragmentShaderId.Value());
+	glLinkProgram(programId.Value());
+
+	if (!GLHelpers::CheckLinkStatus(programId)) {
+		programId = ProgramId_Invalid;
+	}
+
+	return programId;
+}
+
+Texture GLHelpers::LoadTexture( const char* fileName )
+{
+	Texture texture;
+	texture.m_textureId = TextureId_Invalid;
+	unsigned char* data = stbi_load(fileName, &texture.width, &texture.height, &texture.format, STBI_default);
+	if( data==nullptr) return texture;
+
+	switch (texture.format)
+	{
+	case STBI_grey: texture.format = GL_RED; break;
+	case STBI_grey_alpha: texture.format = GL_RG; break;
+	case STBI_rgb: texture.format = GL_RGB; break;
+	case STBI_rgb_alpha: texture.format = GL_RGBA; break;
+	default: POW2_ASSERT_FAIL("Unknown texture format: %d", texture.format); return texture;
+	};
+
+	glGenTextures(1, &texture.m_textureId.Get());
+	glBindTexture(GL_TEXTURE_2D, texture.m_textureId.Value());
+	glTexImage2D(GL_TEXTURE_2D, 0, texture.format, texture.width, texture.height, 0, texture.format, GL_UNSIGNED_BYTE, data);
+	//  glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_MAG_FILTER, GL_LINEAR);
+	//  glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_MIN_FILTER, GL_LINEAR);
+	glGenerateMipmap(GL_TEXTURE_2D);
+	glBindTexture(GL_TEXTURE_2D, 0);
+
+	return texture;
 }
 
 void GLHelpers::TurnOnDebugLogging()

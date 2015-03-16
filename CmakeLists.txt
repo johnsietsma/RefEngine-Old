@@ -24,12 +24,15 @@ set(CMAKE_CXX_FLAGS "${CMAKE_CXX_FLAGS} ${GCC_CHAR_IS_UNSIGNED_CHAR} ${STD_C11}"
 
 
 add_executable(refeng
+    RefEngine/AssetContainer.cpp
+    RefEngine/AssetContainer.h
     RefEngine/Buffer.cpp
     RefEngine/Buffer.h
     RefEngine/Camera.cpp
     RefEngine/Camera.h
     RefEngine/Color.cpp
     RefEngine/Color.h
+	RefEngine/CachingFactory.h
     RefEngine/Controller.cpp
     RefEngine/Controller.h
     RefEngine/GameObject.cpp
@@ -51,8 +54,6 @@ add_executable(refeng
     RefEngine/pow2assert.h
     RefEngine/Prims.cpp
     RefEngine/Prims.h
-    RefEngine/ProgramManager.cpp
-    RefEngine/ProgramManager.h
     RefEngine/RefEngine.h
     RefEngine/RefEngine.cpp
     RefEngine/Renderable.cpp
@@ -61,17 +62,19 @@ add_executable(refeng
     RefEngine/Renderer.h
     RefEngine/SpinController.cpp
     RefEngine/SpinController.h
-    RefEngine/TextureManager.cpp
-    RefEngine/TextureManager.h
 	RefEngine/types.h
     dep/FBXLoader/FBXFile.cpp
     dep/aieutilities/aie/Gizmos.cpp
 	data/shaders/default.vert
-  data/shaders/passthrough.vert
+    data/shaders/passthrough.vert
 	data/shaders/diffuse.frag
 	data/shaders/red.frag
 	data/shaders/white.frag
 )
+
+FILE(GLOB frag_shaders data/shaders/*.*)
+source_group(data\\shaders FILES ${frag_shaders})
+
 
 
 IF(APPLE)
@@ -89,8 +92,8 @@ IF(APPLE)
 ELSE(APPLE)
    target_link_libraries(refeng opengl32.lib)
    target_link_libraries(refeng glfw ${GLFW_LIBRARIES})
-   target_link_libraries(refeng optimized ${CMAKE_SOURCE_DIR}/dep/fbx/lib/vs2013/x86/release/libfbxsdk-md.lib)
-   target_link_libraries(refeng debug ${CMAKE_SOURCE_DIR}/dep/fbx/lib/vs2013/x86/debug/libfbxsdk-md.lib)
+   target_link_libraries(refeng optimized ${CMAKE_SOURCE_DIR}/dep/fbx/vs2013/x86/release/libfbxsdk-md.lib)
+   target_link_libraries(refeng debug ${CMAKE_SOURCE_DIR}/dep/fbx/vs2013/x86/debug/libfbxsdk-md.lib)
 ENDIF (APPLE)
 
 target_link_libraries(refeng ${EXTRA_LIBS})

@@ -5,8 +5,7 @@
 
 #include "FBXFile.h"
 
-
-#include "pow2assert.h"
+#include "AssetContainer.h"
 #include "Buffer.h"
 #include "Color.h"
 #include "Controller.h"
@@ -16,15 +15,17 @@
 #include "GLHelpers.h"
 #include "Material.h"
 #include "Renderable.h"
+#include "pow2assert.h"
 #include "Prims.h"
-#include "ProgramManager.h"
 #include "SpinController.h"
 
 #include <GLFW/glfw3.h>
 #include <glm/glm.hpp>
 #include <iostream>
+#include <string>
 
 using namespace std;
+using namespace reng;
 
 static const VertexAttribute FBXVertexAttributes[9] = {
 	VertexAttribute::Create<glm::vec4>(4, offsetof(FBXVertex, position), GL_FLOAT),
@@ -52,13 +53,13 @@ void keyCallback(GLFWwindow* m_pWindow, int key, int scanCode, int action, int m
 	}
 }
 
-
 RefEngine::RefEngine() :
 	m_isValid(false),
 	m_pCamera(new Camera(glm::vec3(4, 3, 3), glm::vec3(0), 45, 16 / 9.f)),
 	m_pRenderer(new Renderer()),
-	m_pProgramManager(new ProgramManager())
-{}
+	m_pAssetContainer(new AssetContainer())
+{
+}
 
 RefEngine::~RefEngine()
 {
@@ -126,7 +127,9 @@ bool RefEngine::Init()
 
 	//-----
 	// TODO Move into external init section
-	auto programId = m_pProgramManager->GetOrCreateProgram("data/shaders/default.vert", "data/shaders/red.frag");
+	ShaderId vertShader = m_pAssetContainer->LoadShader( std::string("data/shaders/default.vert"), VertexShader);
+	ShaderId fragShader = m_pAssetContainer->LoadShader( std::string("data/shaders/red.frag"), FragmentShader);
+	ProgramId programId = m_pAssetContainer ->LinkProgram(vertShader, fragShader);
 	if (programId == ProgramId_Invalid) return false;
 
 	Material* pMaterial = new Material(programId);
@@ -144,7 +147,7 @@ bool RefEngine::Init()
 
 	// Add a fbx model
 	m_fbx = new FBXFile();
-	m_fbx->load("data/models/Pyro/pyro.fbx");
+	m_fbx->load("data/models/cube.fbx");
 
 	for (uint i = 0; i < m_fbx->getMeshCount(); i++) {
 		FBXMeshNode* pMesh = m_fbx->getMeshByIndex(i);

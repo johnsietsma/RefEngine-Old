@@ -1,14 +1,16 @@
 #pragma once
 
-#include <memory>
 #include <vector>
 
 class Camera;
 class FBXFile;
-class Renderer;
 class GameObject;
 struct GLFWwindow;
-class ProgramManager;
+class Renderer;
+
+namespace reng {
+
+class AssetContainer;
 
 class RefEngine
 {
@@ -33,9 +35,9 @@ private:
 	GLFWwindow* m_pWindow;
 	Camera* m_pCamera;
 	Renderer* m_pRenderer;
-	ProgramManager* m_pProgramManager;
+	AssetContainer* m_pAssetContainer;
 	std::vector<GameObject*> m_gameObjects;
-
 	FBXFile* m_fbx;
 };
 
+}
