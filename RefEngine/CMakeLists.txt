@@ -69,3 +69,23 @@ add_library(refeng
 
 target_include_directories (refeng PUBLIC ${CMAKE_CURRENT_SOURCE_DIR}\\src)
 
+IF(APPLE)
+   INCLUDE_DIRECTORIES ( /System/Library/Frameworks )
+   FIND_LIBRARY(CORE_VIDEO_LIBRARY CoreVideo)
+   FIND_LIBRARY(COCOA_LIBRARY Cocoa)
+   FIND_LIBRARY(CARBON_LIBRARY Carbon)
+   FIND_LIBRARY(OpenGL_LIBRARY OpenGL)
+   FIND_LIBRARY(IOKIT_LIBRARY IOKit)
+   MARK_AS_ADVANCED (CARBON_LIBRARY CORE_VIDEO_LIBRARY COCOA_LIBRARY OpenGL_LIBRARY IOKIT_LIBRARY)
+   SET(EXTRA_LIBS ${CARBON_LIBRARY} ${CORE_VIDEO_LIBRARY} ${COCOA_LIBRARY} ${OpenGL_LIBRARY} ${IOKIT_LIBRARY})
+
+   target_link_libraries(refeng ${CMAKE_SOURCE_DIR}/dep/fbx/libfbxsdk.a)
+   target_link_libraries(refeng glfw ${GLFW_LIBRARIES})
+ELSE(APPLE)
+   target_link_libraries(refeng opengl32.lib)
+   target_link_libraries(refeng glfw ${GLFW_LIBRARIES})
+   target_link_libraries(refeng optimized ${CMAKE_SOURCE_DIR}/dep/fbx/vs2013/x86/release/libfbxsdk-md.lib)
+   target_link_libraries(refeng debug ${CMAKE_SOURCE_DIR}/dep/fbx/vs2013/x86/debug/libfbxsdk-md.lib)
+ENDIF (APPLE)
+
+target_link_libraries(refeng ${EXTRA_LIBS})

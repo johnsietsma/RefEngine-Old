@@ -223,7 +223,7 @@ bool FBXFile::load(const char* a_filename, UNIT_SCALE a_scale /* = FBXFile::UNIT
 			skeleton->m_bones = new(pBonesBuffer) glm::mat4[ skeleton->m_boneCount ];
 
 			void* pBindPosesBuffer = aligned_malloc(sizeof(glm::mat4)*(skeleton->m_boneCount + 1), 16);
-			skeleton->m_bindPoses = new(pBonesBuffer)glm::mat4[skeleton->m_boneCount];
+			skeleton->m_bindPoses = new(pBindPosesBuffer)glm::mat4[skeleton->m_boneCount];
 
             skeleton->m_parentIndex = new int[ skeleton->m_boneCount ];
 
