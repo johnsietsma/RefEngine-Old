@@ -1,8 +1,18 @@
 cmake_minimum_required(VERSION 2.8 FATAL_ERROR)
 
-project("RefEngine")
+set(PROJECT_NAME RefEngine)
+project(${PROJECT_NAME})
 
 add_subdirectory(dep/glfw)
 
 add_subdirectory(RefEngine)
 add_subdirectory(TestBed)
+
+
+
+# Options. Turn on with 'cmake -Dmyvarname=ON'.
+option(test "Build all tests." OFF) # Makes boolean 'test' available.
+if (test)
+  add_subdirectory(dep/gtest-1.7.0)
+  add_subdirectory(RefEngineTests)
+endif()
