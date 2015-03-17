@@ -56,9 +56,9 @@ public:
 		) {
 		return Create(
 			sizeof(VertT), numberOfVerts, verts, 
-			sizeof(IndexT), GLEnumValue<IndexT>::value, numberOfIndices, indices, 
-			0, nullptr
-			);
+            sizeof(IndexT), reng::GLEnumValue<IndexT>::value, numberOfIndices, indices,
+            0, nullptr
+        );
 	}
 
 	// Create indexed vertex buffers, each vertex has a number of attributes.
@@ -70,9 +70,9 @@ public:
 		) {
 		return Create(
 			sizeof(VertT), numberOfVerts, verts, 
-			sizeof(IndexT), GLEnumValue<IndexT>::value, numberOfIndices, indices,
+            sizeof(IndexT), reng::GLEnumValue<IndexT>::value, numberOfIndices, indices,
 			numberOfVertexAttributes, vertexAttributes 
-			);
+        );
 	}
 
 

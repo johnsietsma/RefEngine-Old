@@ -1,6 +1,5 @@
 #pragma once
 
-#include "gl_core_4_4.h"
 #include "OpenGLTypes.h"
 
 namespace reng {
@@ -47,7 +46,7 @@ public:
 	 *  Load a texture from disk and create a new OpenGl texture id.
 	 * Returns a Texture structure with image information.
 	 */
-	static Texture GLHelpers::LoadTexture(const char* fileName);
+	static Texture LoadTexture(const char* fileName);
 
 
 	static void TurnOnDebugLogging();

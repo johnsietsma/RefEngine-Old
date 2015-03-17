@@ -1,5 +1,5 @@
 cd `dirname $0`
-mkdir build
-pushd build
-cmake -G "Xcode" ../
+mkdir -p build/xcode
+pushd build/xcode
+cmake -G "Xcode" ../../
 popd

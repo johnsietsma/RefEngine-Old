@@ -42,7 +42,7 @@ public:
 		std::vector<EntityId>::iterator it = find(m_entities.begin(), m_entities.begin() + m_deadIndex, entityId);
 		if (it != m_entities.end()) {
 			// Swawp the last live entity with the one being destroyed. Then we can just decrement the dead index to destroy it.
-			std::swap(it, m_entities.begin() + m_deadIndex - 1);
+			std::iter_swap(it, m_entities.begin() + m_deadIndex - 1);
 			m_deadIndex--;
 			m_isSorted = false;
 		}

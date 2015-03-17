@@ -1,5 +1,6 @@
 #include "GLHelpers.h"
 
+#include "gl_core_4_1.h"
 #include "pow2assert.h"
 
 //#define STB_IMAGE_IMPLEMENTATION
@@ -14,6 +15,7 @@ using namespace reng;
 
 // ---- Local helpers ----
 
+#ifdef GL_VERSION_4_4
 void APIENTRY openglCallbackFunction(GLenum source,
 		GLenum type,
 		GLuint id,
@@ -64,6 +66,7 @@ void APIENTRY openglCallbackFunction(GLenum source,
 	cout << endl;
 	cout << "---------------------opengl-callback-end--------------" << endl;
 }
+#endif
 
 string readFile(const char* fileName)
 {

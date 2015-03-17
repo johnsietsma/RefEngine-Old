@@ -19,8 +19,10 @@ add_executable(TestBed
 )
 target_link_libraries(TestBed refeng)
 
+# ---- Put the shaders in a folder group ----
 FILE(GLOB frag_shaders data/shaders/*.*)
 source_group(data\\shaders FILES ${frag_shaders})
+
 
 IF(APPLE)
    INCLUDE_DIRECTORIES ( /System/Library/Frameworks )
