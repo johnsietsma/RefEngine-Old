@@ -65,9 +65,8 @@ public:
 	// internal use only!
 	unsigned int index[4];
 
-	void* operator new(size_t size){ return aligned_new(size, 16); }
-	void operator delete(void* mem) { return aligned_delete(mem); }
-
+	ALIGNED_NEW_OP_16
+	ALIGNED_DELETE_OP
 };
 
 enum class Offsets1
@@ -129,8 +128,8 @@ struct FBXMaterial
 	glm::vec2		textureTiling[TextureTypes_Count];			// Texture repeat count
 	float			textureRotation[TextureTypes_Count];		// Texture rotation around Z (2D rotation)
 
-	void* operator new(size_t size){ return aligned_new(size, 16); }
-	void operator delete(void* mem) { return aligned_delete(mem); }
+	ALIGNED_NEW_OP_16
+	ALIGNED_DELETE_OP
 };
 
 // Simple tree node with local/global transforms and children
@@ -166,8 +165,8 @@ public:
 
 	void*					m_userData;
 
-	void* operator new(size_t size){ return aligned_new(size, 16); }
-	void operator delete(void* mem) { return aligned_delete(mem); }
+	ALIGNED_NEW_OP_16
+	ALIGNED_DELETE_OP
 };
 
 // A simple mesh node that contains an array of vertices and indices used
@@ -185,8 +184,8 @@ public:
 	std::vector<FBXVertex>		m_vertices;
 	std::vector<unsigned int>	m_indices;
 
-	void* operator new(size_t size) { return aligned_new(size, 16); }
-	void operator delete(void* mem) { return aligned_delete(mem); }
+	ALIGNED_NEW_OP_16
+	ALIGNED_DELETE_OP
 };
 
 // A light node that can represent a point, directional, or spot light
@@ -212,8 +211,8 @@ public:
 	float		m_innerAngle;	// spotlight inner cone angle (if a spotlight)
 	float		m_outerAngle;	// spotlight outer cone angle (if a spotlight)
 
-	void* operator new(size_t size){ return aligned_new(size, 16); }
-	void operator delete(void* mem) { return aligned_delete(mem); }
+	ALIGNED_NEW_OP_16
+	ALIGNED_DELETE_OP
 };
 
 // A camera node with information to create projection matrix
@@ -234,8 +233,8 @@ public:
 
 	glm::mat4	m_viewMatrix;	// inverse matrix of node's m_globalTransform
 
-	void* operator new(size_t size){ return aligned_new(size, 16); }
-	void operator delete(void* mem) { return aligned_delete(mem); }
+	ALIGNED_NEW_OP_16
+	ALIGNED_DELETE_OP
 };
 
 // A single frame for a bone in an animation
@@ -251,8 +250,8 @@ public:
 	glm::vec3		m_translation;
 	glm::vec3		m_scale;
 
-	void* operator new(size_t size){ return aligned_new(size, 16); }
-	void operator delete(void* mem) { return aligned_delete(mem); }
+	ALIGNED_NEW_OP_16
+	ALIGNED_DELETE_OP
 };
 
 // A collection of frames for a single bone in an animation
@@ -309,8 +308,8 @@ public:
 
 	void*			m_userData;
 
-	void* operator new(size_t size){ return aligned_new(size, 16); }
-	void operator delete(void* mem) { return aligned_delete(mem); }
+	ALIGNED_NEW_OP_16
+	ALIGNED_DELETE_OP
 };
 
 // An FBX scene representing the contents on an FBX file.
@@ -381,8 +380,8 @@ public:
 	FBXAnimation*	getAnimationByIndex(unsigned int a_index);
 	FBXTexture*		getTextureByIndex(unsigned int a_index);
 
-	void* operator new(size_t size) { return aligned_new(size, 16); }
-	void operator delete(void* mem) { return aligned_delete(mem); }
+	ALIGNED_NEW_OP_16
+	ALIGNED_DELETE_OP
 
 private:
 
