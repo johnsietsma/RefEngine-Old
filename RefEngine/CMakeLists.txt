@@ -8,6 +8,10 @@ include_directories(../dep/FBXLoader)
 include_directories(../dep/stb)
 include_directories(src)
 
+if (MSVC)
+    option(USE_MSVC_RUNTIME_LIBRARY_DLL "Use MSVC runtime library DLL" ON)
+endif()
+
 
 IF(APPLE)
     SET(GCC_CHAR_IS_UNSIGNED_CHAR "-funsigned-char")
@@ -17,8 +21,8 @@ ENDIF (APPLE)
 
 set(CMAKE_CXX_FLAGS "${CMAKE_CXX_FLAGS} ${GCC_CHAR_IS_UNSIGNED_CHAR} ${STD_C11}")
 
-
 add_library(refeng
+	../Readme.md
     src/AssetContainer.cpp
     src/AssetContainer.h
     src/Buffer.cpp
@@ -48,7 +52,6 @@ add_library(refeng
     src/MeshRenderer.h
     src/Material.cpp
     src/Material.h
-    src/OpenGLTypes.cpp
     src/OpenGLTypes.h
     src/pow2assert.cpp
     src/pow2assert.h
@@ -63,6 +66,8 @@ add_library(refeng
     src/SpinController.cpp
     src/SpinController.h
     src/types.h
+	src/VariadicHash.cpp
+	src/VariadicHash.h
     ../dep/FBXLoader/FBXFile.cpp
     ../dep/aieutilities/aie/Gizmos.cpp
 )
@@ -84,8 +89,13 @@ IF(APPLE)
 ELSE(APPLE)
    target_link_libraries(refeng opengl32.lib)
    target_link_libraries(refeng glfw ${GLFW_LIBRARIES})
-   target_link_libraries(refeng optimized ${CMAKE_SOURCE_DIR}/dep/fbx/vs2013/x86/release/libfbxsdk-md.lib)
-   target_link_libraries(refeng debug ${CMAKE_SOURCE_DIR}/dep/fbx/vs2013/x86/debug/libfbxsdk-md.lib)
+   if (USE_MSVC_RUNTIME_LIBRARY_DLL)
+	   target_link_libraries(refeng optimized ${CMAKE_SOURCE_DIR}/dep/fbx/vs2013/x86/release/libfbxsdk-md.lib)
+	   target_link_libraries(refeng debug ${CMAKE_SOURCE_DIR}/dep/fbx/vs2013/x86/debug/libfbxsdk-md.lib)
+   else (USE_MSVC_RUNTIME_LIBRARY_DLL)
+   	   target_link_libraries(refeng optimized ${CMAKE_SOURCE_DIR}/dep/fbx/vs2013/x86/release/libfbxsdk-mt.lib)
+	   target_link_libraries(refeng debug ${CMAKE_SOURCE_DIR}/dep/fbx/vs2013/x86/debug/libfbxsdk-mt.lib)
+   endif()
 ENDIF (APPLE)
 
 target_link_libraries(refeng ${EXTRA_LIBS})

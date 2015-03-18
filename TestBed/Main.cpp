@@ -12,7 +12,7 @@
 #endif
 
 
-int main(int argc, char** argv)
+int main()
 {
 	char cCurrentPath[FILENAME_MAX];
 	if (GetCurrentDir(cCurrentPath, sizeof(cCurrentPath)))
