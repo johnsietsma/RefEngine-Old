@@ -45,10 +45,10 @@ void keyCallback(GLFWwindow* m_pWindow, int key, int /*scanCode*/, int action, i
 
 RefEngine::RefEngine() :
 	m_isValid(false),
+	m_pAssetManager(new AssetManager()),
 	m_pCamera(new Camera(glm::vec3(4, 3, 3), glm::vec3(0), 45, 16 / 9.f)),
 	m_pComponentManager(new ComponentManager()),
 	m_pRenderer(new Renderer()),
-	m_pAssetManager(new AssetManager()),
 	m_pTime(new GameTime())
 {
 }
