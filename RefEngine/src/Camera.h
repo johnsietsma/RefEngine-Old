@@ -4,6 +4,8 @@
 
 #include <glm/glm.hpp>
 
+namespace reng {
+
 class Camera
 {
 public:
@@ -19,3 +21,4 @@ private:
 	glm::mat4 m_projection;
 };
 
+}

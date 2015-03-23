@@ -5,9 +5,11 @@
 #include <glm/glm.hpp>
 #include <memory>
 
+namespace reng {
+
 //fwd decls
 class Camera;
-class GameObject;
+class Transform;
 
 class Material
 {
@@ -16,7 +18,7 @@ public:
 
 	ProgramId GetProgramId() const { return m_programId;  }
 
-	void UpdateUniforms( const Camera* pCamera, const GameObject* pGameObject );
+	void UpdateUniforms( const Camera* pCamera, const glm::mat4x4& pTransform );
 private:
 	void UpdateProjectionView(const glm::mat4x4& projectionView);
 
@@ -24,3 +26,5 @@ private:
 	UniformLocationId m_mvpLocation;
 	TextureId m_textureId;
 };
+
+}

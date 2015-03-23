@@ -5,6 +5,8 @@
 #include <glm/glm.hpp>
 #include <memory>
 
+namespace reng {
+
 class Controller;
 class Renderable;
 
@@ -26,3 +28,5 @@ private:
 	std::shared_ptr<Controller> m_pController;
 	std::shared_ptr<Renderable> m_pRenderable;
 };
+
+}

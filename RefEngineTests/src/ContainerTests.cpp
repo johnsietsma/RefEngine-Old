@@ -17,12 +17,12 @@ TestThing* MakeTest1() {
 
 // Create the thing with more params
 TestThing* MakeTest2(std::string p1, int p2, TestThing* p3) {
-	(void*)p3;
+	(std::string)p1; (void*)p2; (void*)p3;  // To stop unreferences param compiler error.
 	return new TestThing();
 }
 
 
-TEST(caching_factory_test, test_get_no_params)
+TEST(container_test, test_get_no_params)
 {
 	CachingFactory<TestThing*> cf(MakeTest1);
 	TestThing* t1 = cf.Get();
@@ -30,10 +30,10 @@ TEST(caching_factory_test, test_get_no_params)
 }
 
 
-TEST(caching_factory_test, test_get_multiple_params)
+TEST(container_test, test_get_multiple_params)
 {
 	TestThing* pTestThing = new TestThing();
-	CachingFactory<TestThing*,std::string,int,TestThing*> cf(MakeTest2);
+	CachingFactory<TestThing*, std::string, int, TestThing*> cf(MakeTest2);
 
 	// Test we're caching the same object
 	TestThing* t1 = cf.Get(std::string("a"), 1, pTestThing);
@@ -49,7 +49,7 @@ TEST(caching_factory_test, test_get_multiple_params)
 	TestThing* t4 = cf.Get(std::string("a"), 2, pTestThing);
 	EXPECT_NE(t1, t4);
 
-	//TestThing* pNullThing = nullptr;
-	//TestThing* t5 = cf.Get(std::string("a"), 1, pNullThing);
-	//EXPECT_NE(t1, t5);
+	TestThing* pNullThing = nullptr;
+	TestThing* t5 = cf.Get(std::string("a"), 1, pNullThing);
+	EXPECT_NE(t1, t5);
 }

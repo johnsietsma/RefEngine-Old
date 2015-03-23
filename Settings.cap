@@ -1,0 +1,21 @@
+<?xml version="1.0" encoding="utf-8"?>
+<CaptureSettings xmlns:xsd="http://www.w3.org/2001/XMLSchema" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance">
+  <Options>
+    <AllowVSync>true</AllowVSync>
+    <AllowFullscreen>true</AllowFullscreen>
+    <DebugDeviceMode>false</DebugDeviceMode>
+    <CaptureCallstacks>false</CaptureCallstacks>
+    <CaptureCallstacksOnlyDraws>false</CaptureCallstacksOnlyDraws>
+    <DelayForDebugger>0</DelayForDebugger>
+    <VerifyMapWrites>false</VerifyMapWrites>
+    <HookIntoChildren>false</HookIntoChildren>
+    <RefAllResources>false</RefAllResources>
+    <SaveAllInitials>false</SaveAllInitials>
+    <CaptureAllCmdLists>false</CaptureAllCmdLists>
+  </Options>
+  <Inject>false</Inject>
+  <AutoStart>false</AutoStart>
+  <Executable>C:\Users\john.sietsma\Source\RefEngine\build\VisualStudio2013\TestBed\Debug\TestBed.exe</Executable>
+  <WorkingDir>C:\Users\john.sietsma\Source\RefEngine\TestBed</WorkingDir>
+  <CmdLine />
+</CaptureSettings>

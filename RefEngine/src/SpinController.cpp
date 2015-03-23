@@ -6,6 +6,8 @@
 #include <glm/gtc/matrix_transform.hpp>
 #include <glm/vec3.hpp>
 
+using namespace reng;
+
 void SpinController::Update(float deltaTime, GameObject* pGameObject)
 {
 	glm::mat4 trans = pGameObject->GetTransform();

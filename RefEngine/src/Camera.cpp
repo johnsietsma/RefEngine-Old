@@ -2,6 +2,8 @@
 
 #include <glm/gtc/matrix_transform.hpp>
 
+using namespace reng;
+
 glm::mat4 Camera::GetProjectionView() const {
     return m_projection * m_view;
 }

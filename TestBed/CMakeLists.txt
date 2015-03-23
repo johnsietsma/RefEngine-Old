@@ -9,8 +9,13 @@ ENDIF (APPLE)
 
 set(CMAKE_CXX_FLAGS "${CMAKE_CXX_FLAGS} ${GCC_CHAR_IS_UNSIGNED_CHAR} ${STD_C11}")
 
+include_directories(../dep/glm)
+include_directories(../dep/FBXLoader)
+
 add_executable(TestBed
     Main.cpp
+	TestBed.cpp
+	Testbed.h
     data/shaders/default.vert
     data/shaders/passthrough.vert
     data/shaders/diffuse.frag

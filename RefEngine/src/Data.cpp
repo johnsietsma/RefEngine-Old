@@ -1,30 +1,55 @@
-#include "Buffer.h"
-
-#include <memory>
+#include "Data.cpp"
 
 #include "pow2assert.h"
 
-VertexBuffer::VertexBuffer(IBOId iboId, VAOId vaoId, VBOId vboId, GLuint numberOfVerts, GLuint numberOfIndices, GLenum indexType) :
-m_vboId(vboId),
-m_vaoId(vaoId),
-m_iboId(iboId),
-m_indexType(indexType),
-m_numberOfVerts(numberOfVerts),
-m_numberOfIndices(numberOfIndices)
-{
+
+Mesh* CreateMesh(
+	size_t vertexSize, uint numberOfVerts, const void* verts,
+	size_t indexSize, GLenum indexType, uint numberOfIndices, const void* indices,
+	size_t numberOfVertexAttributes, const VertexAttribute vertexAttributes[]
+	);
+
+// Create vertex only buffers
+template<typename VertT>
+static Mesh* Mesh::Create(uint numberOfVerts, const VertT verts[]) {
+	return Create(
+		sizeof(VertT), numberOfVerts, verts,
+		0, 0, 0, nullptr,
+		0, nullptr
+		);
 }
 
-VertexBuffer::~VertexBuffer()
-{
-	// Cleanup
-	glDeleteBuffers(1, &m_vboId.Value());
-	glDeleteVertexArrays(1, &m_vaoId.Value());
+// Create indexed vertex buffers, each vertex has a position attribute
+template<typename VertT, typename IndexT>
+static Mesh* Mesh::Create(
+	uint numberOfVerts, const VertT verts[],
+	uint numberOfIndices, const IndexT indices[]
+	) {
+	return Create(
+		sizeof(VertT), numberOfVerts, verts,
+		sizeof(IndexT), reng::GLEnumValue<IndexT>::value, numberOfIndices, indices,
+		0, nullptr
+		);
 }
 
-// Element array creator
-Buffer* VertexBuffer::Create(
-	size_t vertexSize, uint numberOfVerts, const void* verts, 
-	size_t indexSize, GLenum indexType, uint numberOfIndices, const void* indices, 
+// Create indexed vertex buffers, each vertex has a number of attributes.
+template<typename VertT, typename IndexT>
+static Mesh* Mesh::Create(
+	uint numberOfVerts, const VertT verts[],
+	uint numberOfIndices, const IndexT indices[],
+	size_t numberOfVertexAttributes, const VertexAttribute vertexAttributes[]
+	) {
+	return Create(
+		sizeof(VertT), numberOfVerts, verts,
+		sizeof(IndexT), reng::GLEnumValue<IndexT>::value, numberOfIndices, indices,
+		numberOfVertexAttributes, vertexAttributes
+		);
+}
+
+
+Mesh* CreateMesh(
+	size_t vertexSize, uint numberOfVerts, const void* verts,
+	size_t indexSize, GLenum indexType, uint numberOfIndices, const void* indices,
 	size_t numberOfVertexAttributes, const VertexAttribute vertexAttributes[]
 	)
 {
@@ -32,10 +57,10 @@ Buffer* VertexBuffer::Create(
 	POW2_ASSERT(numberOfVerts != 0 || numberOfVerts != (GLuint)-1);
 	POW2_ASSERT(verts != nullptr);
 
-	POW2_ASSERT((indexSize<=0&&indices==nullptr) || indexSize > 0);
+	POW2_ASSERT((indexSize <= 0 && indices == nullptr) || indexSize > 0);
 	POW2_ASSERT(indexType != (GLenum)-1);
 	POW2_ASSERT((((int)numberOfIndices) == -1 || numberOfIndices == 0) || indices != nullptr);
- 	POW2_ASSERT(indexType >= 0);
+	POW2_ASSERT(indexType >= 0);
 
 	VAOId vertexArrayObjectId = VAOId_Invalid;
 	VBOId vertexBufferId = VBOId_Invalid;
@@ -71,34 +96,4 @@ Buffer* VertexBuffer::Create(
 	glBindBuffer(GL_ELEMENT_ARRAY_BUFFER, 0);
 
 	return new VertexBuffer(indexBufferObjectId, vertexArrayObjectId, vertexBufferId, numberOfVerts, numberOfIndices, indexType);
-}
-
-
-void VertexBuffer::Bind()
-{
-	glBindVertexArray(m_vaoId.Value());
-
-	if (m_iboId == IBOId_Invalid) {
-		glBindBuffer(GL_ARRAY_BUFFER, m_vboId.Value());
-	}
-	else {
-		glBindBuffer(GL_ELEMENT_ARRAY_BUFFER, m_iboId.Value());
-	}
-}
-
-void VertexBuffer::Draw()
-{
-	if (m_iboId == IBOId_Invalid) {
-		glDrawArrays(GL_TRIANGLES, 0, 3 * m_numberOfVerts);
-	}
-	else {
-		glDrawElements(GL_TRIANGLES, m_numberOfIndices, m_indexType, 0);
-	}
-}
-
-void VertexBuffer::Unbind()
-{
-	glBindBuffer(GL_ARRAY_BUFFER, 0);
-	glBindBuffer(GL_ELEMENT_ARRAY_BUFFER, 0);
-	glBindVertexArray(0);
 }

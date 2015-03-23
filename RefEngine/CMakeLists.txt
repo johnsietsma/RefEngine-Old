@@ -16,28 +16,23 @@ endif()
 IF(APPLE)
     SET(GCC_CHAR_IS_UNSIGNED_CHAR "-funsigned-char")
     SET(STD_C11 "-std=c++0x")
-ELSE(APPLE)
 ENDIF (APPLE)
 
 set(CMAKE_CXX_FLAGS "${CMAKE_CXX_FLAGS} ${GCC_CHAR_IS_UNSIGNED_CHAR} ${STD_C11}")
 
 add_library(refeng
 	../Readme.md
-    src/AssetContainer.cpp
-    src/AssetContainer.h
-    src/Buffer.cpp
-    src/Buffer.h
+    src/AssetManager.cpp
+    src/AssetManager.h
+	src/CachingFactory.h
     src/Camera.cpp
     src/Camera.h
     src/Color.cpp
     src/Color.h
-    src/CachingFactory.h
     src/Controller.cpp
     src/Controller.h
-    src/ComponentContainer.cpp
-    src/ComponentContainer.h
-    src/Components.cpp
-    src/Components.h
+    src/ComponentManager.cpp
+    src/ComponentManager.h
     src/EntityManager.cpp
     src/EntityManager.h
     src/GameObject.cpp
@@ -48,15 +43,18 @@ add_library(refeng
     src/GLHelpers.h
     src/memaligned.cpp
     src/memaligned.h
-    src/MeshRenderer.cpp
-    src/MeshRenderer.h
     src/Material.cpp
     src/Material.h
+	src/Mesh.h
+	src/Mesh.cpp
+    src/OpenGLRenderer.h
+    src/OpenGLRenderer.cpp
     src/OpenGLTypes.h
     src/pow2assert.cpp
     src/pow2assert.h
     src/Prims.cpp
     src/Prims.h
+	src/processor.h
     src/RefEngine.h
     src/RefEngine.cpp
     src/Renderable.cpp
@@ -65,6 +63,8 @@ add_library(refeng
     src/Renderer.h
     src/SpinController.cpp
     src/SpinController.h
+	src/Time.h
+	src/Transform.h
     src/types.h
 	src/VariadicHash.cpp
 	src/VariadicHash.h

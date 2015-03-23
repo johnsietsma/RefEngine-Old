@@ -5,19 +5,22 @@
 
 #include "FBXFile.h"
 
-#include "AssetContainer.h"
-#include "Buffer.h"
+#include "AssetManager.h"
 #include "Color.h"
 #include "Controller.h"
+#include "ComponentManager.h"
 #include <aie/Gizmos.h>
 #include "GameObject.h"
 #include "gl_core_4_1.h"
 #include "GLHelpers.h"
 #include "Material.h"
+#include "Mesh.h"
 #include "Renderable.h"
+#include "Renderer.h"
 #include "pow2assert.h"
 #include "Prims.h"
 #include "SpinController.h"
+#include "Time.h"
 
 #include <GLFW/glfw3.h>
 #include <glm/glm.hpp>
@@ -27,19 +30,6 @@
 using namespace std;
 using namespace reng;
 
-static const VertexAttribute FBXVertexAttributes[9] = {
-	VertexAttribute::Create<glm::vec4>(4, offsetof(FBXVertex, position), GL_FLOAT),
-	VertexAttribute::Create<glm::vec4>(4, offsetof(FBXVertex, colour), GL_FLOAT),
-	VertexAttribute::Create<glm::vec4>(4, offsetof(FBXVertex, normal), GL_FLOAT),
-	VertexAttribute::Create<glm::vec4>(4, offsetof(FBXVertex, tangent), GL_FLOAT),
-	VertexAttribute::Create<glm::vec4>(4, offsetof(FBXVertex, binormal), GL_FLOAT),
-	VertexAttribute::Create<glm::vec4>(4, offsetof(FBXVertex, indices), GL_FLOAT),
-	VertexAttribute::Create<glm::vec4>(4, offsetof(FBXVertex, weights), GL_FLOAT),
-	VertexAttribute::Create<glm::vec2>(2, offsetof(FBXVertex, texCoord1), GL_FLOAT),
-	VertexAttribute::Create<glm::vec2>(2, offsetof(FBXVertex, texCoord2), GL_FLOAT)
-};
-
-
 static void errorCallback(int errorCode, const char* errorDesc)
 {
 	cerr << "GLFW Error(" << errorCode << "): " << errorDesc << endl;
@@ -47,6 +37,7 @@ static void errorCallback(int errorCode, const char* errorDesc)
 
 void keyCallback(GLFWwindow* m_pWindow, int key, int scanCode, int action, int mods)
 {
+	(void*)scanCode; (void*)mods; // unref param
 	if (key == GLFW_KEY_ESCAPE && action == GLFW_PRESS)
 	{
 		glfwSetWindowShouldClose(m_pWindow, 1);
@@ -56,8 +47,10 @@ void keyCallback(GLFWwindow* m_pWindow, int key, int scanCode, int action, int m
 RefEngine::RefEngine() :
 	m_isValid(false),
 	m_pCamera(new Camera(glm::vec3(4, 3, 3), glm::vec3(0), 45, 16 / 9.f)),
+	m_pComponentManager(new ComponentManager()),
 	m_pRenderer(new Renderer()),
-	m_pAssetContainer(new AssetContainer())
+	m_pAssetManager(new AssetManager()),
+	m_pTime(new Time())
 {
 }
 
@@ -73,6 +66,12 @@ RefEngine::~RefEngine()
 
 	m_isValid = false;
 }
+
+void AddEntity(const Transform& transform, const Renderable& renderable)
+{
+
+}
+
 
 void RefEngine::Run()
 {
@@ -125,54 +124,6 @@ bool RefEngine::Init()
 	m_pRenderer->Init(width, height);
 	Gizmos::create();
 
-	//-----
-	// TODO Move into external init section
-	ShaderId vertShader = m_pAssetContainer->LoadShader( "data/shaders/default.vert", VertexShader);
-	ShaderId fragShader = m_pAssetContainer->LoadShader( "data/shaders/red.frag", FragmentShader);
-	if (vertShader == ShaderId_Invalid || fragShader == ShaderId_Invalid) return false;
-	ProgramId programId = m_pAssetContainer->LinkProgram(vertShader, fragShader);
-	if (programId == ProgramId_Invalid) return false;
-
-	Material* pMaterial = new Material(programId);
-
-	// Put in a couple of tris
-	auto pTriBuffer = VertexBuffer::Create<>(Prims::Triangle_NumberOfVerts, Prims::Triangle_Vertices);
-	Renderable* triRenderable = new Renderable(pMaterial, pTriBuffer);
-	m_gameObjects.push_back(new GameObject(glm::vec3(-2, 0, 0), new SpinController(), triRenderable));
-	m_gameObjects.push_back(new GameObject(glm::vec3(2, 0, 0), new SpinController(), triRenderable));
-
-	// Add a cube
-	auto pCubeBuffer = VertexBuffer::Create(Prims::Cube_NumberOfVerts, Prims::Cube_Vertices, Prims::Cube_NumberOfIndices, Prims::Cube_Indices);
-	Renderable* cubeRenderable = new Renderable(pMaterial, pCubeBuffer);
-	m_gameObjects.push_back(new GameObject(glm::vec3(0,0,-5), nullptr, cubeRenderable));
-
-	// Add a fbx model
-	m_fbx = new FBXFile();
-	m_fbx->load("data/models/cube.fbx");
-
-	for (uint i = 0; i < m_fbx->getMeshCount(); i++) {
-		FBXMeshNode* pMesh = m_fbx->getMeshByIndex(i);
-		if (pMesh->m_vertices.size() >  0) {
-			uint numIndices = 0;
-			uint* pIndices = nullptr;
-			if (pMesh->m_indices.size() > 0) {
-				numIndices = pMesh->m_indices.size();
-				pIndices = &(pMesh->m_indices[0]);
-			}
-
-
-			auto pMeshBuffer = VertexBuffer::Create(
-				pMesh->m_vertices.size(), &(pMesh->m_vertices[0]),
-				numIndices, pIndices,
-				sizeof(FBXVertexAttributes)/sizeof(VertexAttribute), FBXVertexAttributes
-				);
-
-			Renderable* fbxRenderable = new Renderable(pMaterial, pMeshBuffer);
-			m_gameObjects.push_back(new GameObject(glm::vec3(0,0,3), nullptr, fbxRenderable));
-		}
-	}
-
-	m_fbx->initialiseOpenGLTextures();
 
 	// -----
 
@@ -186,12 +137,20 @@ bool RefEngine::Update(float deltaTime)
 	POW2_ASSERT(m_isValid);
 	if (glfwWindowShouldClose(m_pWindow)) return false;
 
+	m_pTime->deltaTime = deltaTime;
+	m_pTime->elapsedTime += deltaTime;
+
+
+	// TODO update components
+
+	/*
 	for (auto gameObject : m_gameObjects) {
 		shared_ptr<Controller> pController = gameObject->GetController();
 		if (pController != nullptr) {
 			gameObject->GetController()->Update(deltaTime, gameObject);
 		}
 	}
+	*/
 
 	glfwPollEvents();
 	return true;
@@ -209,7 +168,7 @@ void RefEngine::Draw()
 
 	DrawWorldGrid();
 
-	m_pRenderer->Render(m_pCamera, m_gameObjects);
+	m_pRenderer->Render(m_pCamera.get(), m_renderables);
 	Gizmos::draw(m_pCamera->GetProjectionView());
 
 	glfwSwapBuffers(m_pWindow);

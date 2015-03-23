@@ -3,6 +3,8 @@
 #include "types.h"
 #include <vector>
 
+#include <OpenGLTypes.h>
+
 #ifdef _WINDOWS
 #include <direct.h>
 #define GetCurrentDir _getcwd
@@ -21,7 +23,9 @@ int main()
 	}
 
 	reng::RefEngine* pRefEng = new reng::RefEngine();
-	if (!pRefEng->Init()) return 1;
+	if (!pRefEng->Init()) {
+		return 1;
+	}
 	pRefEng->Run();
 
 	return 0;

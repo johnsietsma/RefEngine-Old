@@ -1,11 +1,13 @@
 #include "Material.h"
 
 #include "Camera.h"
-#include "GameObject.h"
+#include "Transform.h"
 #include "pow2assert.h"
 
+#include <glm/glm.hpp>
 #include <glm/gtc/type_ptr.hpp>
 
+using namespace reng;
 
 Material::Material( ProgramId programId, TextureId textureId /* = TextureId_Invalid */ ) : 
 m_programId(programId),
@@ -15,9 +17,9 @@ m_textureId(textureId)
 	POW2_ASSERT(m_mvpLocation != UniformLocationId_Invalid);
 }
 
-void Material::UpdateUniforms(const Camera* pCamera, const GameObject* pGameObject)
+void Material::UpdateUniforms(const Camera* pCamera, const glm::mat4x4& transform)
 {
-	glm::mat4 MVP = pCamera->GetProjectionView() * pGameObject->GetTransform();
+	glm::mat4 MVP = pCamera->GetProjectionView() * transform;
 	UpdateProjectionView(MVP);
 }
 

@@ -1,19 +1,30 @@
 #pragma once
 #include "OpenGLTypes.h"
+
+#include "Transform.h"
+
+#include <glm/glm.hpp>
+
 #include <memory>
 
-class Buffer;
+namespace reng {
+
+class Mesh;
 class Material;
 
 class Renderable
 {
 public:
-	Renderable(Material* pMaterial, Buffer* pBuffer);
+	Renderable(Material* pMaterial, Mesh* pMesh, Transform* transform);
 
-	std::shared_ptr<Material> GetMaterial() const { return m_pMaterial;  }
-	std::shared_ptr<Buffer> GetBuffer() const { return m_pBuffer;  }
+	Material* GetMaterial() const { return m_pMaterial.get();  }
+	Mesh* GetMesh() const { return m_pMesh.get();  }
+	const glm::mat4x4& GetTransform() const { return m_pTransform->GetTransform(); }
 
 private:
 	std::shared_ptr<Material> m_pMaterial;
-	std::shared_ptr<Buffer> m_pBuffer;
+	std::shared_ptr<Mesh> m_pMesh;
+	Transform* m_pTransform;
 };
+
+}

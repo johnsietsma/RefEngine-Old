@@ -7,14 +7,22 @@
 
 #include "OpenGLTypes.h"
 
+
+namespace reng {
+
 class Camera;
-class GameObject;
+class OpenGLRenderer;
 class Renderable;
-class ShaderManager;
 
 class Renderer
 {
 public:
+	Renderer();
 	void Init( int width, int height );
-	void Render(Camera* pCamera, std::vector<GameObject*> pGameObjects);
+	void Render(const Camera* pCamera, const std::vector<Renderable>& renderables) const;
+
+private:
+	std::shared_ptr<OpenGLRenderer> m_pRendererImpl;
 };
+
+}

@@ -6,6 +6,7 @@
 #include "Renderable.h"
 #include "pow2assert.h"
 
+using namespace reng;
 
 GameObject::GameObject(const glm::vec3& position, Controller* pController, Renderable* pRenderable) :
 m_pController(pController),

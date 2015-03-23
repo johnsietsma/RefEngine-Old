@@ -18,12 +18,12 @@ typedef CachingFactory<Texture, const char*> TextureFactory;
 
 
 /**
- * A simple wrapper around CachingFactory to provide cached access to commonly used assets.
+ * A simple wrapper around Container to provide cached access to commonly used assets.
  */
-class AssetContainer
+class AssetManager
 {
 public:
-	AssetContainer();
+	AssetManager();
 
 	ShaderId LoadShader(const char* shaderFileName, ShaderType shaderType);
 	ProgramId LinkProgram(ShaderId fragmentShaderId, ShaderId vertexShaderId);

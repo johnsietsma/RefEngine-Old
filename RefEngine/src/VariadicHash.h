@@ -24,7 +24,7 @@ template<typename T, typename... Ts>
 size_t vhash(const T& t, const Ts&... ts)
 {
 	int hash = std::hash<T>()(t);
-	return hash ^ 1 << vhash(ts...);
+	return (1<<hash) ^ vhash(ts...);
 }
 
 }

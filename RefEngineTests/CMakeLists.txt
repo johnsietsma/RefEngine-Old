@@ -7,7 +7,7 @@ include_directories(${gtest_SOURCE_DIR}/include ${gtest_SOURCE_DIR})
 
 add_executable(RefEngineTests
     src/Tests.cpp
-    src/CachingFactoryTests.cpp
+    src/ContainerTests.cpp
     src/VariadicHashTests.cpp
  )
 

@@ -1,15 +1,21 @@
 #include "Renderer.h"
 
-#include "Buffer.h"
 #include "Camera.h"
 #include "GameObject.h"
 #include "gl_core_4_1.h"
 #include "Material.h"
 #include "Renderable.h"
 
+#include "OpenGLRenderer.h"
+
 #include <iostream>
 
 using namespace std;
+using namespace reng;
+
+Renderer::Renderer() :
+m_pRendererImpl(new OpenGLRenderer())
+{}
 
 void Renderer::Init(int width, int height)
 {
@@ -21,23 +27,19 @@ void Renderer::Init(int width, int height)
 
 }
 
-void Renderer::Render(Camera* pCamera, vector<GameObject*> gameObjects)
+void Renderer::Render(const Camera* pCamera, const vector<Renderable>& renderables) const
 {
-	for (const GameObject* pGameObject : gameObjects) {
-		auto pRenderable = pGameObject->GetRenderable();
-		auto pMaterial = pRenderable->GetMaterial();
+	for (const Renderable& renderable : renderables) {
+		auto pMaterial = renderable.GetMaterial();
 
-		GLuint programId = pMaterial->GetProgramId().Value();
-		glUseProgram(programId);
-
-		pMaterial->UpdateUniforms(pCamera, pGameObject);
-
-		auto pBuffer = pRenderable->GetBuffer();
-
-		pBuffer->Bind();
-		pBuffer->Draw();
-		pBuffer->Unbind();
-
-		glUseProgram(0);
+		m_pRendererImpl->UseProgram(pMaterial->GetProgramId());
+		pMaterial->UpdateUniforms(pCamera, renderable.GetTransform());
+		auto pMesh = renderable.GetMesh();
+		m_pRendererImpl->Bind(*pMesh);
+		m_pRendererImpl->Draw(*pMesh);
 	}
+
+	m_pRendererImpl->UnbindAll();
+	m_pRendererImpl->UnuseProgram();
+
 }
