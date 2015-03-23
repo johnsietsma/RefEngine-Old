@@ -2,10 +2,10 @@
 
 namespace reng {
 
-class Time
+class GameTime
 {
 public:
-	Time() :
+	GameTime() :
 		deltaTime(0),
 		elapsedTime(0)
 	{}

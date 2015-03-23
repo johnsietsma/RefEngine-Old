@@ -20,7 +20,7 @@
 #include "pow2assert.h"
 #include "Prims.h"
 #include "SpinController.h"
-#include "Time.h"
+#include "GameTime.h"
 
 #include <GLFW/glfw3.h>
 #include <glm/glm.hpp>
@@ -35,9 +35,8 @@ static void errorCallback(int errorCode, const char* errorDesc)
 	cerr << "GLFW Error(" << errorCode << "): " << errorDesc << endl;
 }
 
-void keyCallback(GLFWwindow* m_pWindow, int key, int scanCode, int action, int mods)
+void keyCallback(GLFWwindow* m_pWindow, int key, int /*scanCode*/, int action, int /*mods*/)
 {
-	(void*)scanCode; (void*)mods; // unref param
 	if (key == GLFW_KEY_ESCAPE && action == GLFW_PRESS)
 	{
 		glfwSetWindowShouldClose(m_pWindow, 1);
@@ -50,7 +49,7 @@ RefEngine::RefEngine() :
 	m_pComponentManager(new ComponentManager()),
 	m_pRenderer(new Renderer()),
 	m_pAssetManager(new AssetManager()),
-	m_pTime(new Time())
+	m_pTime(new GameTime())
 {
 }
 

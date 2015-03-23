@@ -15,7 +15,7 @@ struct EntityId;
 class GameObject;
 class Renderable;
 class Renderer;
-class Time;
+class GameTime;
 class Transform;
 
 class RefEngine
@@ -30,7 +30,7 @@ public:
 	RefEngine& operator=( const RefEngine& ) = delete;
 	RefEngine& operator=( RefEngine&& ) = delete;
 
-	Time* GetTime() const { return m_pTime.get(); }
+	GameTime* GetTime() const { return m_pTime.get(); }
 	ComponentManager* GetComponentManager() const { return m_pComponentManager.get(); }
 
 	void Run();
@@ -42,11 +42,11 @@ private:
 
 	bool m_isValid;
 	GLFWwindow* m_pWindow;
+	std::shared_ptr<AssetManager> m_pAssetManager;
 	std::shared_ptr<Camera> m_pCamera;
 	std::shared_ptr<ComponentManager> m_pComponentManager;
+	std::shared_ptr<GameTime> m_pTime;
 	std::shared_ptr<Renderer> m_pRenderer;
-	std::shared_ptr<Time> m_pTime;
-	std::shared_ptr<AssetManager> m_pAssetManager;
 	std::vector<Transform> m_transforms;
 	std::vector<Renderable> m_renderables;
 };

@@ -16,8 +16,7 @@ TestThing* MakeTest1() {
 }
 
 // Create the thing with more params
-TestThing* MakeTest2(std::string p1, int p2, TestThing* p3) {
-	(std::string)p1; (void*)p2; (void*)p3;  // To stop unreferences param compiler error.
+TestThing* MakeTest2(std::string, int, TestThing*) {
 	return new TestThing();
 }
 

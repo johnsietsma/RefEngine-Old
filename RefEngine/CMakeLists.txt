@@ -24,7 +24,7 @@ add_library(refeng
 	../Readme.md
     src/AssetManager.cpp
     src/AssetManager.h
-	src/CachingFactory.h
+    src/CachingFactory.h
     src/Camera.cpp
     src/Camera.h
     src/Color.cpp
@@ -37,6 +37,7 @@ add_library(refeng
     src/EntityManager.h
     src/GameObject.cpp
     src/GameObject.h
+    src/GameTime.h
     src/gl_core_4_1.c
     src/gl_core_4_1.h
     src/GLHelpers.cpp
@@ -45,8 +46,8 @@ add_library(refeng
     src/memaligned.h
     src/Material.cpp
     src/Material.h
-	src/Mesh.h
-	src/Mesh.cpp
+    src/Mesh.h
+    src/Mesh.cpp
     src/OpenGLRenderer.h
     src/OpenGLRenderer.cpp
     src/OpenGLTypes.h
@@ -54,7 +55,7 @@ add_library(refeng
     src/pow2assert.h
     src/Prims.cpp
     src/Prims.h
-	src/processor.h
+    src/processor.h
     src/RefEngine.h
     src/RefEngine.cpp
     src/Renderable.cpp
@@ -63,11 +64,10 @@ add_library(refeng
     src/Renderer.h
     src/SpinController.cpp
     src/SpinController.h
-	src/Time.h
-	src/Transform.h
+    src/Transform.h
     src/types.h
-	src/VariadicHash.cpp
-	src/VariadicHash.h
+    src/VariadicHash.cpp
+    src/VariadicHash.h
     ../dep/FBXLoader/FBXFile.cpp
     ../dep/aieutilities/aie/Gizmos.cpp
 )

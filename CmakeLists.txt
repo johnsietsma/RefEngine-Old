@@ -4,6 +4,8 @@ set(PROJECT_NAME RefEngine)
 project(${PROJECT_NAME})
 
 
+#TODO: I may be able to use this flag instead: gtest_force_shared_crt
+
 # gtest stomps the CRT settings, so I stomp the test executeables in the same way so that it links correctly.
 # Stealing googles code from: https://code.humavips.eu/svn/naorsb/tags/paris/RSBImageConverter/3rdparty/gtest-1.5.0/CMakeLists.txt
 if (MSVC)
@@ -29,6 +31,8 @@ endif()
 if (MSVC)
     set(USE_MSVC_RUNTIME_LIBRARY_DLL OFF)
 endif()
+
+set(BUILD_SHARED_LIBS OFF)
 
 add_subdirectory(dep/glfw)
 

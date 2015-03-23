@@ -66,7 +66,6 @@ TEST(vhash_test, test_three_object)
 {
 	TestThing* pThing1 = new TestThing();
 	TestThing* pThing2 = new TestThing();
-	TestThing* pNullThing = nullptr;
 	size_t hash1 = vhash(std::string("a"), 1, pThing1);
 	size_t hash2 = vhash(std::string("a"), 1, pThing2);
 	EXPECT_NE(hash1, hash2);

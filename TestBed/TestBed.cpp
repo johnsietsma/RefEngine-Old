@@ -48,7 +48,7 @@ bool TestBed::Init()
 
 	Material* pMaterial = new Material(programId);
 
-	Time* pTime = m_pRefEngine->GetTime();
+	GameTime* pTime = m_pRefEngine->GetTime();
 	Transform* pT1 = new Transform(glm::vec3(-2, 0, 0));
 	Transform* pT2 = new Transform(glm::vec3(2, 0, 0));
 

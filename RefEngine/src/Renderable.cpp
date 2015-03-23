@@ -1,5 +1,6 @@
 #include "Renderable.h"
 
+#include "Mesh.h"
 #include "Material.h"
 #include "pow2assert.h"
 #include "Transform.h"

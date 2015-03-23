@@ -11,6 +11,8 @@ add_executable(RefEngineTests
     src/VariadicHashTests.cpp
  )
 
+set(CMAKE_FIND_LIBRARY_SUFFIXES ".a")
+
 target_link_libraries(RefEngineTests
     debug ${gtest_BINARY_DIR}/Debug/${CMAKE_FIND_LIBRARY_PREFIXES}gtest${CMAKE_FIND_LIBRARY_SUFFIXES}
     optimized ${gtest_BINARY_DIR}/Release/${CMAKE_FIND_LIBRARY_PREFIXES}gtest${CMAKE_FIND_LIBRARY_SUFFIXES}

@@ -11,12 +11,12 @@ namespace reng {
 class Renderable;
 class Processor;
 class SpinController;
-class Time;
+class GameTime;
 class Transform;
 
 struct SpinComponent {
 	Transform* pTransform;
-	Time* pTime;
+	GameTime* pTime;
 };
 
 

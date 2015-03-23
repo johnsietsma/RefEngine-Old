@@ -1,7 +1,7 @@
 #include "ComponentManager.h"
 #include "pow2assert.h"
 #include "Processor.h"
-#include "Time.h"
+#include "GameTime.h"
 #include "Transform.h"
 
 #include <typeinfo>
@@ -21,8 +21,6 @@ public:
 		}
 	}
 };
-
-
 
 
 ComponentManager::ComponentManager()
@@ -54,5 +52,5 @@ void ComponentManager::Process(std::vector<T> processObjects)
 {
 	size_t key = typeid(T).hash_code();
 	POW2_ASSERT(m_processors.find(key) != m_processors.end());
-	m_processor[key]->Process(processObjects);
+//	m_processors[key]->Process(processObjects);
 }

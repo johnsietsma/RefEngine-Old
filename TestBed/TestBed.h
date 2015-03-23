@@ -8,7 +8,7 @@ namespace reng {
 	class RefEngine;
 }
 
-class TestBed 
+class TestBed
 {
 public:
 	TestBed();
@@ -18,8 +18,8 @@ public:
 	void Run();
 
 private:
+    std::unique_ptr<reng::AssetManager> m_pAssetManager;
 	std::unique_ptr<reng::RefEngine> m_pRefEngine;
-	std::unique_ptr<reng::AssetManager> m_pAssetManager;
 	std::shared_ptr<FBXFile> m_fbx;
 
 };
