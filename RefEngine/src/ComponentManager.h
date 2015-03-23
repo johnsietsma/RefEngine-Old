@@ -14,12 +14,13 @@ class SpinController;
 class GameTime;
 class Transform;
 
+// A non-templated base class for component containers
+class ComponentContainerBase {};
+
 struct SpinComponent {
 	Transform* pTransform;
 	GameTime* pTime;
 };
-
-
 
 
 class ComponentManager
@@ -31,15 +32,19 @@ public:
 	void RegisterProcessor();
 
 	// Process all the objects of a certain type
-	template<typename T>
-	void Process(std::vector<T> processObjects);
+	template<typename TComponent>
+	void Process(std::vector<TComponent> processObjects);
 
-	void AddComponent(const Transform& transform);
-	void AddComponent(const SpinComponent& spinComponent);
+	template<typename TComponent>
+	void AddComponent(const TComponent& component);
 
 private:
-	// Maps types to processors that can process objects of that type
-	std::map<size_t,Processor*> m_processors;
+	// A map of types to processors that can process objects of that type
+	std::map<size_t,Processor*> m_processorMap;
+
+	// A map of types to all the components of that type.
+	// They are stored in a generic base class, so the derived class can hold a std::vector of a certain type.
+	std::map<size_t,ComponentContainerBase> m_componentsMap;
 
 	std::vector<Transform> m_transformComponents;
 	std::vector<SpinComponent> m_spinComponents;

@@ -9,7 +9,12 @@
 #include <glm/glm.hpp>
 #include <glm/gtx/transform.hpp>
 
-using namespace reng;
+namespace reng {
+template<typename TComponent>
+class ComponentContainer {
+	std::vector<TComponent> components;
+};
+
 
 class SpinProcessor : public Processor
 {
@@ -21,6 +26,10 @@ public:
 		}
 	}
 };
+}
+
+
+using namespace reng;
 
 
 ComponentManager::ComponentManager()
@@ -28,14 +37,14 @@ ComponentManager::ComponentManager()
 	RegisterProcessor<SpinProcessor>();
 }
 
-void ComponentManager::AddComponent(const Transform& transform)
+template<typename TComponent>
+void ComponentManager::AddComponent(const TComponent& component)
 {
-	m_transformComponents.emplace_back(transform);
-}
-
-void ComponentManager::AddComponent(const SpinComponent& spinComponent)
-{
-	m_spinComponents.emplace_back(spinComponent);
+	size_t key = typeid(TComponent).hash_code();
+	if( m_componentsMap.find(key) == m_componentsMap.end() ) {
+		m_componentsMap[key] = new ComponentContainer<TComponent>();
+	}
+    dynamic_cast<ComponentContainer<TComponent>>(m_componentsMap[key]).components.emplace_back(component);
 }
 
 
@@ -43,14 +52,14 @@ template<typename T>
 void ComponentManager::RegisterProcessor()
 {
 	size_t key = typeid(T).hash_code();
-	POW2_ASSERT(m_processors.find(key) == m_processors.end());
-	m_processors[key] = new T();
+	POW2_ASSERT(m_processorMap.find(key) == m_processorMap.end());
+	m_processorMap[key] = new T();
 }
 
 template<typename T>
 void ComponentManager::Process(std::vector<T> processObjects)
 {
 	size_t key = typeid(T).hash_code();
-	POW2_ASSERT(m_processors.find(key) != m_processors.end());
+	POW2_ASSERT(m_processorMap.find(key) != m_processorMap.end());
 //	m_processors[key]->Process(processObjects);
 }

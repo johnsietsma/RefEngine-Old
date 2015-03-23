@@ -45,8 +45,8 @@ private:
 	std::shared_ptr<AssetManager> m_pAssetManager;
 	std::shared_ptr<Camera> m_pCamera;
 	std::shared_ptr<ComponentManager> m_pComponentManager;
-	std::shared_ptr<GameTime> m_pTime;
 	std::shared_ptr<Renderer> m_pRenderer;
+	std::shared_ptr<GameTime> m_pTime;
 	std::vector<Transform> m_transforms;
 	std::vector<Renderable> m_renderables;
 };
