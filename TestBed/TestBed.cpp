@@ -2,6 +2,7 @@
 
 #include <AssetManager.h>
 #include <ComponentManager.h>
+#include <EntityManager.h>
 #include <Material.h>
 #include <Mesh.h>
 #include <RefEngine.h>
@@ -59,9 +60,12 @@ bool TestBed::Init()
 	SpinComponent spin1 = { pT1, pTime };
 	SpinComponent spin2 = { pT2, pTime };
 
+	EntityId ent1 = m_pRefEngine->GetEntityManager()->Create();
+	EntityId ent2 = m_pRefEngine->GetEntityManager()->Create();
+
 	ComponentManager* pComponentManager = m_pRefEngine->GetComponentManager();
-	pComponentManager->AddComponent(spin1);
-	pComponentManager->AddComponent(spin2);
+	pComponentManager->AddComponent( ent1, spin1);
+	pComponentManager->AddComponent( ent2, spin2);
 
 
 

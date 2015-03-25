@@ -6,12 +6,16 @@ enable_testing()
 include_directories(${gtest_SOURCE_DIR}/include ${gtest_SOURCE_DIR})
 
 add_executable(RefEngineTests
-    src/Tests.cpp
     src/ContainerTests.cpp
+    src/EntityManagerTests.cpp
     src/VariadicHashTests.cpp
  )
 
-set(CMAKE_FIND_LIBRARY_SUFFIXES ".a")
+IF(APPLE)
+	# Fix for Macs looking for .dylib
+	set(CMAKE_FIND_LIBRARY_SUFFIXES ".a")
+ENDIF(APPLE)
+
 
 target_link_libraries(RefEngineTests
     debug ${gtest_BINARY_DIR}/Debug/${CMAKE_FIND_LIBRARY_PREFIXES}gtest${CMAKE_FIND_LIBRARY_SUFFIXES}

@@ -11,7 +11,7 @@
 
 namespace reng {
 
-STRONG_TYPE(uint, EntityId, -1)
+STRONG_TYPE(uint, EntityId, (uint)-1)
 
 struct Entity
 {
@@ -28,39 +28,12 @@ struct Entity
 class EntityManager
 {
 public:
-	EntityId Create() {
-		uint newId = CurrentEntityId++;
-		POW2_ASSERT(std::numeric_limits<uint>::max() != CurrentEntityId); // Check for overuns
-		m_entities.push_back(newId); // Store the new id
-		m_deadIndex++; // Keep track of where the dead entites start
-		m_isSorted = false; // Mark the sorted as dirty
-		return newId;
-	}
+	EntityManager();
 
-	void Destroy( EntityId entityId )
-	{
-		std::vector<EntityId>::iterator it = find(m_entities.begin(), m_entities.begin() + m_deadIndex, entityId);
-		if (it != m_entities.end()) {
-			// Swawp the last live entity with the one being destroyed. Then we can just decrement the dead index to destroy it.
-			std::iter_swap(it, m_entities.begin() + m_deadIndex - 1);
-			m_deadIndex--;
-			m_isSorted = false;
-		}
-		else {
-			POW2_ASSERT_FAIL("Entity &d doesn't exist and can't be destroyed", entityId.Value());
-		}
-	}
-
-	bool IsAlive(EntityId entityId) {
-		if (!m_isSorted) {
-			// Assume that the alive check is commonly called, only sort when needed, then use fast binary search
-			std::sort(m_entities.begin(), m_entities.begin() + m_deadIndex );
-			m_isSorted = true;
-		}
-
-		std::vector<EntityId>::iterator foundEntity = std::lower_bound(m_entities.begin(), m_entities.begin() + m_deadIndex, entityId);
-		return foundEntity != m_entities.end();
-	}
+	size_t GetNumberOfEntites() const { return m_deadIndex; }
+	EntityId Create();
+	void Destroy(EntityId entityId);
+	bool IsAlive(EntityId entityId);
 
 private:
 	std::vector<EntityId> m_entities; // TODO: Sort by heirarchy for top down transform updates.

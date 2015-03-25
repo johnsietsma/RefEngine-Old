@@ -11,6 +11,12 @@ namespace std \
 struct hash<StrongType>	{ size_t operator()(StrongType const& s) const { return hash<PrimitiveType>()(s.Value()); } }; \
 }
 
+//-----------------------------------------------------------------------------
+/* Macro to create strong type definitions
+*/
+#define STRONG_TYPE_DEF(PrimitiveType, StrongType) \
+struct PhantomType_##StrongType;\
+typedef StronglyTyped<PrimitiveType, PhantomType_##StrongType> StrongType; \
 
 //-----------------------------------------------------------------------------
 /* Macro to create strong types
