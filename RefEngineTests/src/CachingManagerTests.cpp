@@ -21,7 +21,7 @@ TestThing* MakeTest2(std::string, int, TestThing*) {
 }
 
 
-TEST(container_test, test_get_no_params)
+TEST(caching_factory_test, test_get_no_params)
 {
 	CachingFactory<TestThing*> cf(MakeTest1);
 	TestThing* t1 = cf.Get();
@@ -29,7 +29,7 @@ TEST(container_test, test_get_no_params)
 }
 
 
-TEST(container_test, test_get_multiple_params)
+TEST(caching_factory_test, test_get_multiple_params)
 {
 	TestThing* pTestThing = new TestThing();
 	CachingFactory<TestThing*, std::string, int, TestThing*> cf(MakeTest2);
