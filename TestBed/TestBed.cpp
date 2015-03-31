@@ -64,8 +64,8 @@ bool TestBed::Init()
 	EntityId ent2 = m_pRefEngine->GetEntityManager()->Create();
 
 	ComponentManager* pComponentManager = m_pRefEngine->GetComponentManager();
-	pComponentManager->AddComponent( ent1, spin1);
-	pComponentManager->AddComponent( ent2, spin2);
+	pComponentManager->AddComponent<SpinComponent>( ent1 );
+	pComponentManager->AddComponent<SpinComponent>( ent2 );
 
 
 
@@ -106,6 +106,8 @@ bool TestBed::Init()
 	}
 
 	m_fbx->initialiseOpenGLTextures();
+
+	return true;
 }
 
 void TestBed::Run()

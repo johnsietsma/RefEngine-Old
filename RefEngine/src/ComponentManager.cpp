@@ -13,9 +13,6 @@
 
 namespace reng {
 
-
-
-
 class SpinProcessor : public Processor
 {
 public:

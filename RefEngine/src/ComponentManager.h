@@ -11,8 +11,9 @@
 
 namespace reng {
 
+// fwd decls
 STRONG_TYPE_DEF(uint,EntityId)
-//class ComponentContainer;
+class ComponentContainer;
 class Renderable;
 class Processor;
 class SpinController;
@@ -20,15 +21,27 @@ class GameTime;
 class Transform;
 
 
-// A non-templated base class for component containers
-class ComponentContainer {
+//! A generic component container.
+/*!
+	This class doesn't hold components, it provides a non-templated base class
+	for subclasses which will hold the components.
+	It doesn't provide a way to map between entities and the components that 
+	are stored within the container.
+*/
+class EntityComponentContainer {
 public:
-	// A map from EntityIds to the index of components it contains.
+	//! A map from EntityIds to the index of components associated with it.
 	std::map<EntityId, std::vector<int>> entityIndexMap;
 };
 
+
+//! A templated component container.
+/*! 
+	Extends EntityComponentContainer and provides type specific storage for
+	components.
+*/
 template<typename TComponent>
-class ComponentContainerT : public ComponentContainer {
+class EntityComponentContainerT : public EntityComponentContainer {
 public:
 	std::vector<TComponent> components;
 };
@@ -40,10 +53,35 @@ struct SpinComponent {
 };
 
 
+//! ComponentManager stores components of specific types.
+/*!
+	An entity is made up of components. The ComponentManager stores each
+	type of component in contiguous memory, while still allowing components
+	to be looked up by entity. 
+	This gives better cache performance when larger numbers of homogenous
+	components are used.
+	Components are stored by value and returned by by const&. So any
+	modified components must be explicitly set.
+*/
 class ComponentManager
 {
 public:
 	ComponentManager();
+
+	//! Get the number of components of a particluar type.
+	template<typename TComponent>
+	size_t GetNumberOfComponents() const {
+		size_t key = GetKey<TComponent>();
+		if (Contains<TComponent>()) { return GetEntityComponentContainerT<TComponent>( m_componentsMap.at(key) )->components.size(); };
+		return 0;
+	}
+
+	//! Test whether a component of a particular type is being stored.
+	template<typename TComponent>
+	bool Contains() const {
+		size_t key = GetKey<TComponent>();
+		return m_componentsMap.find(key) != m_componentsMap.end();
+	}
 
 	template<typename T>
 	void RegisterProcessor();
@@ -52,29 +90,64 @@ public:
 	template<typename TComponent>
 	void Process(std::vector<TComponent> processObjects);
 
+	//! Add a component of a particular type and associate it with the given entity.
 	template<typename TComponent>
-	void AddComponent(const EntityId& entityId, const TComponent& component)
+	void AddComponent(const EntityId& entityId)
 	{
-		ComponentContainerT<TComponent>* componentContainer = GetOrCreateComponentContainer(component);
+		EntityComponentContainerT<TComponent>* componentContainer = GetOrCreateComponentContainer<TComponent>();
+
+		TComponent component;
 
 		// Add the component to the templated container map
 		componentContainer->components.emplace_back(component);
 
-		// Store the idnex of the component for this entity
-		componentContainer->entityIndexMap[entityId].push_back(componentContainer->components.size() - 1);
+		// Store the index of the component for this entity
+		size_t componentIndex = componentContainer->components.size() - 1;
+		componentContainer->entityIndexMap[entityId].emplace_back(componentIndex);
 	}
+
+	template<typename TComponent>
+	void RemoveComponent(const EntityId& entityId)
+	{
+		EntityComponentContainerT<TComponent>* componentContainer<TComponent>();
+	}
+
 
 private:
 	template<typename TComponent>
-	ComponentContainerT<TComponent>* GetOrCreateComponentContainer(const TComponent& component)
-	{
-		size_t key = typeid(TComponent).hash_code();
+	size_t GetKey() const {
+		return typeid(TComponent).hash_code();
+	}
 
-		if (m_componentsMap.find(key) == m_componentsMap.end()) {
-			m_componentsMap[key] = new ComponentContainerT<TComponent>();
+	template<typename TComponent>
+	EntityComponentContainerT<TComponent>* GetEntityComponentContainerT(ComponentContainer* container)
+	{
+		return reinterpret_cast<EntityComponentContainerT<TComponent>*>(container);
+	}
+
+	template<typename TComponent>
+	const EntityComponentContainerT<TComponent>* GetEntityComponentContainerT(const ComponentContainer* container) const
+	{
+		return reinterpret_cast<const EntityComponentContainerT<TComponent>*>(container);
+	}
+
+	template<typename TComponent>
+	EntityComponentContainerT<TComponent>* GetComponentContainer()
+	{
+		size_t key = GetKey<TComponent>();
+		return GetEntityComponentContainerT(m_componentsMap[key]); // Will throw if doesn't exist
+	}
+
+	template<typename TComponent>
+	EntityComponentContainerT<TComponent>* GetOrCreateComponentContainer()
+	{
+		size_t key = GetKey<TComponent>();
+
+		if ( !Contains<TComponent>() ) {
+			m_componentsMap[key] = new EntityComponentContainerT<TComponent>();
 		}
 
-		return reinterpret_cast<ComponentContainerT<TComponent>*>(m_componentsMap[key]);
+		return GetEntityComponentContainerT<TComponent>(m_componentsMap[key]);
 	}
 
 	// A map of types to processors that can process objects of that type
