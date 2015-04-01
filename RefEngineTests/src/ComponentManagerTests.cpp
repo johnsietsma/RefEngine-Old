@@ -17,3 +17,13 @@ TEST(component_manager_test, test_add)
 	componentManager.AddComponent<TestThing1>(1);
 	EXPECT_EQ(1, componentManager.GetNumberOfComponents<TestThing1>());
 }
+
+TEST(component_manager_test, test_remove)
+{
+	ComponentManager componentManager;
+
+	componentManager.AddComponent<TestThing1>(1);
+	componentManager.RemoveComponent<TestThing1>(1);
+	EXPECT_EQ(0, componentManager.GetNumberOfComponents<TestThing1>());
+
+}

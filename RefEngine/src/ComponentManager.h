@@ -11,9 +11,10 @@
 
 namespace reng {
 
+using namespace std;
+
 // fwd decls
 STRONG_TYPE_DEF(uint,EntityId)
-class ComponentContainer;
 class Renderable;
 class Processor;
 class SpinController;
@@ -60,8 +61,10 @@ struct SpinComponent {
 	to be looked up by entity. 
 	This gives better cache performance when larger numbers of homogenous
 	components are used.
-	Components are stored by value and returned by by const&. So any
+	Components are stored by value and returned by reference. So any
 	modified components must be explicitly set.
+	Entities aren't stored explicitly, instead a mapping is maintained between
+	EntityId's and their components.
 */
 class ComponentManager
 {
@@ -90,7 +93,7 @@ public:
 	template<typename TComponent>
 	void Process(std::vector<TComponent> processObjects);
 
-	//! Add a component of a particular type and associate it with the given entity.
+	//! Add a component of a particular type that is associated with the given entity.
 	template<typename TComponent>
 	void AddComponent(const EntityId& entityId)
 	{
@@ -106,10 +109,21 @@ public:
 		componentContainer->entityIndexMap[entityId].emplace_back(componentIndex);
 	}
 
+	//! Removes a component of type TComponent.
+	/*!
+		This will remove the last added component.
+	*/
 	template<typename TComponent>
 	void RemoveComponent(const EntityId& entityId)
 	{
-		EntityComponentContainerT<TComponent>* componentContainer<TComponent>();
+		EntityComponentContainerT<TComponent>* componentContainer = GetComponentContainer<TComponent>();
+		vector<TComponent>& components = componentContainer->components;
+
+		// Remove the component
+		components.pop_back();
+
+		// And its index
+		componentContainer->entityIndexMap[entityId].pop_back();
 	}
 
 
@@ -120,13 +134,13 @@ private:
 	}
 
 	template<typename TComponent>
-	EntityComponentContainerT<TComponent>* GetEntityComponentContainerT(ComponentContainer* container)
+	EntityComponentContainerT<TComponent>* GetEntityComponentContainerT(EntityComponentContainer* container)
 	{
 		return reinterpret_cast<EntityComponentContainerT<TComponent>*>(container);
 	}
 
 	template<typename TComponent>
-	const EntityComponentContainerT<TComponent>* GetEntityComponentContainerT(const ComponentContainer* container) const
+	const EntityComponentContainerT<TComponent>* GetEntityComponentContainerT(const EntityComponentContainer* container) const
 	{
 		return reinterpret_cast<const EntityComponentContainerT<TComponent>*>(container);
 	}
@@ -135,7 +149,7 @@ private:
 	EntityComponentContainerT<TComponent>* GetComponentContainer()
 	{
 		size_t key = GetKey<TComponent>();
-		return GetEntityComponentContainerT(m_componentsMap[key]); // Will throw if doesn't exist
+		return GetEntityComponentContainerT<TComponent>(m_componentsMap[key]); // Will throw if doesn't exist
 	}
 
 	template<typename TComponent>
@@ -155,7 +169,7 @@ private:
 
 	// A map of types to all the components of that type.
 	// They are stored in a generic base class, so the derived class can hold a std::vector of a certain type.
-	std::map<size_t,ComponentContainer*> m_componentsMap;
+	std::map<size_t, EntityComponentContainer*> m_componentsMap;
 
 
 };
