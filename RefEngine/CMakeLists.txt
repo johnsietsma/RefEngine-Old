@@ -2,7 +2,7 @@ cmake_minimum_required(VERSION 2.8 FATAL_ERROR)
 
 
 IF(APPLE)
-    SET(FBX_SDK_DIR "{CMAKE_SOURCE_DIR}/dep/fbx/" CACHE PATH "The location of the FBX SDK" )
+    SET(FBX_SDK_DIR "${CMAKE_CURRENT_SOURCE_DIR}/dep/fbx/" CACHE PATH "The location of the FBX SDK" )
 ELSE(APPLE)
     SET(FBX_SDK_DIR "C:\\Program Files\\Autodesk\\FBX\\FBX SDK\\2015.1\\" CACHE PATH "The location of the FBX SDK" )
 ENDIF()
@@ -31,51 +31,58 @@ set(CMAKE_CXX_FLAGS "${CMAKE_CXX_FLAGS} ${GCC_CHAR_IS_UNSIGNED_CHAR} ${STD_C11}"
 
 add_library(refeng
     ../Readme.md
-    src/AssetContainer.cpp
-    src/AssetContainer.h
-    src/Buffer.cpp
-    src/Buffer.h
+    src/AssetManager.cpp
+    src/AssetManager.h
+    src/CachingFactory.h
     src/Camera.cpp
     src/Camera.h
     src/Color.cpp
     src/Color.h
-    src/CachingFactory.h
+    src/ComponentManager.cpp
+    src/ComponentManager.h
     src/Controller.cpp
     src/Controller.h
-    src/ComponentContainer.cpp
-    src/ComponentContainer.h
-    src/Components.cpp
-    src/Components.h
     src/EntityManager.cpp
     src/EntityManager.h
     src/GameObject.cpp
     src/GameObject.h
+    src/GameTime.h
     src/gl_core_4_1.c
     src/gl_core_4_1.h
     src/GLHelpers.cpp
     src/GLHelpers.h
-    src/memaligned.cpp
-    src/memaligned.h
-    src/MeshRenderer.cpp
-    src/MeshRenderer.h
+    src/IndexedContainer.h
     src/Material.cpp
     src/Material.h
+    src/memaligned.cpp
+    src/memaligned.h
+    src/Mesh.cpp
+    src/Mesh.h
+    src/OpenGLRenderer.cpp
+    src/OpenGLRenderer.h
     src/OpenGLTypes.h
     src/pow2assert.cpp
     src/pow2assert.h
     src/Prims.cpp
     src/Prims.h
-    src/RefEngine.h
+    src/Processor.h
+    src/ReadMe.txt
     src/RefEngine.cpp
+    src/RefEngine.h
     src/Renderable.cpp
     src/Renderable.h
     src/Renderer.cpp
     src/Renderer.h
     src/SpinController.cpp
     src/SpinController.h
+    src/StronglyTyped.h
+    src/targetver.h
+    src/Transform.h
     src/types.h
     src/VariadicHash.cpp
     src/VariadicHash.h
+    src/VertexArrayRenderer.cpp
+    src/VertexArrayRenderer.h
     ../dep/FBXLoader/FBXFile.cpp
     ../dep/aieutilities/aie/Gizmos.cpp
 )
