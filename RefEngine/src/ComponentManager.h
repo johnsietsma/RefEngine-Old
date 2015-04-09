@@ -136,13 +136,13 @@ private:
 	template<typename TComponent>
 	EntityComponentContainerT<TComponent>* GetEntityComponentContainerT(EntityComponentContainer* container)
 	{
-		return reinterpret_cast<EntityComponentContainerT<TComponent>*>(container);
+		return static_cast<EntityComponentContainerT<TComponent>*>(container);
 	}
 
 	template<typename TComponent>
 	const EntityComponentContainerT<TComponent>* GetEntityComponentContainerT(const EntityComponentContainer* container) const
 	{
-		return reinterpret_cast<const EntityComponentContainerT<TComponent>*>(container);
+		return static_cast<const EntityComponentContainerT<TComponent>*>(container);
 	}
 
 	template<typename TComponent>

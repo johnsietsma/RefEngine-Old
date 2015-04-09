@@ -42,6 +42,7 @@ add_library(refeng
     src/gl_core_4_1.h
     src/GLHelpers.cpp
     src/GLHelpers.h
+	src/IndexedContainer.h
     src/memaligned.cpp
     src/memaligned.h
     src/Material.cpp
