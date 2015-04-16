@@ -25,37 +25,48 @@ public:
 //! A templated indexed container.
 /*!
 This is used to store a mapping between indexes and multiple elements in the container.
+Provides a way to get a list individual element indexes that are associated with an id or
+to get elements by index.
 
 A use case is Entities that are associated with Components. A Component can be stored
 in an IndexedContainer and associated with a specific Entity. Then either all Components
-of a particular type can be operated on, or Components of an Entity retrieved by index.
+of a particular type can be operated on, or Components of a particular Entity retrieved by index.
 */
 template<typename TElement>
 class IndexedContainerTyped : public IndexedContainer {
 public:
 	int Size() const { return elements.size();  }
 
+	//! Get an element at an index.
+	TElement& Get(uint index) {
+		return elements[index];
+	}
+
+	//! Get all the elements associated with the given id.
+	std::vector<uint>& GetIndexes(uint assocId) {
+		return elementIndexMap[assocId];
+	}
 
 	//! Make a new element, store it and return a reference to it.
 	//! Takes an index to associate with the element and arguments used to contruct it.
 	template< class... Args >
-	TElement& Add( uint assocIndex, Args&&... args )
+	TElement& Add( uint assocId, Args&&... args )
 	{
 		// Add a new element to the templated container map
 		elements.emplace_back(args...);
 
 		// Store the associated index of the element for this element
 		size_t componentIndex = elements.size() - 1;
-		elementIndexMap[assocIndex].push_back(componentIndex);
+		elementIndexMap[assocId].push_back(componentIndex);
 
 		return elements.back();
 	}
 
 	//! Remove an element
-	void Remove(uint assocIndex)
+	void Remove(uint assocId)
 	{
 		// Get the component to remove
-		auto elementIndexes = elementIndexMap.at(assocIndex);
+		auto elementIndexes = elementIndexMap.at(assocId);
 		POW2_ASSERT(elementIndexes.size() > 0);
 		uint componentIndex = elementIndexes.back();
 
