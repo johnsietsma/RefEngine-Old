@@ -1,12 +1,14 @@
 # AIETestBed
 My playground for AIE material
 
+# Dependencies
+You must install the FBX SDK. If you install to a non-default location please update the path in RefEngine/RefEngine/CMakeLists.txt
 
 #Building
-Dependencies are included in the 'dep' folder.
-You'll have to download and install the FBX SDK and copy the contents of `{FBX_SDK_LOCATION}/FBX SDK/2015.1/lib` into 'deps/fbx'
+Pre-built projects for various build environments are provided in the "build" directory.
 
-RefEngine uses CMake. There are shell scripts and batch files to easily create projects for various 
+## From CMake
+If your IDE isn't in the build directory or you'd like to build using CMak there are shell scripts and batch files to easily create projects for various development environments.
 
 #Testing
 RefEngine uses [GoogleTest](https://code.google.com/p/googletest/).
