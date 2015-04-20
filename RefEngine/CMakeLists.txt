@@ -81,8 +81,6 @@ add_library(refeng
     src/types.h
     src/VariadicHash.cpp
     src/VariadicHash.h
-    src/VertexArrayRenderer.cpp
-    src/VertexArrayRenderer.h
     ../dep/FBXLoader/FBXFile.cpp
     ../dep/aieutilities/aie/Gizmos.cpp
 )

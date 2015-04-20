@@ -57,15 +57,15 @@ bool TestBed::Init()
 	Mesh* pTriBuffer = Mesh::Create<>(Prims::Triangle_NumberOfVerts, Prims::Triangle_Vertices);
 	Renderable* triRenderable = new Renderable(pMaterial, pTriBuffer, pT1);
 
-	SpinComponent spin1 = { pT1, pTime };
-	SpinComponent spin2 = { pT2, pTime };
+	//SpinComponent spin1 = { pT1, pTime };
+	//SpinComponent spin2 = { pT2, pTime };
 
 	EntityId ent1 = m_pRefEngine->GetEntityManager()->Create();
 	EntityId ent2 = m_pRefEngine->GetEntityManager()->Create();
 
 	ComponentManager* pComponentManager = m_pRefEngine->GetComponentManager();
-	pComponentManager->AddComponent<SpinComponent>( ent1 );
-	pComponentManager->AddComponent<SpinComponent>( ent2 );
+	//pComponentManager->AddComponent<SpinComponent>( ent1 );
+	//pComponentManager->AddComponent<SpinComponent>( ent2 );
 
 
 

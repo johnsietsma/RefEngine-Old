@@ -25,8 +25,8 @@ TEST(indexed_component_test, test_get)
 	indexedCont.Add(id, 99);
 	EXPECT_EQ(indexedCont.GetIndexes(id).size(), 2);
 
-	EXPECT_EQ(5, indexedCont.Get(0).m_test);
-	EXPECT_EQ(99, indexedCont.Get(1).m_test);
+	EXPECT_EQ(5, indexedCont.GetByIndex(0).m_test);
+	EXPECT_EQ(99, indexedCont.GetByIndex(1).m_test);
 }
 
 TEST(indexed_component_test, test_as_type)

@@ -2,28 +2,48 @@
 #include "gtest/gtest.h"
 
 #include <ComponentManager.h>
+#include <IndexedContainer.h>
 
 #include <string>
+#include <vector>
 
 using namespace reng;
 
 class TestThing1{};
 
+
+class Component {
+public:
+	EntityId entityId;
+};
+
+class Transform : Component {};
+
+struct SpinComponent : Component {
+	Transform* pTransform;
+	GameTime* pTime;
+};
+
+
+
 TEST(component_manager_test, test_add)
 {
-	ComponentManager componentManager;
+	IndexedContainerTyped<SpinComponent> spinContainer;
+	IndexedContainerTyped<Transform> transformContainer;
 
-	EXPECT_EQ(0, componentManager.GetNumberOfComponents<TestThing1>());
-	componentManager.AddComponent<TestThing1>(1);
-	EXPECT_EQ(1, componentManager.GetNumberOfComponents<TestThing1>());
-}
+	spinContainer.Add(0);
+	transformContainer.Add(0);
 
-TEST(component_manager_test, test_remove)
-{
-	ComponentManager componentManager;
+	transformContainer.Add(1);
 
-	componentManager.AddComponent<TestThing1>(1);
-	componentManager.RemoveComponent<TestThing1>(1);
-	EXPECT_EQ(0, componentManager.GetNumberOfComponents<TestThing1>());
+	spinContainer.Add(2);
+	transformContainer.Add(2);
 
+
+	std::vector<SpinComponent>& spinComponents = spinContainer.GetAll();
+
+	for(auto spinComponent : spinComponents)
+	{
+		Transform& t = transformContainer.GetFirst(spinComponent.entityId.Value());
+	}
 }

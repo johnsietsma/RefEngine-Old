@@ -11,9 +11,10 @@
 #include <glm/glm.hpp>
 #include <glm/gtx/transform.hpp>
 
-namespace reng {
 
-class SpinProcessor : public Processor
+	/*
+	namespace reng {
+	class SpinProcessor : public Processor
 {
 public:
 
@@ -25,13 +26,13 @@ public:
 };
 }
 
-
+*/
 using namespace reng;
 
 
 ComponentManager::ComponentManager()
 {
-	RegisterProcessor<SpinProcessor>();
+	//RegisterProcessor<SpinProcessor>();
 }
 
 template<typename T>

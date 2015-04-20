@@ -1,6 +1,6 @@
 #pragma once
 
-#include "gl_core_4_4.h"
+#include "gl_core_4_1.h"
 #include "types.h"
 class Prims
 {

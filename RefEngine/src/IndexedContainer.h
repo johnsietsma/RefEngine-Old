@@ -24,13 +24,16 @@ public:
 
 //! A templated indexed container.
 /*!
-This is used to store a mapping between indexes and multiple elements in the container.
-Provides a way to get a list individual element indexes that are associated with an id or
+IndexedContainers store a mapping between indexes and multiple elements in the container.
+Users can get a list individual element indexes that are associated with an id or
 to get elements by index.
 
 A use case is Entities that are associated with Components. A Component can be stored
 in an IndexedContainer and associated with a specific Entity. Then either all Components
 of a particular type can be operated on, or Components of a particular Entity retrieved by index.
+
+This also give better CPU cache performance as elements are stored in contiguous memory.
+
 */
 template<typename TElement>
 class IndexedContainerTyped : public IndexedContainer {
@@ -38,8 +41,17 @@ public:
 	int Size() const { return elements.size();  }
 
 	//! Get an element at an index.
-	TElement& Get(uint index) {
+	TElement& GetByIndex(uint index) {
 		return elements[index];
+	}
+
+	TElement& GetFirst(uint assocId) {
+		int index = elementIndexMap[assocId].at(0);
+		return elements[index];
+	}
+
+	std::vector<TElement>& GetAll() {
+		return elements;
 	}
 
 	//! Get all the elements associated with the given id.
