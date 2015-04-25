@@ -39,7 +39,6 @@ add_library(refeng
     src/Color.cpp
     src/Color.h
     src/ComponentContainer.h
-    src/ComponentManager.cpp
     src/ComponentManager.h
     src/Controller.cpp
     src/Controller.h
@@ -53,6 +52,7 @@ add_library(refeng
     src/gl_core_4_1.h
     src/GLHelpers.cpp
     src/GLHelpers.h
+	src/IndexedContainer.h
     src/Material.cpp
     src/Material.h
     src/memaligned.cpp

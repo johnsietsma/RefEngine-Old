@@ -36,23 +36,6 @@ TEST(component_container_test, test_as_type)
 	//EXPECT_TRUE(testThingContainer == nullptr);
 }
 
-TEST(component_container_test, test_get_first)
-{
-	auto cont = ComponentContainerTyped<int>();
-
-	EntityId e1(1);
-	EntityId e2(3);
-
-	EXPECT_THROW(cont.GetFirstComponent(e1), std::out_of_range);
-
-	cont.Add(e2, 5);
-	cont.Add(e1, 2);
-	cont.Add(e1, 3);
-
-	EXPECT_EQ(cont.GetFirstComponent(e1), 2);
-
-}
-
 TEST(component_container_test, test_get_indexes)
 {
 	auto cont = ComponentContainerTyped<int>();
@@ -76,6 +59,29 @@ TEST(component_container_test, test_get_entity_id)
 	cont.Add(e1, 2);
 
 	EXPECT_EQ(cont.GetEntityId(0), e1); // The component at index 0 belongs to e1.
+}
+
+TEST(component_container_test, test_get_indexed_container)
+{
+	auto cont = ComponentContainerTyped<int>();
+
+	EntityId e1(1);
+	EntityId e2(2);
+	EntityId e3(3);
+
+	cont.Add(e1, 2);
+	cont.Add(e2, 99);
+	cont.Add(e3, 3);
+
+	IndexedContainer<int> indexedCont = cont.GetIndexedContainer({e1,e3});
+
+	int total = 0;
+	for (uint i = 0; i < indexedCont.Size(); i++)
+	{
+		total += indexedCont.Get(i);
+	}
+
+	EXPECT_EQ(total, 5); //3+2
 }
 
 TEST(component_container_test, test_add)

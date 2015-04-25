@@ -4,27 +4,31 @@
 #include <ComponentManager.h>
 #include <ComponentContainer.h>
 
+#include <algorithm>
 #include <string>
 #include <vector>
 
 using namespace reng;
 
 class TestThing1{};
+class Transform {};
 
-
-class Component {
-public:
-	EntityId entityId;
-};
-
-class Transform : Component {};
-
-struct SpinComponent : Component {
+struct SpinComponent {
 	Transform* pTransform;
 	GameTime* pTime;
 };
 
+void ProcessFunc(
+	IndexedContainer<Transform>& transforms,
+	IndexedContainer<SpinComponent>& spins)
+{
 
+	for (uint i = 0; i < transforms.Size(); i++)
+	{
+		SpinComponent& spin = spins.Get(i);
+		Transform& t = transforms.Get(i);
+	}
+}
 
 TEST(component_manager_test, test_add)
 {
@@ -39,11 +43,9 @@ TEST(component_manager_test, test_add)
 	spinContainer.Add(2);
 	transformContainer.Add(2);
 
+	const std::vector<EntityId>& entityIds = spinContainer.GetEntityIds();
+	IndexedContainer<Transform> transforms = transformContainer.GetIndexedContainer(entityIds);
+	IndexedContainer<SpinComponent> spins = spinContainer.GetIndexedContainer(entityIds);
 
-	std::vector<SpinComponent>& spinComponents = spinContainer.GetComponents();
-
-	for(auto spinComponent : spinComponents)
-	{
-		Transform& t = transformContainer.GetFirstComponent(spinComponent.entityId.Value());
-	}
+	ProcessFunc(transforms, spins);
 }

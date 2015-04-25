@@ -1,5 +1,7 @@
 #pragma once
 
+//#include "ComponentContainer.h"
+#include "Processor.h"
 #include "StronglyTyped.h"
 #include "types.h"
 
@@ -16,7 +18,6 @@ using namespace std;
 // fwd decls
 STRONG_TYPE_DEF(uint,EntityId)
 class Renderable;
-class Processor;
 class SpinController;
 class GameTime;
 
@@ -31,21 +32,29 @@ class GameTime;
 class ComponentManager
 {
 public:
-	ComponentManager();
+	ComponentManager() {};
 
-	template<typename T>
-	void RegisterProcessor();
+	/*template<typename T>
+	void RegisterProcessor( std::function<void(T,void*) ){
+		type_info key = typeid(T);
+		POW2_ASSERT(m_processorMap.find(key) == m_processorMap.end());
+		m_processorMap[key] = new T();
+	}*/
+
 
 	// Process all the objects of a certain type
-	template<typename TComponent>
-	void Process(std::vector<TComponent> processObjects);
+	//template<typename TComponent>
+	/*void Process(std::vector<int> processObjects)
+	{
+
+	}*/
 
 private:
 	// A map of types to processors that can process objects of that type
-	std::map<size_t,Processor*> m_processorMap;
+	//std::map<type_info,Processor*> m_processorMap;
 
-	//IndexedContainer m_indexedContainer;
-
+	//ComponentContainerTyped<int> m_componentContainer;
+	//Processor<int, bool&> m_processor;
 
 };
 

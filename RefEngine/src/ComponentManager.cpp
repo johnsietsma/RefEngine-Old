@@ -30,18 +30,9 @@ public:
 using namespace reng;
 
 
-ComponentManager::ComponentManager()
-{
-	//RegisterProcessor<SpinProcessor>();
-}
 
 template<typename T>
 void ComponentManager::RegisterProcessor()
-{
-	size_t key = typeid(T).hash_code();
-	POW2_ASSERT(m_processorMap.find(key) == m_processorMap.end());
-	m_processorMap[key] = new T();
-}
 
 template<typename T>
 void ComponentManager::Process(std::vector<T> processObjects)
