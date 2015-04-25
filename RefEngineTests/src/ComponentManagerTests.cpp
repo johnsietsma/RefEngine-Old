@@ -2,7 +2,7 @@
 #include "gtest/gtest.h"
 
 #include <ComponentManager.h>
-#include <IndexedContainer.h>
+#include <ComponentContainer.h>
 
 #include <string>
 #include <vector>
@@ -28,8 +28,8 @@ struct SpinComponent : Component {
 
 TEST(component_manager_test, test_add)
 {
-	IndexedContainerTyped<SpinComponent> spinContainer;
-	IndexedContainerTyped<Transform> transformContainer;
+	ComponentContainerTyped<SpinComponent> spinContainer;
+	ComponentContainerTyped<Transform> transformContainer;
 
 	spinContainer.Add(0);
 	transformContainer.Add(0);
@@ -40,10 +40,10 @@ TEST(component_manager_test, test_add)
 	transformContainer.Add(2);
 
 
-	std::vector<SpinComponent>& spinComponents = spinContainer.GetAll();
+	std::vector<SpinComponent>& spinComponents = spinContainer.GetComponents();
 
 	for(auto spinComponent : spinComponents)
 	{
-		Transform& t = transformContainer.GetFirst(spinComponent.entityId.Value());
+		Transform& t = transformContainer.GetFirstComponent(spinComponent.entityId.Value());
 	}
 }

@@ -1,8 +1,8 @@
 #pragma once
 
+#include "Entity.h"
 #include "pow2assert.h"
-#include "StronglyTyped.h"
-#include "types.h"
+
 
 #include <algorithm>
 #include <atomic>
@@ -11,7 +11,6 @@
 
 namespace reng {
 
-STRONG_TYPE(uint, EntityId, (uint)-1)
 
 struct Entity
 {
