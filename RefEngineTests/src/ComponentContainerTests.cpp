@@ -23,15 +23,15 @@ TEST(component_container_test, test_as_type)
 	auto testThingCont = ComponentContainerTyped<TestThing>();
 	ComponentContainer cont = testThingCont; // Store base var
 
-	auto testThingContainer = cont.AsTyped<TestThing>(); // Get derived inst back
+	ComponentContainerTyped<TestThing>& testThingContainer = cont.AsTyped<TestThing>(); // Get derived inst back
 
-	const std::type_info& t1 = typeid(*testThingContainer);
+	const std::type_info& t1 = typeid(testThingContainer);
 	const std::type_info& t2 = typeid(testThingCont);
 
 	// Surpisingly this doesn't work for different instances! The names are slightly differently managled.
 	EXPECT_EQ(t1, t2);
 
-	auto testTooContainer = cont.AsTyped<TestToo>();
+	ComponentContainerTyped<TestToo>& testTooContainer = cont.AsTyped<TestToo>();
 	// Programmer error, no guarantees here
 	//EXPECT_TRUE(testThingContainer == nullptr);
 }
@@ -91,9 +91,11 @@ TEST(component_container_test, test_add)
 	auto testThingCont = ComponentContainerTyped<TestThing>();
 	testThingCont.Add(id, 5);
 	EXPECT_EQ(testThingCont.GetComponents().size(), 1);
+	EXPECT_EQ(testThingCont.GetEntityIds().size(), 1);
 
 	testThingCont.Add(id, 99);
 	EXPECT_EQ(testThingCont.GetComponents().size(), 2);
+	EXPECT_EQ(testThingCont.GetEntityIds().size(), 2);
 
 	EXPECT_EQ(5, testThingCont.GetComponents()[0].m_test);
 	EXPECT_EQ(99, testThingCont.GetComponents()[1].m_test);
@@ -110,5 +112,6 @@ TEST(component_container_test, test_remove)
 
 	cont.Remove(entityId);
 	EXPECT_EQ(cont.GetComponents().size(), 1);
+	EXPECT_EQ(cont.GetEntityIds().size(), 1);
 	EXPECT_EQ(cont.GetComponents()[0].m_test, 99);
 }

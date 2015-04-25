@@ -22,8 +22,8 @@ class ComponentContainer {
 public:
 	//! Return a derived instance of IndexedContainer that stores a particular type.
 	template<typename T>
-	ComponentContainerTyped<T>* AsTyped() {
-		return static_cast<ComponentContainerTyped<T>*>(this);
+	ComponentContainerTyped<T>& AsTyped() {
+		return static_cast<ComponentContainerTyped<T>&>(*this);
 	}
 };
 

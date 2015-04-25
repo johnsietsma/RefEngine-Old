@@ -6,12 +6,15 @@
 
 #include <algorithm>
 #include <string>
+#include <typeindex>
 #include <vector>
 
 using namespace reng;
 
 class TestThing1{};
-class Transform {};
+struct Transform {
+	bool processed;
+};
 
 struct SpinComponent {
 	Transform* pTransform;
@@ -19,21 +22,24 @@ struct SpinComponent {
 };
 
 void ProcessFunc(
-	IndexedContainer<Transform>& transforms,
-	IndexedContainer<SpinComponent>& spins)
+	IndexedContainer<SpinComponent>& spins,
+	IndexedContainer<Transform>& transforms)
 {
 
 	for (uint i = 0; i < transforms.Size(); i++)
 	{
 		SpinComponent& spin = spins.Get(i);
 		Transform& t = transforms.Get(i);
+		t.processed = true;
 	}
 }
 
-TEST(component_manager_test, test_add)
+TEST(component_manager_test, test_process)
 {
-	ComponentContainerTyped<SpinComponent> spinContainer;
-	ComponentContainerTyped<Transform> transformContainer;
+	ComponentManager cm;
+
+	ComponentContainerTyped<SpinComponent>& spinContainer = cm.GetComponentContainer<SpinComponent>();
+	ComponentContainerTyped<Transform>& transformContainer = cm.GetComponentContainer<Transform>();
 
 	spinContainer.Add(0);
 	transformContainer.Add(0);
@@ -43,9 +49,29 @@ TEST(component_manager_test, test_add)
 	spinContainer.Add(2);
 	transformContainer.Add(2);
 
-	const std::vector<EntityId>& entityIds = spinContainer.GetEntityIds();
-	IndexedContainer<Transform> transforms = transformContainer.GetIndexedContainer(entityIds);
-	IndexedContainer<SpinComponent> spins = spinContainer.GetIndexedContainer(entityIds);
+	EXPECT_FALSE( transformContainer.GetComponents()[0].processed );
 
-	ProcessFunc(transforms, spins);
+	cm.Process<SpinComponent, Transform>(ProcessFunc);
+
+	EXPECT_TRUE(transformContainer.GetComponents()[0].processed);
+}
+
+TEST(component_manager_test, test_get_component_manager)
+{
+	ComponentManager cm;
+
+	EXPECT_EQ(cm.GetNumberOfComponentContainers(), 0);
+
+	ComponentContainerTyped<SpinComponent>& spinContainer = cm.GetComponentContainer<SpinComponent>();
+
+	EXPECT_EQ(spinContainer.GetComponents().size(), 0);
+	spinContainer.Add(0);
+
+	EXPECT_EQ(spinContainer.GetComponents().size(), 1);
+	EXPECT_EQ(cm.GetComponentContainer<SpinComponent>().GetEntityIds().size(), 1);
+
+
+	ComponentContainerTyped<Transform>& transformContainer = cm.GetComponentContainer<Transform>();
+
+	EXPECT_EQ(cm.GetNumberOfComponentContainers(), 2);
 }

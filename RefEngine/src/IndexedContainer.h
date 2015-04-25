@@ -1,8 +1,9 @@
 #pragma once
 
 #include "types.h"
-
 #include "pow2assert.h"
+
+#include <vector>
 
 
 namespace reng {
@@ -32,7 +33,7 @@ public:
 	}
 
 	// Get the 'i'th element that has been indexed.
-	T& Get(uint i)
+	inline T& Get(uint i)
 	{
 		POW2_ASSERT(i < m_indexes.size());
 		POW2_ASSERT(m_indexes[i] < m_container.size());

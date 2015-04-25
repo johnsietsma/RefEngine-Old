@@ -1,6 +1,6 @@
 #pragma once
 
-//#include "ComponentContainer.h"
+#include "ComponentContainer.h"
 #include "Processor.h"
 #include "StronglyTyped.h"
 #include "types.h"
@@ -8,8 +8,9 @@
 #include <map>
 #include <functional>
 #include <memory>
-#include <typeinfo>
+#include <typeindex>
 #include <vector>
+#include <unordered_map>
 
 namespace reng {
 
@@ -32,30 +33,41 @@ class GameTime;
 class ComponentManager
 {
 public:
-	ComponentManager() {};
-
-	/*template<typename T>
-	void RegisterProcessor( std::function<void(T,void*) ){
-		type_info key = typeid(T);
-		POW2_ASSERT(m_processorMap.find(key) == m_processorMap.end());
-		m_processorMap[key] = new T();
-	}*/
-
-
-	// Process all the objects of a certain type
-	//template<typename TComponent>
-	/*void Process(std::vector<int> processObjects)
+	size_t GetNumberOfComponentContainers() const 
 	{
+		return m_typeContainerMap.size();
+	}
 
-	}*/
+	//! Get the component container that holds the given type.
+	template<typename TComponent>
+	ComponentContainerTyped<TComponent>& GetComponentContainer()
+	{
+		const type_info& ti = typeid(TComponent);
+		if (m_typeContainerMap.find(ti) == m_typeContainerMap.end()) {
+			// Create the component container if it doesn't exist yet.
+			m_typeContainerMap.emplace(ti, std::make_unique<ComponentContainerTyped<TComponent>>());
+		}
+		return m_typeContainerMap[ti]->AsTyped<TComponent>();
+	}
+
+	template<typename TComponent, typename... TComponents>
+	ComponentContainerTyped<TComponent>& GetFirstComponentContainer()
+	{
+		return GetComponentContainer<TComponent>();
+	}
+
+	template<typename... TComponents>
+	void Process(std::function<void(IndexedContainer<TComponents>...)> processFunction)
+	{
+		const std::vector<EntityId>& entityIds = GetFirstComponentContainer<TComponents...>().GetEntityIds();
+		processFunction( 
+			GetComponentContainer<TComponents>().GetIndexedContainer(entityIds)...
+			);
+	}
 
 private:
-	// A map of types to processors that can process objects of that type
-	//std::map<type_info,Processor*> m_processorMap;
-
-	//ComponentContainerTyped<int> m_componentContainer;
-	//Processor<int, bool&> m_processor;
-
+	//! A map from type info to the container that holds that type/
+	std::unordered_map<std::type_index, unique_ptr<ComponentContainer>> m_typeContainerMap;
 };
 
 }
