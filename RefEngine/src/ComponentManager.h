@@ -21,7 +21,7 @@ STRONG_TYPE_DEF(uint,EntityId)
 class Renderable;
 class SpinController;
 class GameTime;
-
+ 
 //! ComponentManager stores components of specific types.
 /*!
 	An entity is made up of components. The ComponentManager stores each
@@ -45,7 +45,7 @@ public:
 		const type_info& ti = typeid(TComponent);
 		if (m_typeContainerMap.find(ti) == m_typeContainerMap.end()) {
 			// Create the component container if it doesn't exist yet.
-			m_typeContainerMap.emplace(ti, std::make_unique<ComponentContainerTyped<TComponent>>());
+			m_typeContainerMap.emplace(ti, std::unique_ptr<ComponentContainerTyped<TComponent>>());
 		}
 		return m_typeContainerMap[ti]->AsTyped<TComponent>();
 	}

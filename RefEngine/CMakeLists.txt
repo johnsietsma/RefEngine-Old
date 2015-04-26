@@ -2,7 +2,7 @@ cmake_minimum_required(VERSION 2.8 FATAL_ERROR)
 
 
 IF(APPLE)
-    SET(FBX_SDK_DIR "${CMAKE_CURRENT_SOURCE_DIR}/dep/fbx/" CACHE PATH "The location of the FBX SDK" )
+    SET(FBX_SDK_DIR "/Applications/Autodesk/FBX SDK/2015.1/" CACHE PATH "The location of the FBX SDK" )
 ELSE(APPLE)
     SET(FBX_SDK_DIR "C:/Program Files/Autodesk/FBX/FBX SDK/2015.1/" CACHE PATH "The location of the FBX SDK" )
 ENDIF()
@@ -113,4 +113,4 @@ ELSE(APPLE)
 ENDIF (APPLE)
 
 target_link_libraries(refeng ${EXTRA_LIBS})
-	
+
