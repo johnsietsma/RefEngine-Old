@@ -8,7 +8,7 @@
 
 using namespace reng;
 
-class TestThing 
+class TestThing
 {
 public:
 	TestThing(int test) : m_test(test) {}
@@ -23,15 +23,15 @@ TEST(component_container_test, test_as_type)
 	auto testThingCont = ComponentContainerTyped<TestThing>();
 	ComponentContainer cont = testThingCont; // Store base var
 
-	ComponentContainerTyped<TestThing>& testThingContainer = cont.AsTyped<TestThing>(); // Get derived inst back
+	ComponentContainerTyped<TestThing>* testThingContainer = cont.AsTyped<TestThing>(); // Get derived inst back
 
-	const std::type_info& t1 = typeid(testThingContainer);
+	const std::type_info& t1 = typeid(*testThingContainer);
 	const std::type_info& t2 = typeid(testThingCont);
 
 	// Surpisingly this doesn't work for different instances! The names are slightly differently managled.
 	EXPECT_EQ(t1, t2);
 
-	ComponentContainerTyped<TestToo>& testTooContainer = cont.AsTyped<TestToo>();
+	ComponentContainerTyped<TestToo>* testTooContainer = cont.AsTyped<TestToo>();
 	// Programmer error, no guarantees here
 	//EXPECT_TRUE(testThingContainer == nullptr);
 }
@@ -47,7 +47,7 @@ TEST(component_container_test, test_get_indexes)
 	cont.Add(e2, 99);
 	cont.Add(e1, 3);
 
-	std::vector<uint> indices{ 0, 2 }; // Entity 1 has components at index 0 and 2.
+	std::vector<uint> indices { 0, 2 }; // Entity 1 has components at index 0 and 2.
 	EXPECT_EQ(cont.GetComponentIndexes(e1), indices );
 }
 

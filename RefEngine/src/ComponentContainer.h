@@ -14,7 +14,7 @@ template<typename TComponent>
 class ComponentContainerTyped;
 
 
-//! The base class for ComponentContainers. 
+//! The base class for ComponentContainers.
 /*!
 This provides a unified type for ComponentContainers.
 */
@@ -22,15 +22,15 @@ class ComponentContainer {
 public:
 	//! Return a derived instance of IndexedContainer that stores a particular type.
 	template<typename T>
-	ComponentContainerTyped<T>& AsTyped() {
-		return static_cast<ComponentContainerTyped<T>&>(*this);
+	ComponentContainerTyped<T>* AsTyped() {
+		return static_cast<ComponentContainerTyped<T>*>(this);
 	}
 };
 
 
 //! A templated component container.
 /*!
-ComponentContainers provide storage for components of a single type. 
+ComponentContainers provide storage for components of a single type.
 Their main purposes are:
 	* To provide a way to get the EntityId a component belongs to.
 	* To provide a way to get the all components associated with a particular EntityId.
@@ -124,7 +124,7 @@ private:
 	std::vector<EntityId> m_entityIds;  // All the component's EntityIds. Indexes provide a one to one mapping from components.
 
 	//! A map from indexes to the index of components associated with it.
-	std::map<EntityId, std::vector<uint>> m_elementIndexMap;
+	std::map< EntityId, std::vector<uint> > m_elementIndexMap;
 };
 
 }
