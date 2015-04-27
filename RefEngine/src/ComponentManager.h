@@ -33,7 +33,7 @@ class GameTime;
 class ComponentManager
 {
 public:
-	template<typename TComponent, typename... TArgs> 
+	template<typename TComponent, typename... TArgs>
 	TComponent& AddComponent(EntityId entityId, TArgs&&... args)
 	{
 		return GetOrCreateComponentContainer<TComponent>()->Add(entityId, args...);
@@ -81,7 +81,7 @@ private:
 		const type_info& ti = typeid(TComponent);
 		if (m_typeContainerMap.find(ti) == m_typeContainerMap.end()) {
 			// Create the component container if it doesn't exist yet.
-			m_typeContainerMap[ti] = unique_ptr<ComponentContainer>(new ComponentContainerTyped<TComponent>);
+			m_typeContainerMap.emplace(ti,unique_ptr<ComponentContainer>(new ComponentContainerTyped<TComponent>));
 		}
 		return m_typeContainerMap[ti]->AsTyped<TComponent>();
 	}
