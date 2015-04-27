@@ -18,8 +18,9 @@ struct Transform {
 };
 
 struct SpinComponent {
-	Transform* pTransform;
-	GameTime* pTime;
+	SpinComponent() = default;
+	SpinComponent(int s) : spinSpeed(s) {}
+	int spinSpeed;
 };
 
 void ProcessFunc(
@@ -39,41 +40,36 @@ TEST(component_manager_test, test_process)
 {
 	ComponentManager cm;
 
-	ComponentContainerTyped<SpinComponent>* spinContainer = cm.GetComponentContainer<SpinComponent>();
-	ComponentContainerTyped<Transform>* transformContainer = cm.GetComponentContainer<Transform>();
+	EntityId id1(1);
+	EntityId id2(2);
 
-	spinContainer->Add(0);
-	transformContainer->Add(0);
+	cm.AddComponent<SpinComponent>(id1);
 
-	transformContainer->Add(1);
+	cm.AddComponent<Transform>(id1);
+	cm.AddComponent<Transform>(id2);
 
-	spinContainer->Add(2);
-	transformContainer->Add(2);
+	cm.AddComponent<SpinComponent>(id2);
 
-	EXPECT_FALSE( transformContainer->GetComponents()[0].processed );
+	EXPECT_FALSE( cm.GetComponents<Transform>()[0].processed );
 
 	std::function< void(IndexedContainer<SpinComponent>, IndexedContainer<Transform>) > f = ProcessFunc;
 	cm.Process<SpinComponent, Transform>(f);
 
-	EXPECT_TRUE(transformContainer->GetComponents()[0].processed);
+	EXPECT_TRUE(cm.GetComponents<Transform>()[0].processed);
 }
 
-TEST(component_manager_test, test_get_component_manager)
+TEST(component_manager_test, test_get_component)
 {
 	ComponentManager cm;
+	EntityId id1(1);
+	EntityId id2(2);
 
-	EXPECT_EQ(cm.GetNumberOfComponentContainers(), 0);
+	SpinComponent& spin = cm.AddComponent<SpinComponent>(id1, 5);
+	EXPECT_EQ(cm.GetComponent<SpinComponent>(id1).spinSpeed, 5);
+	spin.spinSpeed = 4;
+	EXPECT_EQ(cm.GetComponent<SpinComponent>(id1).spinSpeed, 4);
 
-	ComponentContainerTyped<SpinComponent>* spinContainer = cm.GetComponentContainer<SpinComponent>();
+	cm.AddComponent<SpinComponent>(id2, 10);
 
-	EXPECT_EQ(spinContainer->GetComponents().size(), 0);
-	spinContainer->Add(0);
-
-	EXPECT_EQ(spinContainer->GetComponents().size(), 1);
-	EXPECT_EQ(cm.GetComponentContainer<SpinComponent>()->GetEntityIds().size(), 1);
-
-
-	ComponentContainerTyped<Transform>* transformContainer = cm.GetComponentContainer<Transform>();
-
-	EXPECT_EQ(cm.GetNumberOfComponentContainers(), 2);
+	EXPECT_EQ(cm.GetComponents<SpinComponent>().size(), 2);
 }

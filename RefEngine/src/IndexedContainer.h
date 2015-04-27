@@ -37,7 +37,7 @@ public:
 	{
 		POW2_ASSERT(i < m_indexes.size());
 		POW2_ASSERT(m_indexes[i] < m_container.size());
-		return m_container[m_indexes[i]];
+		return m_container.at(m_indexes[i]);
 	}
 
 private:

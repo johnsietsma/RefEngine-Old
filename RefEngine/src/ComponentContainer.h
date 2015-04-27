@@ -20,10 +20,12 @@ This provides a unified type for ComponentContainers.
 */
 class ComponentContainer {
 public:
+	virtual ~ComponentContainer() = default;
+
 	//! Return a derived instance of IndexedContainer that stores a particular type.
 	template<typename T>
 	ComponentContainerTyped<T>* AsTyped() {
-		return static_cast<ComponentContainerTyped<T>*>(this);
+		return dynamic_cast<ComponentContainerTyped<T>*>(this);
 	}
 };
 
@@ -40,16 +42,19 @@ Their main purposes are:
 template<typename TComponent>
 class ComponentContainerTyped : public ComponentContainer {
 public:
+	virtual ~ComponentContainerTyped() = default;
+
 	//! Get all the components stored in this container.
-	std::vector<TComponent>& GetComponents()
+	std::vector<TComponent>& GetAll()
 	{
 		return m_components;
 	}
 
-	//! Get all the components associated with the given entity.
-	std::vector<uint>& GetComponentIndexes(EntityId entityId)
+	//! Get the component associated with the given entity.
+	TComponent& Get(EntityId entityId)
 	{
-		return m_elementIndexMap[entityId];
+		uint componentIndex = m_elementIndexMap.at(entityId);
+		return m_components[componentIndex];
 	}
 
 	//! Returns the EntityId associated with the component at the given index.
@@ -74,10 +79,8 @@ public:
 		for (uint i = 0; i < entityIds.size(); i++)
 		{
 			const EntityId id = entityIds[i];
-			const std::vector<uint> entityIndexes = m_elementIndexMap[id];
-			POW2_ASSERT_MSG(entityIndexes.size() > 0, "No entities with that id exist in this container.");
-			POW2_ASSERT_MSG(entityIndexes.size() == 1, "Only one component type per entity supported in IndexedContainer.");
-			indexes.push_back(entityIndexes.front());
+			uint componentIndex = m_elementIndexMap.at(id);
+			indexes.push_back(componentIndex);
 		}
 		return IndexedContainer<TComponent>(indexes, m_components);
 	}
@@ -87,6 +90,8 @@ public:
 	template< class... Args >
 	TComponent& Add( EntityId entityId, Args&&... args )
 	{
+		if (m_elementIndexMap.find(entityId) != m_elementIndexMap.end()) { throw std::invalid_argument("EntityId has already been added to the container."); }
+
 		// Add a new element to the templated container map
 		m_components.emplace_back(args...);
 
@@ -95,7 +100,7 @@ public:
 
 		// Store the associated index of the element for this element
 		size_t componentIndex = m_components.size() - 1;
-		m_elementIndexMap[entityId].push_back(componentIndex);
+		m_elementIndexMap[entityId] = componentIndex;
 
 		return m_components.back();
 	}
@@ -103,13 +108,9 @@ public:
 	//! Remove an element
 	void Remove(EntityId entityId)
 	{
-		// Get the component to remove
-		auto elementIndexes = m_elementIndexMap.at(entityId);
-		POW2_ASSERT(elementIndexes.size() > 0);
-		uint componentIndex = elementIndexes.back();
-
-		// Remove the associated index
-		elementIndexes.pop_back();
+		// Remove the entity to index mapping
+		uint componentIndex = m_elementIndexMap.at(entityId);
+		m_elementIndexMap.erase(entityId);
 
 		// Remove the component
 		POW2_ASSERT(m_components.size() > componentIndex);
@@ -124,7 +125,7 @@ private:
 	std::vector<EntityId> m_entityIds;  // All the component's EntityIds. Indexes provide a one to one mapping from components.
 
 	//! A map from indexes to the index of components associated with it.
-	std::map< EntityId, std::vector<uint> > m_elementIndexMap;
+	std::map< EntityId, uint > m_elementIndexMap;
 };
 
 }

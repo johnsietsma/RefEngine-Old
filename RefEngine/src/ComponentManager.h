@@ -33,14 +33,50 @@ class GameTime;
 class ComponentManager
 {
 public:
+	template<typename TComponent, typename... TArgs> 
+	TComponent& AddComponent(EntityId entityId, TArgs&&... args)
+	{
+		return GetOrCreateComponentContainer<TComponent>()->Add(entityId, args...);
+	}
+
+	template<typename TComponent>
+	TComponent& GetComponent(EntityId entityId)
+	{
+		return GetComponentContainer<TComponent>()->Get(entityId);
+	}
+
+	template<typename TComponent>
+	std::vector<TComponent>& GetComponents()
+	{
+		return GetComponentContainer<TComponent>()->GetAll();
+	}
+
+	template<typename... TComponents>
+	void Process(std::function<void(IndexedContainer<TComponents>...)> processFunction)
+	{
+		// Use the first type as tehe main component type. Get all it's EntityIds.
+		const std::vector<EntityId>& entityIds = GetFirstComponentContainer<TComponents...>()->GetEntityIds();
+		processFunction(
+			GetOrCreateComponentContainer<TComponents>()->GetIndexedContainer(entityIds)...
+			);
+	}
+
+private:
 	size_t GetNumberOfComponentContainers() const
 	{
 		return m_typeContainerMap.size();
 	}
 
-	//! Get the component container that holds the given type.
 	template<typename TComponent>
 	ComponentContainerTyped<TComponent>* GetComponentContainer()
+	{
+		const type_info& ti = typeid(TComponent);
+		return m_typeContainerMap.at(ti)->AsTyped<TComponent>();
+	}
+
+	//! Get the component container that holds the given type.
+	template<typename TComponent>
+	ComponentContainerTyped<TComponent>* GetOrCreateComponentContainer()
 	{
 		const type_info& ti = typeid(TComponent);
 		if (m_typeContainerMap.find(ti) == m_typeContainerMap.end()) {
@@ -50,22 +86,13 @@ public:
 		return m_typeContainerMap[ti]->AsTyped<TComponent>();
 	}
 
+	//! Get the ComponentContainer of the first type in the template list
 	template<typename TComponent, typename... TComponents>
 	ComponentContainerTyped<TComponent>* GetFirstComponentContainer()
 	{
-		return GetComponentContainer<TComponent>();
+		return GetOrCreateComponentContainer<TComponent>();
 	}
 
-	template<typename... TComponents>
-	void Process(std::function<void(IndexedContainer<TComponents>...)> processFunction)
-	{
-		const std::vector<EntityId>& entityIds = GetFirstComponentContainer<TComponents...>()->GetEntityIds();
-		processFunction(
-			GetComponentContainer<TComponents>()->GetIndexedContainer(entityIds)...
-			);
-	}
-
-private:
 	//! A map from type info to the container that holds that type/
 	std::unordered_map< std::type_index, unique_ptr<ComponentContainer> > m_typeContainerMap;
 };
