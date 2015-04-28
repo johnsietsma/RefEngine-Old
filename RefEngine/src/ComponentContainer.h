@@ -1,12 +1,13 @@
 #pragma once
 
 #include "Entity.h"
-#include "IndexedContainer.h"
+#include "IndexedIterator.h"
 #include "pow2assert.h"
 #include "types.h"
 
 #include <map>
 #include <stdexcept>
+#include <utility>
 
 namespace reng {
 
@@ -42,6 +43,9 @@ Their main purposes are:
 template<typename TComponent>
 class ComponentContainerTyped : public ComponentContainer {
 public:
+	typedef IndexedIterator<TComponent,typename std::vector<TComponent>::iterator, typename std::vector<uint>::iterator> iterator;
+	typedef std::pair<iterator,iterator> iterator_pair;
+
 	virtual ~ComponentContainerTyped() = default;
 
 	//! Get all the components stored in this container.
@@ -68,10 +72,10 @@ public:
 		return m_entityIds;
 	}
 
-	//! Get a container that maps EntityIds to components.
-	// This container can be iterated through in sequential order, even if the components
+	//! Get a iterator that maps EntityIds to components.
+	// This iterated through in sequential order, even if the components
 	// aren't sequential.
-	IndexedContainer<TComponent> GetIndexedContainer(const std::vector<EntityId>& entityIds)
+    iterator_pair GetIterators(const std::vector<EntityId>& entityIds)
 	{
 		std::vector<uint> indexes;
 		indexes.reserve(entityIds.size());
@@ -82,7 +86,10 @@ public:
 			uint componentIndex = m_elementIndexMap.at(id);
 			indexes.push_back(componentIndex);
 		}
-		return IndexedContainer<TComponent>(indexes, m_components);
+		iterator b(m_components.begin(), indexes.begin());
+		iterator e(m_components.end(), indexes.end());
+
+		return std::make_pair(b,e);
 	}
 
 	//! Make a new element, store it and return a reference to it.

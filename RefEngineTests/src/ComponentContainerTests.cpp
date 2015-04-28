@@ -5,6 +5,7 @@
 #include <vector>
 #include <stdexcept>
 #include <typeinfo>
+#include <utility>
 
 using namespace reng;
 
@@ -72,12 +73,14 @@ TEST(component_container_test, test_get_indexed_container)
 	cont.Add(e2, 99);
 	cont.Add(e3, 3);
 
-	IndexedContainer<int> indexedCont = cont.GetIndexedContainer({e1,e3});
+    ComponentContainerTyped<int>::iterator_pair iterPair = cont.GetIterators({e1,e3});
 
 	int total = 0;
-	for (uint i = 0; i < indexedCont.Size(); i++)
+    
+    while( iterPair.first!=iterPair.second)
 	{
-		total += indexedCont.Get(i);
+        total += *iterPair.first;
+        iterPair.first++;
 	}
 
 	EXPECT_EQ(total, 5); //3+2

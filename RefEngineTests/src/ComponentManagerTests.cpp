@@ -24,15 +24,18 @@ struct SpinComponent {
 };
 
 void ProcessFunc(
-	IndexedContainer<SpinComponent> spins,
-	IndexedContainer<Transform> transforms)
+                 ComponentContainerTyped<SpinComponent>::iterator_pair spinIters,
+                 ComponentContainerTyped<Transform>::iterator_pair transformIters
+                 )
 {
 
-	for (uint i = 0; i < transforms.Size(); i++)
+	while( spinIters.first!=spinIters.second)
 	{
-		SpinComponent& spin = spins.Get(i);
-		Transform& t = transforms.Get(i);
+        SpinComponent& spin = *spinIters.first;
+		Transform& t = *transformIters.first;
 		t.processed = true;
+        spinIters.first++;
+        transformIters.first++;
 	}
 }
 
@@ -52,7 +55,7 @@ TEST(component_manager_test, test_process)
 
 	EXPECT_FALSE( cm.GetComponents<Transform>()[0].processed );
 
-	std::function< void(IndexedContainer<SpinComponent>, IndexedContainer<Transform>) > f = ProcessFunc;
+    std::function< void(ComponentContainerTyped<SpinComponent>::iterator, ComponentContainerTyped<Transform>::iterator) > f = ProcessFunc;
 	cm.Process<SpinComponent, Transform>(f);
 
 	EXPECT_TRUE(cm.GetComponents<Transform>()[0].processed);

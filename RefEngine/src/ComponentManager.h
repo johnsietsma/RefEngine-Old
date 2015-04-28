@@ -1,6 +1,7 @@
 #pragma once
 
 #include "ComponentContainer.h"
+#include "IndexedIterator.h"
 #include "Processor.h"
 #include "StronglyTyped.h"
 #include "types.h"
@@ -52,12 +53,12 @@ public:
 	}
 
 	template<typename... TComponents>
-	void Process(std::function<void(IndexedContainer<TComponents>...)> processFunction)
+    void Process(std::function<void(typename ComponentContainer<TComponents>::iterator_pair)> processFunction)
 	{
-		// Use the first type as tehe main component type. Get all it's EntityIds.
+		// Use the first type as the main component type. Get all it's EntityIds.
 		const std::vector<EntityId>& entityIds = GetFirstComponentContainer<TComponents...>()->GetEntityIds();
 		processFunction(
-			GetOrCreateComponentContainer<TComponents>()->GetIndexedContainer(entityIds)...
+			GetOrCreateComponentContainer<TComponents>()->GetIterator(entityIds)...
 			);
 	}
 
