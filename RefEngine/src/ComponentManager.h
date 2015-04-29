@@ -53,12 +53,12 @@ public:
 	}
 
 	template<typename... TComponents>
-    void Process(std::function<void(typename ComponentContainer<TComponents>::iterator_pair)> processFunction)
+    void Process(std::function<void(ComponentIteratorPair<TComponents>...)> processFunction)
 	{
 		// Use the first type as the main component type. Get all it's EntityIds.
 		const std::vector<EntityId>& entityIds = GetFirstComponentContainer<TComponents...>()->GetEntityIds();
 		processFunction(
-			GetOrCreateComponentContainer<TComponents>()->GetIterator(entityIds)...
+			GetOrCreateComponentContainer<TComponents>()->GetIterators(entityIds)...
 			);
 	}
 
@@ -69,7 +69,7 @@ private:
 	}
 
 	template<typename TComponent>
-	ComponentContainerTyped<TComponent>* GetComponentContainer()
+	ComponentContainer<TComponent>* GetComponentContainer()
 	{
 		const type_info& ti = typeid(TComponent);
 		return m_typeContainerMap.at(ti)->AsTyped<TComponent>();
@@ -77,25 +77,25 @@ private:
 
 	//! Get the component container that holds the given type.
 	template<typename TComponent>
-	ComponentContainerTyped<TComponent>* GetOrCreateComponentContainer()
+	ComponentContainer<TComponent>* GetOrCreateComponentContainer()
 	{
 		const type_info& ti = typeid(TComponent);
 		if (m_typeContainerMap.find(ti) == m_typeContainerMap.end()) {
 			// Create the component container if it doesn't exist yet.
-			m_typeContainerMap.emplace(ti,unique_ptr<ComponentContainer>(new ComponentContainerTyped<TComponent>));
+			m_typeContainerMap.emplace(ti,unique_ptr<IComponentContainer>(new ComponentContainer<TComponent>));
 		}
 		return m_typeContainerMap[ti]->AsTyped<TComponent>();
 	}
 
 	//! Get the ComponentContainer of the first type in the template list
 	template<typename TComponent, typename... TComponents>
-	ComponentContainerTyped<TComponent>* GetFirstComponentContainer()
+	ComponentContainer<TComponent>* GetFirstComponentContainer()
 	{
 		return GetOrCreateComponentContainer<TComponent>();
 	}
 
 	//! A map from type info to the container that holds that type/
-	std::unordered_map< std::type_index, unique_ptr<ComponentContainer> > m_typeContainerMap;
+	std::unordered_map< std::type_index, unique_ptr<IComponentContainer> > m_typeContainerMap;
 };
 
 }

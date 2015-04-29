@@ -2,6 +2,7 @@
 #include "gtest/gtest.h"
 
 #include "IndexedIterator.h"
+#include "types.h"
 
 #include <vector>
 

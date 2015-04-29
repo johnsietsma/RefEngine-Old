@@ -1,5 +1,7 @@
 #pragma once
 
+
+
 #include "Entity.h"
 #include "IndexedIterator.h"
 #include "pow2assert.h"
@@ -12,21 +14,42 @@
 namespace reng {
 
 template<typename TComponent>
-class ComponentContainerTyped;
+class ComponentContainer;
+
+
+template<typename TComponent>
+class ComponentIteratorPair
+{
+public:
+	typedef IndexedIterator<TComponent, typename std::vector<TComponent>::iterator, typename std::vector<uint>::iterator> iterator;
+
+	ComponentIteratorPair(std::vector<TComponent>& components, std::vector<uint>& indexes) : 
+		m_indexes(indexes), // Take a copy, the caller doesn't keep these around.
+		begin(components.begin(), m_indexes.begin()),
+		end(components.end(), m_indexes.end())
+	{
+	}
+
+	std::vector<uint> m_indexes;
+
+	iterator begin;
+	iterator end;
+};
+
 
 
 //! The base class for ComponentContainers.
 /*!
 This provides a unified type for ComponentContainers.
 */
-class ComponentContainer {
+class IComponentContainer {
 public:
-	virtual ~ComponentContainer() = default;
+	virtual ~IComponentContainer() = default;
 
 	//! Return a derived instance of IndexedContainer that stores a particular type.
 	template<typename T>
-	ComponentContainerTyped<T>* AsTyped() {
-		return dynamic_cast<ComponentContainerTyped<T>*>(this);
+	ComponentContainer<T>* AsTyped() {
+		return dynamic_cast<ComponentContainer<T>*>(this);
 	}
 };
 
@@ -41,12 +64,10 @@ Their main purposes are:
 	* To store the components in contiguous storage for good CPU cache performance.
 */
 template<typename TComponent>
-class ComponentContainerTyped : public ComponentContainer {
+class ComponentContainer : public IComponentContainer {
 public:
-	typedef IndexedIterator<TComponent,typename std::vector<TComponent>::iterator, typename std::vector<uint>::iterator> iterator;
-	typedef std::pair<iterator,iterator> iterator_pair;
 
-	virtual ~ComponentContainerTyped() = default;
+	virtual ~ComponentContainer() = default;
 
 	//! Get all the components stored in this container.
 	std::vector<TComponent>& GetAll()
@@ -75,7 +96,7 @@ public:
 	//! Get a iterator that maps EntityIds to components.
 	// This iterated through in sequential order, even if the components
 	// aren't sequential.
-    iterator_pair GetIterators(const std::vector<EntityId>& entityIds)
+    ComponentIteratorPair<TComponent> GetIterators(const std::vector<EntityId>& entityIds)
 	{
 		std::vector<uint> indexes;
 		indexes.reserve(entityIds.size());
@@ -86,10 +107,8 @@ public:
 			uint componentIndex = m_elementIndexMap.at(id);
 			indexes.push_back(componentIndex);
 		}
-		iterator b(m_components.begin(), indexes.begin());
-		iterator e(m_components.end(), indexes.end());
 
-		return std::make_pair(b,e);
+		return ComponentIteratorPair<TComponent>( m_components, indexes );
 	}
 
 	//! Make a new element, store it and return a reference to it.
@@ -134,5 +153,6 @@ private:
 	//! A map from indexes to the index of components associated with it.
 	std::map< EntityId, uint > m_elementIndexMap;
 };
+
 
 }

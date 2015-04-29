@@ -23,19 +23,16 @@ struct SpinComponent {
 	int spinSpeed;
 };
 
-void ProcessFunc(
-                 ComponentContainerTyped<SpinComponent>::iterator_pair spinIters,
-                 ComponentContainerTyped<Transform>::iterator_pair transformIters
-                 )
+void ProcessFunc( ComponentIteratorPair<SpinComponent> spinIters,
+				  ComponentIteratorPair<Transform> transformIters )
 {
-
-	while( spinIters.first!=spinIters.second)
+	while( spinIters.begin!=spinIters.end)
 	{
-        SpinComponent& spin = *spinIters.first;
-		Transform& t = *transformIters.first;
+        SpinComponent& spin = *spinIters.begin;
+		Transform& t = *transformIters.begin;
 		t.processed = true;
-        spinIters.first++;
-        transformIters.first++;
+        spinIters.begin++;
+        transformIters.begin++;
 	}
 }
 
@@ -55,7 +52,7 @@ TEST(component_manager_test, test_process)
 
 	EXPECT_FALSE( cm.GetComponents<Transform>()[0].processed );
 
-    std::function< void(ComponentContainerTyped<SpinComponent>::iterator, ComponentContainerTyped<Transform>::iterator) > f = ProcessFunc;
+    std::function< void(ComponentIteratorPair<SpinComponent>, ComponentIteratorPair<Transform>) > f = ProcessFunc;
 	cm.Process<SpinComponent, Transform>(f);
 
 	EXPECT_TRUE(cm.GetComponents<Transform>()[0].processed);

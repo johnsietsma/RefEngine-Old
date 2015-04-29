@@ -24,33 +24,24 @@ public:
     	m_indexIter(indexIter)
     {}
 
-    bool operator==(const IndexedIterator_t& rhs)const
-    {
-    	return m_iter==rhs.m_iter
-    	&& m_indexIter==rhs.m_indexIter;
-    }
-
-    bool operator!=(const IndexedIterator_t& rhs)const
-    {
-    	return !(*this==rhs);
-    }
+    bool operator==(const IndexedIterator_t& rhs) const { return m_indexIter==rhs.m_indexIter; }
+    bool operator!=(const IndexedIterator_t& rhs)const { return !(*this==rhs); }
 
     IndexedIterator_t& operator++() { m_indexIter++; }
     IndexedIterator_t operator++(int) { auto temp(*this); ++m_indexIter; return temp; }
     IndexedIterator_t& operator--() { --m_indexIter; return (*this); }
     IndexedIterator_t operator--(int) { auto temp(*this); --m_indexIter; return temp; }
 
-    T& operator*(){return m_iter[*m_indexIter];}
-    const T& operator*()const{return m_iter[*m_indexIter];}
+    T& operator*() { return m_iter[*m_indexIter]; } // Do the double lookup. The index and then the element.
+    const T& operator*() const { return m_iter[*m_indexIter]; }
     T* operator->(){return &*this;}
-
     T* getPtr()const{return &*this;}
     const T* getConstPtr()const{return &*this;}
 
 protected:
 
-	TIterator m_iter;
-	TIndexIterator m_indexIter;
+	TIterator m_iter; // The underlying container
+	TIndexIterator m_indexIter; // The index that looks up the underlying container
 };
 
 }
