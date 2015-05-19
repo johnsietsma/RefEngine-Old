@@ -32,11 +32,15 @@ public:
     IndexedIterator_t& operator--() { --m_indexIter; return (*this); }
     IndexedIterator_t operator--(int) { auto temp(*this); --m_indexIter; return temp; }
 
-    T& operator*() { return m_iter[*m_indexIter]; } // Do the double lookup. The index and then the element.
+	T& operator*() { return m_iter[*m_indexIter]; } // Do the double lookup. The index and then the element.
     const T& operator*() const { return m_iter[*m_indexIter]; }
-    T* operator->(){return &*this;}
-    T* getPtr()const{return &*this;}
-    const T* getConstPtr()const{return &*this;}
+    T* operator->() { return &*this; }
+
+	T get() { return m_iter[*m_indexIter]; }
+	const T get() const { m_iter[*m_indexIter]; }
+
+    T* getPtr() { return &*this; }
+    const T* getPtr() const { return &*this; }
 
 protected:
 

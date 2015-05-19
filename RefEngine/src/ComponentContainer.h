@@ -1,10 +1,10 @@
 #pragma once
 
 
-
-#include "Entity.h"
+#include "ComponentIteratorPair.h"
 #include "IndexedIterator.h"
 #include "pow2assert.h"
+#include "StronglyTyped.h"
 #include "types.h"
 
 #include <map>
@@ -13,29 +13,11 @@
 
 namespace reng {
 
+// fwd decls
+STRONG_TYPE_DEF(uint, EntityId)
+
 template<typename TComponent>
 class ComponentContainer;
-
-
-template<typename TComponent>
-class ComponentIteratorPair
-{
-public:
-	typedef IndexedIterator<TComponent, typename std::vector<TComponent>::iterator, typename std::vector<uint>::iterator> iterator;
-
-	ComponentIteratorPair(std::vector<TComponent>& components, std::vector<uint>& indexes) : 
-		m_indexes(indexes), // Take a copy, the caller doesn't keep these around.
-		begin(components.begin(), m_indexes.begin()),
-		end(components.end(), m_indexes.end())
-	{
-	}
-
-	std::vector<uint> m_indexes;
-
-	iterator begin;
-	iterator end;
-};
-
 
 
 //! The base class for ComponentContainers.

@@ -39,14 +39,15 @@ add_library(refeng
     src/Color.cpp
     src/Color.h
     src/ComponentContainer.h
+    src/ComponentIteratorPair.h
     src/ComponentManager.h
+    src/ComponentManager.cpp
     src/Controller.cpp
     src/Controller.h
     src/Entity.h
+    src/Entity.cpp
     src/EntityManager.cpp
     src/EntityManager.h
-    src/GameObject.cpp
-    src/GameObject.h
     src/GameTime.h
     src/gl_core_4_1.c
     src/gl_core_4_1.h
@@ -66,14 +67,12 @@ add_library(refeng
     src/pow2assert.h
     src/Prims.cpp
     src/Prims.h
-    src/Processor.h
+    src/ProcessorManager.h
+    src/Processors.cpp
+    src/Processors.h
     src/ReadMe.txt
     src/RefEngine.cpp
     src/RefEngine.h
-    src/Renderable.cpp
-    src/Renderable.h
-    src/Renderer.cpp
-    src/Renderer.h
     src/SpinController.cpp
     src/SpinController.h
     src/StronglyTyped.h

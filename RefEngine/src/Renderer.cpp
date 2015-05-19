@@ -1,10 +1,8 @@
 #include "Renderer.h"
 
 #include "Camera.h"
-#include "GameObject.h"
 #include "gl_core_4_1.h"
 #include "Material.h"
-#include "Renderable.h"
 
 #include "OpenGLRenderer.h"
 
@@ -13,10 +11,13 @@
 using namespace std;
 using namespace reng;
 
+/*
 Renderer::Renderer() :
 m_pRendererImpl(new OpenGLRenderer())
 {}
+*/
 
+/*
 void Renderer::Init(int width, int height)
 {
 	glViewport(0, 0, width, height);
@@ -26,7 +27,9 @@ void Renderer::Init(int width, int height)
 	//glEnable(GL_CULL_FACE);
 
 }
+*/
 
+/*
 void Renderer::Render(const Camera* pCamera, const vector<Renderable>& renderables) const
 {
 	for (const Renderable& renderable : renderables) {
@@ -43,3 +46,5 @@ void Renderer::Render(const Camera* pCamera, const vector<Renderable>& renderabl
 	m_pRendererImpl->UnuseProgram();
 
 }
+
+*/

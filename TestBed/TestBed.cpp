@@ -2,13 +2,13 @@
 
 #include <AssetManager.h>
 #include <ComponentManager.h>
+#include <Entity.h>
 #include <EntityManager.h>
 #include <Material.h>
 #include <Mesh.h>
 #include <RefEngine.h>
-#include <Renderable.h>
 #include <Prims.h>
-#include <Processor.h>
+#include <ProcessorManager.h>
 #include <Transform.h>
 
 #include <FBXFile.h>
@@ -30,6 +30,11 @@ static const VertexAttribute FBXVertexAttributes[9] = {
 };
 
 
+struct SpinComponent {
+	SpinComponent() = default;
+	SpinComponent(int s) : spinSpeed(s) {}
+	int spinSpeed;
+};
 
 
 TestBed::TestBed() :
@@ -47,44 +52,42 @@ bool TestBed::Init()
 	if (programId == ProgramId_Invalid) return false;
 
 
-	Material* pMaterial = new Material(programId);
 
-	GameTime* pTime = m_pRefEngine->GetTime();
-	Transform* pT1 = new Transform(glm::vec3(-2, 0, 0));
-	Transform* pT2 = new Transform(glm::vec3(2, 0, 0));
+	std::shared_ptr<GameTime> pTime = m_pRefEngine->GetTime();
 
 	// Put in a couple of tris
 	Mesh* pTriBuffer = Mesh::Create<>(Prims::Triangle_NumberOfVerts, Prims::Triangle_Vertices);
-	Renderable* triRenderable = new Renderable(pMaterial, pTriBuffer, pT1);
+	Material* pMaterial = new Material(programId);
 
-	//SpinComponent spin1 = { pT1, pTime };
-	//SpinComponent spin2 = { pT2, pTime };
-
-	EntityId ent1 = m_pRefEngine->GetEntityManager()->Create();
-	EntityId ent2 = m_pRefEngine->GetEntityManager()->Create();
-
-	ComponentManager* pComponentManager = m_pRefEngine->GetComponentManager();
-	//pComponentManager->AddComponent<SpinComponent>( ent1 );
-	//pComponentManager->AddComponent<SpinComponent>( ent2 );
-
-
-
-	//m_gameObjects.push_back(, new SpinController(), triRenderable));
-	//m_gameObjects.push_back(new Transform(glm::vec3(2, 0, 0), new SpinController(), triRenderable));
+	auto ent1 = m_pRefEngine->GetEntityManager()->Create();
+	ent1->AddComponent<Transform>(glm::vec3(-2, 0, 0));
+	ent1->AddComponent<SpinComponent>();
+	ent1->AddComponent<Mesh*>(pTriBuffer);
+	ent1->AddComponent<Material*>(pMaterial);
+	m_entities.push_back(ent1);
+	
+	auto ent2 = m_pRefEngine->GetEntityManager()->Create();
+	ent2->AddComponent<Transform>(glm::vec3(2, 0, 0));
+	ent2->AddComponent<SpinComponent>();
+	ent2->AddComponent<Mesh*>(pTriBuffer);
+	ent2->AddComponent<Material*>(pMaterial);
+	m_entities.push_back(ent2);
 
 	// Add a cube
 	auto pCubeBuffer = Mesh::Create(Prims::Cube_NumberOfVerts, Prims::Cube_Vertices, Prims::Cube_NumberOfIndices, Prims::Cube_Indices);
-	Renderable* cubeRenderable = new Renderable(pMaterial, pCubeBuffer, pT2);
-	//m_gameObjects.push_back(new GameObject(glm::vec3(0, 0, -5), nullptr, cubeRenderable));
+
+	std::shared_ptr<Entity> cube = m_pRefEngine->GetEntityManager()->Create();
+	cube->AddComponent<Transform>(glm::vec3(0, 0, -5));
+	cube->AddComponent<Mesh*>(pCubeBuffer);
+	cube->AddComponent<Material*>(pMaterial);
+	m_entities.push_back(cube);
 
 	// Add a fbx model
-	m_fbx = std::shared_ptr<FBXFile>(new FBXFile());
-	m_fbx->load("data/models/cube.fbx");
+	auto fbx = std::shared_ptr<FBXFile>(new FBXFile());
+	fbx->load("data/models/cube.fbx");
 
-	Transform* fbxTransform = new Transform(glm::vec3(0, 0, 3));
-
-	for (uint i = 0; i < m_fbx->getMeshCount(); i++) {
-		FBXMeshNode* pMesh = m_fbx->getMeshByIndex(i);
+	for (uint i = 0; i < fbx->getMeshCount(); i++) {
+		FBXMeshNode* pMesh = fbx->getMeshByIndex(i);
 		if (pMesh->m_vertices.size() >  0) {
 			uint numIndices = 0;
 			uint* pIndices = nullptr;
@@ -100,12 +103,14 @@ bool TestBed::Init()
 				sizeof(FBXVertexAttributes) / sizeof(VertexAttribute), FBXVertexAttributes
 				);
 
-			Renderable* fbxRenderable = new Renderable(pMaterial, pMeshBuffer, fbxTransform);
-			//m_gameObjects.push_back(new GameObject(glm::vec3(0, 0, 3), nullptr, fbxRenderable));
+			auto fbxModel = m_pRefEngine->GetEntityManager()->Create();
+			fbxModel->AddComponent<Transform>(glm::vec3(0, 0, 3));
+			fbxModel->AddComponent<Mesh*>(pMeshBuffer);
+			fbxModel->AddComponent<Material*>(pMaterial);
 		}
 	}
 
-	m_fbx->initialiseOpenGLTextures();
+	fbx->initialiseOpenGLTextures();
 
 	return true;
 }

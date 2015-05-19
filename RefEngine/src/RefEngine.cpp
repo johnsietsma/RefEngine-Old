@@ -1,22 +1,17 @@
 #include "RefEngine.h"
 
 #include "Camera.h"
-#include "Renderer.h"
-
 #include "FBXFile.h"
-
 #include "AssetManager.h"
 #include "Color.h"
 #include "Controller.h"
 #include "ComponentManager.h"
+#include "EntityManager.h"
 #include <aie/Gizmos.h>
-#include "GameObject.h"
 #include "gl_core_4_1.h"
 #include "GLHelpers.h"
 #include "Material.h"
 #include "Mesh.h"
-#include "Renderable.h"
-#include "Renderer.h"
 #include "pow2assert.h"
 #include "Prims.h"
 #include "SpinController.h"
@@ -43,12 +38,11 @@ void keyCallback(GLFWwindow* m_pWindow, int key, int /*scanCode*/, int action, i
 	}
 }
 
+
 RefEngine::RefEngine() :
 	m_isValid(false),
 	m_pAssetManager(new AssetManager()),
 	m_pCamera(new Camera(glm::vec3(4, 3, 3), glm::vec3(0), 45, 16 / 9.f)),
-	m_pComponentManager(new ComponentManager()),
-	m_pRenderer(new Renderer()),
 	m_pTime(new GameTime())
 {
 }
@@ -66,11 +60,7 @@ RefEngine::~RefEngine()
 	m_isValid = false;
 }
 
-void AddEntity(const Transform& transform, const Renderable& renderable)
-{
-
-}
-
+std::shared_ptr<ComponentManager> RefEngine::GetComponentManager() const { return m_pEntityManager->GetComponentManager(); }
 
 void RefEngine::Run()
 {
@@ -120,7 +110,6 @@ bool RefEngine::Init()
 
 	int width, height;
 	glfwGetFramebufferSize(m_pWindow, &width, &height);
-	m_pRenderer->Init(width, height);
 	Gizmos::create();
 
 
@@ -167,7 +156,7 @@ void RefEngine::Draw()
 
 	DrawWorldGrid();
 
-	m_pRenderer->Render(m_pCamera.get(), m_renderables);
+	//m_pRenderer->Render(m_pCamera.get(), m_renderables);
 	Gizmos::draw(m_pCamera->GetProjectionView());
 
 	glfwSwapBuffers(m_pWindow);

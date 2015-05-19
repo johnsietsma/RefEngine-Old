@@ -1,8 +1,8 @@
 #pragma once
 
 #include "ComponentContainer.h"
+#include "ComponentIteratorPair.h"
 #include "IndexedIterator.h"
-#include "Processor.h"
 #include "StronglyTyped.h"
 #include "types.h"
 
@@ -19,6 +19,8 @@ using namespace std;
 
 // fwd decls
 STRONG_TYPE_DEF(uint,EntityId)
+//template<typename TComponent> class ComponentContainer;
+//class IComponentContainer;
 class Renderable;
 class SpinController;
 class GameTime;
@@ -34,8 +36,11 @@ class GameTime;
 class ComponentManager
 {
 public:
+	ComponentManager();
+	~ComponentManager(); // So unique_ptr has the complete type
+
 	template<typename TComponent, typename... TArgs>
-	TComponent& AddComponent(EntityId entityId, TArgs&&... args)
+	TComponent& AddComponent(EntityId entityId, TArgs... args)
 	{
 		return GetOrCreateComponentContainer<TComponent>()->Add(entityId, args...);
 	}
@@ -63,10 +68,7 @@ public:
 	}
 
 private:
-	size_t GetNumberOfComponentContainers() const
-	{
-		return m_typeContainerMap.size();
-	}
+	size_t GetNumberOfComponentContainers() const;
 
 	template<typename TComponent>
 	ComponentContainer<TComponent>* GetComponentContainer()
@@ -91,7 +93,7 @@ private:
 	template<typename TComponent, typename... TComponents>
 	ComponentContainer<TComponent>* GetFirstComponentContainer()
 	{
-		return GetOrCreateComponentContainer<TComponent>();
+		return GetComponentContainer<TComponent>();
 	}
 
 	//! A map from type info to the container that holds that type/

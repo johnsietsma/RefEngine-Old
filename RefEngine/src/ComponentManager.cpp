@@ -1,43 +1,12 @@
 #include "ComponentManager.h"
 
-#include "EntityManager.h"
-#include "GameTime.h"
-#include "pow2assert.h"
-#include "Processor.h"
-#include "Transform.h"
-
-#include <typeinfo>
-
-#include <glm/glm.hpp>
-#include <glm/gtx/transform.hpp>
-
-
-	/*
-	namespace reng {
-	class SpinProcessor : public Processor
-{
-public:
-
-	void Process(std::vector<SpinComponent>& spinComponents) {
-		for (SpinComponent& spin : spinComponents) {
-			spin.pTransform->SetTransform( glm::rotate<float>(spin.pTransform->GetTransform(), 10 * spin.pTime->deltaTime, glm::vec3(0, 1.f, 0)) );
-		}
-	}
-};
-}
-
-*/
 using namespace reng;
 
+// Need these in the cpp so that unique_ptr know how to delete component manager
+ComponentManager::ComponentManager() {}
+ComponentManager::~ComponentManager() {}
 
-
-template<typename T>
-void ComponentManager::RegisterProcessor()
-
-template<typename T>
-void ComponentManager::Process(std::vector<T> processObjects)
+size_t ComponentManager::GetNumberOfComponentContainers() const
 {
-	size_t key = typeid(T).hash_code();
-	POW2_ASSERT(m_processorMap.find(key) != m_processorMap.end());
-//	m_processors[key]->Process(processObjects);
+	return m_typeContainerMap.size();
 }

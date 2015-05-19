@@ -1,7 +1,7 @@
 
 #include "gtest/gtest.h"
 
-#include <Processor.h>
+#include <ProcessorManager.h>
 
 #include <string>
 #include <vector>

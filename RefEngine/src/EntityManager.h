@@ -1,48 +1,49 @@
 #pragma once
 
-#include "Entity.h"
+#include "ComponentManager.h"
 #include "pow2assert.h"
-
+#include "StronglyTyped.h"
+#include "types.h"
 
 #include <algorithm>
 #include <atomic>
 #include <limits>
+#include <memory>
 #include <vector>
 
 namespace reng {
 
-
-struct Entity
-{
-	EntityId m_entityId;
-	// TODO: vector<EntityId> m_children;
-};
-
+// fwd decls
+STRONG_TYPE_DEF(uint, EntityId)
+class Entity;
 
 /**
  * Manages the entities that are considered alive.
  * Each entity is represented by a uint, no assumptions are made about how it is used.
  * Lots of ideas implemented here are from: http://bitsquid.blogspot.com.au/2014/08/building-data-oriented-entity-system.html
  */
-class EntityManager
+class EntityManager : public std::enable_shared_from_this<EntityManager>
 {
 public:
 	EntityManager();
 
+	std::shared_ptr<ComponentManager> GetComponentManager() { return m_componentManager;  }
+
 	size_t GetNumberOfEntites() const { return m_deadIndex; }
-	EntityId Create();
-	void Destroy(EntityId entityId);
-	bool IsAlive(EntityId entityId);
+	EntityId CreateId();
+	std::shared_ptr<Entity> Create();
+	void Destroy(std::shared_ptr<Entity> pEntity);
+	bool IsAlive(std::shared_ptr<Entity> pEntity);
 
 private:
 	std::vector<EntityId> m_entities; // TODO: Sort by heirarchy for top down transform updates.
 	int m_deadIndex; // An index into m_entities that marks where the dead entities start. This index may point to end().
 	bool m_isSorted = false;
 
+	std::shared_ptr<ComponentManager> m_componentManager;
+
 	// Assume safety for a thread per EntityManager
 	static std::atomic<uint> CurrentEntityId;
-
-	// TODO: Unit tests!
 };
 
 }

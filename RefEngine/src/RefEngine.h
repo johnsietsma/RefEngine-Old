@@ -12,10 +12,8 @@ class AssetManager;
 class Camera;
 class ComponentManager;
 class EntityManager;
-class Renderable;
-class Renderer;
 class GameTime;
-class Transform;
+class ProcessorManager;
 
 class RefEngine
 {
@@ -29,9 +27,9 @@ public:
 	RefEngine& operator=( const RefEngine& ) = delete;
 	RefEngine& operator=( RefEngine&& ) = delete;
 
-	GameTime* GetTime() const { return m_pTime.get(); }
-	ComponentManager* GetComponentManager() const { return m_pComponentManager.get(); }
-	EntityManager* GetEntityManager() const { return m_pEntityManager.get(); }
+	std::shared_ptr<GameTime> GetTime() const { return m_pTime; }
+	std::shared_ptr<ComponentManager> GetComponentManager() const;
+	std::shared_ptr<EntityManager> GetEntityManager() const { return m_pEntityManager; }
 
 	void Run();
 	bool Init();
@@ -42,14 +40,11 @@ private:
 
 	bool m_isValid;
 	GLFWwindow* m_pWindow;
-	std::shared_ptr<AssetManager> m_pAssetManager;
-	std::shared_ptr<Camera> m_pCamera;
-	std::shared_ptr<ComponentManager> m_pComponentManager;
+	std::unique_ptr<AssetManager> m_pAssetManager;
+	std::unique_ptr<Camera> m_pCamera;
 	std::shared_ptr<EntityManager> m_pEntityManager;
-	std::shared_ptr<Renderer> m_pRenderer;
 	std::shared_ptr<GameTime> m_pTime;
-	std::vector<Renderable> m_renderables;
-	std::vector<Transform> m_transforms;
+	std::shared_ptr<ProcessorManager> m_pProcessor;
 };
 
 }
