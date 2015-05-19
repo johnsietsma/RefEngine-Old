@@ -14,16 +14,12 @@ void RenderProcessor(Camera* pCamera, OpenGLRenderer* pRenderer, ComponentIterat
 	ComponentIteratorPair<Material*>::iterator materialIt = materialIters.begin;
 	ComponentIteratorPair<Transform>::iterator transformIt = transformIters.begin;
 
-	// TODO: Get Camera
-	// TODO: Get Render impl
-
 	while (meshIt != meshIters.end) {
 		Material* pMaterial = materialIt.get();
 		pRenderer->UseProgram( pMaterial->GetProgramId() );
 
 		// TODO: Cache this
-		const Transform& transform = transformIt.get();
-		pMaterial->UpdateUniforms(pCamera, transform.GetMartix());
+		pMaterial->UpdateUniforms(pCamera, transformIt->GetMartix());
 
 		const Mesh *pMesh = meshIt.get();
 		pRenderer->Bind(*pMesh);
