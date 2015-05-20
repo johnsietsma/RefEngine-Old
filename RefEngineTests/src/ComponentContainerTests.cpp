@@ -77,10 +77,11 @@ TEST(component_container_test, test_get_indexed_container)
 
 	int total = 0;
     
-    while( iterPair.begin!=iterPair.end)
+	auto it = iterPair.begin();
+    while( it!=iterPair.end())
 	{
-        total += *iterPair.begin;
-        iterPair.begin++;
+        total += *it;
+        it++;
 	}
 
 	EXPECT_EQ(total, 5); //3+2

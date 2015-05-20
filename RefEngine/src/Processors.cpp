@@ -8,26 +8,32 @@
 
 using namespace reng;
 
-void RenderProcessor(Camera* pCamera, OpenGLRenderer* pRenderer, ComponentIteratorPair<Mesh*> meshIters, ComponentIteratorPair<Material*> materialIters, ComponentIteratorPair<Transform> transformIters)
+void RenderProcessor::Process(std::tuple<ComponentIteratorPair<Mesh*>, ComponentIteratorPair<Material*>, ComponentIteratorPair<Transform>> iterators)
 {
-	ComponentIteratorPair<Mesh*>::iterator meshIt = meshIters.begin;
-	ComponentIteratorPair<Material*>::iterator materialIt = materialIters.begin;
-	ComponentIteratorPair<Transform>::iterator transformIt = transformIters.begin;
+	Process(std::get<0>(iterators), std::get<1>(iterators), std::get<2>(iterators));
+}
 
-	while (meshIt != meshIters.end) {
+
+void RenderProcessor::Process(ComponentIteratorPair<Mesh*> meshIters, ComponentIteratorPair<Material*> materialIters, ComponentIteratorPair<Transform> transformIters)
+{
+	ComponentIteratorPair<Mesh*>::iterator meshIt = meshIters.begin();
+	ComponentIteratorPair<Material*>::iterator materialIt = materialIters.begin();
+	ComponentIteratorPair<Transform>::iterator transformIt = transformIters.begin();
+
+	while (meshIt != meshIters.end()) {
 		Material* pMaterial = materialIt.get();
-		pRenderer->UseProgram( pMaterial->GetProgramId() );
+		m_pRenderer->UseProgram( pMaterial->GetProgramId() );
 
 		// TODO: Cache this
-		pMaterial->UpdateUniforms(pCamera, transformIt->GetMartix());
+		pMaterial->UpdateUniforms(m_pCamera.get(), transformIt->GetMartix());
 
 		const Mesh *pMesh = meshIt.get();
-		pRenderer->Bind(*pMesh);
-		pRenderer->Draw(*pMesh);
+		m_pRenderer->Bind(*pMesh);
+		m_pRenderer->Draw(*pMesh);
 
 		meshIt++; materialIt++; transformIt++;
 	}
 
-	pRenderer->UnbindAll();
-	pRenderer->UnuseProgram();
+	m_pRenderer->UnbindAll();
+	m_pRenderer->UnuseProgram();
 }

@@ -63,8 +63,22 @@ public:
 		// Use the first type as the main component type. Get all it's EntityIds.
 		const std::vector<EntityId>& entityIds = GetFirstComponentContainer<TComponents...>()->GetEntityIds();
 		processFunction(
-			GetOrCreateComponentContainer<TComponents>()->GetIterators(entityIds)...
+			GetComponentContainer<TComponents>()->GetIterators(entityIds)...
 			);
+	}
+
+	template<typename... TComponents>
+	std::tuple<ComponentContainer<TComponents>*...> GetContainers()
+	{
+		return std::tuple<ComponentContainer<TComponents>*...>(GetOrCreateComponentContainer<TComponents>()...);
+	}
+
+	template<typename... TComponents>
+	std::tuple<ComponentIteratorPair<TComponents>...> GetIterators()
+	{
+		// Use the first type as the main component type. Get all it's EntityIds.
+		const std::vector<EntityId>& entityIds = GetFirstComponentContainer<TComponents...>()->GetEntityIds();
+		return std::tuple<ComponentIteratorPair<TComponents>...>(GetOrCreateComponentContainer<TComponents>()->GetIterators(entityIds)...);
 	}
 
 private:
@@ -93,10 +107,10 @@ private:
 	template<typename TComponent, typename... TComponents>
 	ComponentContainer<TComponent>* GetFirstComponentContainer()
 	{
-		return GetComponentContainer<TComponent>();
+		return GetOrCreateComponentContainer<TComponent>();
 	}
 
-	//! A map from type info to the container that holds that type/
+	//! A map from type info to the container that holds that type.
 	std::unordered_map< std::type_index, unique_ptr<IComponentContainer> > m_typeContainerMap;
 };
 

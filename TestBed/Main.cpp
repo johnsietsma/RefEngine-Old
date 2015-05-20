@@ -1,4 +1,4 @@
-#include "RefEngine.h"
+#include "TestBed.h"
 
 #include "types.h"
 #include <vector>
@@ -16,17 +16,11 @@
 
 int main()
 {
-	char cCurrentPath[FILENAME_MAX];
-	if (GetCurrentDir(cCurrentPath, sizeof(cCurrentPath)))
-	{
-		printf("The current working directory is %s\n", cCurrentPath);
-	}
-
-	reng::RefEngine* pRefEng = new reng::RefEngine();
-	if (!pRefEng->Init()) {
+	TestBed testBed;
+	if (!testBed.Init()) {
 		return 1;
 	}
-	pRefEng->Run();
+	testBed.Run();
 
 	return 0;
 }

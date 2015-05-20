@@ -14,5 +14,5 @@ Entity::Entity(std::shared_ptr<ComponentManager> componentManager, std::shared_p
 
 Entity::~Entity()
 {
-	m_entityManager->Destroy(shared_from_this());
+	m_entityManager->Destroy(this);
 }

@@ -13,8 +13,11 @@
 #include "Material.h"
 #include "Mesh.h"
 #include "pow2assert.h"
+#include "OpenGLRenderer.h"
 #include "Prims.h"
+#include "Processors.h"
 #include "SpinController.h"
+#include "Transform.h"
 #include "GameTime.h"
 
 #include <GLFW/glfw3.h>
@@ -43,7 +46,10 @@ RefEngine::RefEngine() :
 	m_isValid(false),
 	m_pAssetManager(new AssetManager()),
 	m_pCamera(new Camera(glm::vec3(4, 3, 3), glm::vec3(0), 45, 16 / 9.f)),
-	m_pTime(new GameTime())
+	m_pEntityManager(new EntityManager() ),
+	m_pRenderer(new OpenGLRenderer()),
+	m_pTime(new GameTime()),
+	m_pRenderProcessor( new RenderProcessor(m_pCamera, m_pRenderer) )
 {
 }
 
@@ -128,6 +134,8 @@ bool RefEngine::Update(float deltaTime)
 	m_pTime->deltaTime = deltaTime;
 	m_pTime->elapsedTime += deltaTime;
 
+	//m_pEntityManager->GetComponentManager()->Process(m_pRenderProcessor->Process);
+
 
 	// TODO update components
 
@@ -155,9 +163,11 @@ void RefEngine::Draw()
 	Gizmos::addTransform(glm::mat4(1));
 
 	DrawWorldGrid();
-
-	//m_pRenderer->Render(m_pCamera.get(), m_renderables);
 	Gizmos::draw(m_pCamera->GetProjectionView());
+
+	auto iters = m_pEntityManager->GetComponentManager()->GetIterators<Mesh*, Material*, Transform>();
+	m_pRenderProcessor->Process(iters);
+
 
 	glfwSwapBuffers(m_pWindow);
 }

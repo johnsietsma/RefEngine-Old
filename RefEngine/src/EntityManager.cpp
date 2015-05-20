@@ -12,7 +12,7 @@ std::atomic<uint> reng::EntityManager::CurrentEntityId(0);
 EntityManager::EntityManager() :
 m_deadIndex(0),
 m_isSorted(true),
-m_componentManager(std::make_shared<ComponentManager>())
+m_componentManager(new ComponentManager())
 {}
 
 
@@ -31,7 +31,7 @@ std::shared_ptr<Entity> EntityManager::Create() {
 
 
 
-void EntityManager::Destroy(std::shared_ptr<Entity> pEntity)
+void EntityManager::Destroy(Entity* pEntity)
 {
 	std::vector<EntityId>::iterator it = find(m_entities.begin(), m_entities.begin() + m_deadIndex, pEntity->GetId());
 	if (it != m_entities.end()) {
@@ -45,7 +45,7 @@ void EntityManager::Destroy(std::shared_ptr<Entity> pEntity)
 	}
 }
 
-bool EntityManager::IsAlive(std::shared_ptr<Entity> pEntity) {
+bool EntityManager::IsAlive(Entity* pEntity) {
 	if (!m_isSorted) {
 		// Assume that the alive check is commonly called, only sort when needed, then use fast binary search
 		std::sort(m_entities.begin(), m_entities.begin() + m_deadIndex);

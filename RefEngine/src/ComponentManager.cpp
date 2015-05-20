@@ -2,7 +2,7 @@
 
 using namespace reng;
 
-// Need these in the cpp so that unique_ptr know how to delete component manager
+// Need these in the cpp so that unique_ptr knows how to delete component manager
 ComponentManager::ComponentManager() {}
 ComponentManager::~ComponentManager() {}
 

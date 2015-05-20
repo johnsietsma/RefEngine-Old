@@ -87,6 +87,7 @@ string readFile(const char* fileName)
 
 bool GLHelpers::CheckCompileStatus(ShaderId shaderId)
 {
+	POW2_ASSERT_MSG(glGetShaderiv, "Has OpenGL been initialized?");
 	GLint result = GL_FALSE;
 	int logLength;
 	glGetShaderiv(shaderId.Get(), GL_COMPILE_STATUS, &result);
@@ -104,6 +105,7 @@ bool GLHelpers::CheckCompileStatus(ShaderId shaderId)
 
 bool GLHelpers::CheckLinkStatus(ProgramId programId)
 {
+	POW2_ASSERT_MSG(glGetProgramiv, "Has OpenGL been initialized?");
 	GLint result = GL_FALSE;
 	int logLength;
 	glGetProgramiv(programId.Get(), GL_LINK_STATUS, &result);
@@ -121,6 +123,7 @@ bool GLHelpers::CheckLinkStatus(ProgramId programId)
 
 ShaderId GLHelpers::LoadShader(const char* shaderFileName, ShaderType shaderType)
 {
+	POW2_ASSERT_MSG(glCreateShader, "Has OpenGL been initialized?");
 	GLuint shaderId = glCreateShader(shaderType.Value());
 	string shaderSource = readFile(shaderFileName);
 	if (shaderSource.length() == 0) {

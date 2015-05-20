@@ -13,6 +13,8 @@ class Camera;
 class ComponentManager;
 class EntityManager;
 class GameTime;
+class RenderProcessor;
+class OpenGLRenderer;
 class ProcessorManager;
 
 class RefEngine
@@ -41,10 +43,13 @@ private:
 	bool m_isValid;
 	GLFWwindow* m_pWindow;
 	std::unique_ptr<AssetManager> m_pAssetManager;
-	std::unique_ptr<Camera> m_pCamera;
+	std::shared_ptr<Camera> m_pCamera;
 	std::shared_ptr<EntityManager> m_pEntityManager;
 	std::shared_ptr<GameTime> m_pTime;
 	std::shared_ptr<ProcessorManager> m_pProcessor;
+	std::shared_ptr<OpenGLRenderer> m_pRenderer;
+
+	std::shared_ptr<RenderProcessor> m_pRenderProcessor;
 };
 
 }

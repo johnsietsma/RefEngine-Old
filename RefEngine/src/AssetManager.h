@@ -17,6 +17,13 @@ typedef CachingFactory<ProgramId, ShaderId, ShaderId> ProgramFactory;
 typedef CachingFactory<Texture, const char*> TextureFactory;
 
 
+class BadAssetLoad : public std::runtime_error 
+{
+public:
+	BadAssetLoad(const char* message) : std::runtime_error(message) {}
+	BadAssetLoad(const std::string& message) : std::runtime_error(message.c_str()) {}
+};
+
 /**
  * A simple wrapper around Container to provide cached access to commonly used assets.
  */

@@ -44,6 +44,8 @@ TestBed::TestBed() :
 
 bool TestBed::Init()
 {
+	m_pRefEngine->Init();
+
 	ShaderId vertShader = m_pAssetManager->LoadShader("data/shaders/default.vert", VertexShader);
 	ShaderId fragShader = m_pAssetManager->LoadShader("data/shaders/red.frag", FragmentShader);
 	if (vertShader == ShaderId_Invalid || fragShader == ShaderId_Invalid) return false;
@@ -64,14 +66,14 @@ bool TestBed::Init()
 	ent1->AddComponent<SpinComponent>();
 	ent1->AddComponent<Mesh*>(pTriBuffer);
 	ent1->AddComponent<Material*>(pMaterial);
-	m_entities.push_back(ent1);
+	m_entities.emplace_back(std::move(ent1));
 	
 	auto ent2 = m_pRefEngine->GetEntityManager()->Create();
 	ent2->AddComponent<Transform>(glm::vec3(2, 0, 0));
 	ent2->AddComponent<SpinComponent>();
 	ent2->AddComponent<Mesh*>(pTriBuffer);
 	ent2->AddComponent<Material*>(pMaterial);
-	m_entities.push_back(ent2);
+	m_entities.emplace_back(std::move(ent2));
 
 	// Add a cube
 	auto pCubeBuffer = Mesh::Create(Prims::Cube_NumberOfVerts, Prims::Cube_Vertices, Prims::Cube_NumberOfIndices, Prims::Cube_Indices);
@@ -80,7 +82,7 @@ bool TestBed::Init()
 	cube->AddComponent<Transform>(glm::vec3(0, 0, -5));
 	cube->AddComponent<Mesh*>(pCubeBuffer);
 	cube->AddComponent<Material*>(pMaterial);
-	m_entities.push_back(cube);
+	m_entities.emplace_back(std::move(cube));
 
 	// Add a fbx model
 	auto fbx = std::shared_ptr<FBXFile>(new FBXFile());
@@ -107,6 +109,7 @@ bool TestBed::Init()
 			fbxModel->AddComponent<Transform>(glm::vec3(0, 0, 3));
 			fbxModel->AddComponent<Mesh*>(pMeshBuffer);
 			fbxModel->AddComponent<Material*>(pMaterial);
+			m_entities.emplace_back(std::move(fbxModel));
 		}
 	}
 
@@ -117,5 +120,5 @@ bool TestBed::Init()
 
 void TestBed::Run()
 {
-
+	m_pRefEngine->Run();
 }

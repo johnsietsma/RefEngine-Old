@@ -28,4 +28,6 @@ target_link_libraries(TestBed refeng)
 FILE(GLOB frag_shaders data/shaders/*.*)
 source_group(data\\shaders FILES ${frag_shaders})
 
-
+add_custom_command(TARGET TestBed POST_BUILD
+    COMMAND ${CMAKE_COMMAND} -E copy_directory ${CMAKE_CURRENT_SOURCE_DIR}/data $<TARGET_FILE_DIR:TestBed>/../data COMMENT "Copying data to output directory"
+)

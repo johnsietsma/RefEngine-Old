@@ -32,8 +32,8 @@ public:
 	size_t GetNumberOfEntites() const { return m_deadIndex; }
 	EntityId CreateId();
 	std::shared_ptr<Entity> Create();
-	void Destroy(std::shared_ptr<Entity> pEntity);
-	bool IsAlive(std::shared_ptr<Entity> pEntity);
+	void Destroy(Entity* pEntity);
+	bool IsAlive(Entity* pEntity);
 
 private:
 	std::vector<EntityId> m_entities; // TODO: Sort by heirarchy for top down transform updates.

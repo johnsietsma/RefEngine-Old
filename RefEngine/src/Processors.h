@@ -2,6 +2,9 @@
 
 #include "ComponentIteratorPair.h"
 
+#include <memory>
+#include <tuple>
+
 namespace reng {
 	class Camera;
 	class Material;
@@ -9,5 +12,22 @@ namespace reng {
 	class OpenGLRenderer;
 	class Transform;
 
-	void Render(Camera* pCamera, OpenGLRenderer* pRenderer, ComponentIteratorPair<Mesh*> meshIters, ComponentIteratorPair<Material*> materialIters, ComponentIteratorPair<Transform> transformIters);
+class RenderProcessor {
+public:
+
+
+
+	RenderProcessor(std::shared_ptr<Camera> pCamera, std::shared_ptr<OpenGLRenderer> pRenderer) :
+		m_pCamera(pCamera),
+		m_pRenderer(pRenderer)
+	{
+	}
+
+	void Process(ComponentIteratorPair<Mesh*> meshIters, ComponentIteratorPair<Material*> materialIters, ComponentIteratorPair<Transform> transformIters);
+	void Process( std::tuple<ComponentIteratorPair<Mesh*>, ComponentIteratorPair<Material*>, ComponentIteratorPair<Transform>> iterators );
+private:
+	std::shared_ptr<Camera> m_pCamera;
+	std::shared_ptr<OpenGLRenderer> m_pRenderer;
+};
+
 }
