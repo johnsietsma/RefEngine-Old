@@ -24,7 +24,7 @@ ShaderId AssetManager::LoadShader(const char* shaderFileName, ShaderType shaderT
 ProgramId AssetManager::LinkProgram(ShaderId fragmentShaderId, ShaderId vertexShaderId)
 {
 	ProgramId programId = m_pProgramFactory->Get(fragmentShaderId, vertexShaderId);
-	if (programId == ProgramId_Invalid) throw BadAssetLoad("Failed to load program ");
+	if (programId == ProgramId_Invalid) throw BadAssetLoad("Failed to load program");
 	return programId;
 }
 

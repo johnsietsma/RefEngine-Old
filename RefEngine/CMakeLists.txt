@@ -39,11 +39,8 @@ add_library(refeng
     src/Color.cpp
     src/Color.h
     src/ComponentContainer.h
-    src/ComponentIteratorPair.h
     src/ComponentManager.h
     src/ComponentManager.cpp
-    src/Controller.cpp
-    src/Controller.h
     src/Entity.h
     src/Entity.cpp
     src/EntityManager.cpp
@@ -53,7 +50,6 @@ add_library(refeng
     src/gl_core_4_1.h
     src/GLHelpers.cpp
     src/GLHelpers.h
-    src/IndexedIterator.h
     src/Material.cpp
     src/Material.h
     src/memaligned.cpp
@@ -67,14 +63,12 @@ add_library(refeng
     src/pow2assert.h
     src/Prims.cpp
     src/Prims.h
-    src/ProcessorManager.h
+    src/Processor.h
     src/Processors.cpp
     src/Processors.h
     src/ReadMe.txt
     src/RefEngine.cpp
     src/RefEngine.h
-    src/SpinController.cpp
-    src/SpinController.h
     src/StronglyTyped.h
     src/targetver.h
     src/Transform.h

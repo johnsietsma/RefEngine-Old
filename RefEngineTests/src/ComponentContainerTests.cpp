@@ -61,32 +61,6 @@ TEST(component_container_test, test_get_entity_id)
 	EXPECT_EQ(cont.GetEntityId(0), e1); // The component at index 0 belongs to e1.
 }
 
-TEST(component_container_test, test_get_indexed_container)
-{
-	auto cont = ComponentContainer<int>();
-
-	EntityId e1(1);
-	EntityId e2(2);
-	EntityId e3(3);
-
-	cont.Add(e1, 2);
-	cont.Add(e2, 99);
-	cont.Add(e3, 3);
-
-    ComponentIteratorPair<int> iterPair = cont.GetIterators({e1,e3});
-
-	int total = 0;
-    
-	auto it = iterPair.begin();
-    while( it!=iterPair.end())
-	{
-        total += *it;
-        it++;
-	}
-
-	EXPECT_EQ(total, 5); //3+2
-}
-
 TEST(component_container_test, test_add)
 {
 	EntityId id1(1);

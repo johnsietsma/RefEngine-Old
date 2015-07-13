@@ -10,8 +10,8 @@ public:
 		elapsedTime(0)
 	{}
 
-	float deltaTime;
-	float elapsedTime;
+	double deltaTime;
+	double elapsedTime;
 };
 
 }

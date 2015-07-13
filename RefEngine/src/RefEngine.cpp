@@ -4,7 +4,6 @@
 #include "FBXFile.h"
 #include "AssetManager.h"
 #include "Color.h"
-#include "Controller.h"
 #include "ComponentManager.h"
 #include "EntityManager.h"
 #include <aie/Gizmos.h>
@@ -16,7 +15,6 @@
 #include "OpenGLRenderer.h"
 #include "Prims.h"
 #include "Processors.h"
-#include "SpinController.h"
 #include "Transform.h"
 #include "GameTime.h"
 
@@ -66,21 +64,30 @@ RefEngine::~RefEngine()
 	m_isValid = false;
 }
 
-std::shared_ptr<ComponentManager> RefEngine::GetComponentManager() const { return m_pEntityManager->GetComponentManager(); }
+ComponentManager* RefEngine::GetComponentManager() const { return m_pEntityManager->GetComponentManager(); }
 
 void RefEngine::Run()
 {
 	POW2_ASSERT_MSG(m_isValid, "Call Init() first and check return code.");
 
-	double deltaTime = 0;
-	double totalRunTime = glfwGetTime();
+	double currentTime = glfwGetTime();
+	double deltaTime = 0.01;
+	double elapsedTime = 0;
+	double accumulator = 0.0;
 	bool isRunning = true;
+
 	while (isRunning) {
-		double currTime = glfwGetTime();
-		deltaTime = currTime - totalRunTime;
-		totalRunTime = currTime;
-		isRunning = Update((float)deltaTime);
-		Draw();
+		double newTime = glfwGetTime();
+		double frameTime = newTime - currentTime; 
+		if (frameTime > 0.25) frameTime = 0.25; 
+		currentTime = newTime;  
+		accumulator += frameTime;
+		while (accumulator >= deltaTime && isRunning) {
+			isRunning = Update(deltaTime); 
+			elapsedTime += deltaTime; 
+			accumulator -= deltaTime; 
+		}  
+		Draw(); 
 	}
 }
 
@@ -103,30 +110,30 @@ bool RefEngine::Init()
 
 	glfwSetErrorCallback(errorCallback);
 	glfwSetKeyCallback(m_pWindow, keyCallback);
-
 	glfwMakeContextCurrent(m_pWindow);
+	glfwSwapInterval(1);
+	int width, height;
+	glfwGetFramebufferSize(m_pWindow, &width, &height);
 
 	if (ogl_LoadFunctions() == ogl_LOAD_FAILED) return false;
+
+	float clear = 192 / 255.f;
+	glClearColor(clear, clear, clear, 1);
 
 	printf("Supported GLSL version is %s.\n", (char *)glGetString(GL_SHADING_LANGUAGE_VERSION));
 
 	GLHelpers::TurnOnDebugLogging();
 
-	glfwSwapInterval(1);
-
-	int width, height;
-	glfwGetFramebufferSize(m_pWindow, &width, &height);
 	Gizmos::create();
 
-
-	// -----
+	if (!DoInit()) return false;
 
 	m_isValid = true;
 
 	return true;
 }
 
-bool RefEngine::Update(float deltaTime)
+bool RefEngine::Update(double deltaTime)
 {
 	POW2_ASSERT(m_isValid);
 	if (glfwWindowShouldClose(m_pWindow)) return false;
@@ -134,21 +141,10 @@ bool RefEngine::Update(float deltaTime)
 	m_pTime->deltaTime = deltaTime;
 	m_pTime->elapsedTime += deltaTime;
 
-	//m_pEntityManager->GetComponentManager()->Process(m_pRenderProcessor->Process);
-
-
-	// TODO update components
-
-	/*
-	for (auto gameObject : m_gameObjects) {
-		shared_ptr<Controller> pController = gameObject->GetController();
-		if (pController != nullptr) {
-			gameObject->GetController()->Update(deltaTime, gameObject);
-		}
-	}
-	*/
-
 	glfwPollEvents();
+
+	DoUpdate(deltaTime);
+
 	return true;
 }
 
@@ -165,9 +161,8 @@ void RefEngine::Draw()
 	DrawWorldGrid();
 	Gizmos::draw(m_pCamera->GetProjectionView());
 
-	auto iters = m_pEntityManager->GetComponentManager()->GetIterators<Mesh*, Material*, Transform>();
-	m_pRenderProcessor->Process(iters);
-
+	auto componentManager = m_pEntityManager->GetComponentManager();
+	m_pRenderProcessor->Process(*componentManager);
 
 	glfwSwapBuffers(m_pWindow);
 }

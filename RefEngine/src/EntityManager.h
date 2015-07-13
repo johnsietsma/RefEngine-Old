@@ -26,8 +26,9 @@ class EntityManager : public std::enable_shared_from_this<EntityManager>
 {
 public:
 	EntityManager();
+	EntityManager( ComponentManager* componentManager );
 
-	std::shared_ptr<ComponentManager> GetComponentManager() { return m_componentManager;  }
+	ComponentManager* GetComponentManager() { return m_componentManager.get();  }
 
 	size_t GetNumberOfEntites() const { return m_deadIndex; }
 	EntityId CreateId();

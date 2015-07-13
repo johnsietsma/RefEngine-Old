@@ -13,18 +13,15 @@ namespace reng {
 	class RefEngine;
 }
 
-class TestBed
+class TestBed : public reng::RefEngine
 {
 public:
 	TestBed();
 
-	bool Init();
-
-	void Run();
-
 private:
-    std::unique_ptr<reng::AssetManager> m_pAssetManager;
-	std::unique_ptr<reng::RefEngine> m_pRefEngine;
+	void DoUpdate(double deltaTime) override;
+	bool DoInit() override;
 
+    std::unique_ptr<reng::AssetManager> m_pAssetManager;
 	std::vector<std::shared_ptr<reng::Entity>> m_entities;
 };

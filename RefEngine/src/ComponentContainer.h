@@ -1,8 +1,5 @@
 #pragma once
 
-
-#include "ComponentIteratorPair.h"
-#include "IndexedIterator.h"
 #include "pow2assert.h"
 #include "StronglyTyped.h"
 #include "types.h"
@@ -10,6 +7,7 @@
 #include <map>
 #include <stdexcept>
 #include <utility>
+#include <vector>
 
 namespace reng {
 
@@ -48,6 +46,8 @@ Their main purposes are:
 template<typename TComponent>
 class ComponentContainer : public IComponentContainer {
 public:
+	typedef typename std::vector<TComponent>::iterator component_iterator;
+	typedef typename std::vector<EntityId>::iterator entityid_iterator;
 
 	virtual ~ComponentContainer() = default;
 
@@ -75,23 +75,8 @@ public:
 		return m_entityIds;
 	}
 
-	//! Get a iterator that maps EntityIds to components.
-	// This iterated through in sequential order, even if the components
-	// aren't sequential.
-    ComponentIteratorPair<TComponent> GetIterators(const std::vector<EntityId>& entityIds)
-	{
-		std::vector<uint> indexes;
-		indexes.reserve(entityIds.size());
-
-		for (uint i = 0; i < entityIds.size(); i++)
-		{
-			const EntityId id = entityIds[i];
-			uint componentIndex = m_elementIndexMap.at(id);
-			indexes.push_back(componentIndex);
-		}
-
-		return ComponentIteratorPair<TComponent>( m_components, indexes );
-	}
+	component_iterator begin() { return m_components.begin(); }
+	component_iterator end() { return m_components.end(); }
 
 	//! Make a new element, store it and return a reference to it.
 	//! Takes an index to associate with the element and arguments used to contruct it.

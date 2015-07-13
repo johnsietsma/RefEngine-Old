@@ -10,11 +10,16 @@ using namespace reng;
 std::atomic<uint> reng::EntityManager::CurrentEntityId(0);
 
 EntityManager::EntityManager() :
-m_deadIndex(0),
-m_isSorted(true),
-m_componentManager(new ComponentManager())
+	EntityManager(new ComponentManager())
 {}
 
+EntityManager::EntityManager(ComponentManager* componentManager) :
+	m_deadIndex(0),
+	m_isSorted(true),
+	m_componentManager(componentManager)
+{
+
+}
 
 EntityId EntityManager::CreateId() {
 	uint newId = CurrentEntityId++;
@@ -28,8 +33,6 @@ EntityId EntityManager::CreateId() {
 std::shared_ptr<Entity> EntityManager::Create() {
 	return std::make_shared<Entity>(m_componentManager, shared_from_this());
 }
-
-
 
 void EntityManager::Destroy(Entity* pEntity)
 {

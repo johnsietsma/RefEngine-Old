@@ -29,14 +29,19 @@ public:
 	RefEngine& operator=( const RefEngine& ) = delete;
 	RefEngine& operator=( RefEngine&& ) = delete;
 
-	std::shared_ptr<GameTime> GetTime() const { return m_pTime; }
-	std::shared_ptr<ComponentManager> GetComponentManager() const;
-	std::shared_ptr<EntityManager> GetEntityManager() const { return m_pEntityManager; }
+	GameTime* GetTime() const { return m_pTime.get(); }
+	ComponentManager* GetComponentManager() const;
+	EntityManager* GetEntityManager() const { return m_pEntityManager.get(); }
 
 	void Run();
 	bool Init();
-	bool Update(float deltaTime);
+	bool Update(double deltaTime);
 	void Draw();
+
+protected:
+	virtual bool DoInit() = 0;
+	virtual void DoUpdate(double deltaTime) = 0;
+
 private:
 	void DrawWorldGrid() const;
 

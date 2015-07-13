@@ -38,14 +38,11 @@ struct SpinComponent {
 
 
 TestBed::TestBed() :
-	m_pAssetManager( new AssetManager() ),
-	m_pRefEngine(new RefEngine() )
+	m_pAssetManager( new AssetManager() )
 {}
 
-bool TestBed::Init()
+bool TestBed::DoInit()
 {
-	m_pRefEngine->Init();
-
 	ShaderId vertShader = m_pAssetManager->LoadShader("data/shaders/default.vert", VertexShader);
 	ShaderId fragShader = m_pAssetManager->LoadShader("data/shaders/red.frag", FragmentShader);
 	if (vertShader == ShaderId_Invalid || fragShader == ShaderId_Invalid) return false;
@@ -53,22 +50,20 @@ bool TestBed::Init()
 	ProgramId programId = m_pAssetManager->LinkProgram(vertShader, fragShader);
 	if (programId == ProgramId_Invalid) return false;
 
-
-
-	std::shared_ptr<GameTime> pTime = m_pRefEngine->GetTime();
+	GameTime* pTime = GetTime();
 
 	// Put in a couple of tris
 	Mesh* pTriBuffer = Mesh::Create<>(Prims::Triangle_NumberOfVerts, Prims::Triangle_Vertices);
 	Material* pMaterial = new Material(programId);
 
-	auto ent1 = m_pRefEngine->GetEntityManager()->Create();
+	auto ent1 = GetEntityManager()->Create();
 	ent1->AddComponent<Transform>(glm::vec3(-2, 0, 0));
 	ent1->AddComponent<SpinComponent>();
 	ent1->AddComponent<Mesh*>(pTriBuffer);
 	ent1->AddComponent<Material*>(pMaterial);
 	m_entities.emplace_back(std::move(ent1));
 	
-	auto ent2 = m_pRefEngine->GetEntityManager()->Create();
+	auto ent2 = GetEntityManager()->Create();
 	ent2->AddComponent<Transform>(glm::vec3(2, 0, 0));
 	ent2->AddComponent<SpinComponent>();
 	ent2->AddComponent<Mesh*>(pTriBuffer);
@@ -78,7 +73,7 @@ bool TestBed::Init()
 	// Add a cube
 	auto pCubeBuffer = Mesh::Create(Prims::Cube_NumberOfVerts, Prims::Cube_Vertices, Prims::Cube_NumberOfIndices, Prims::Cube_Indices);
 
-	std::shared_ptr<Entity> cube = m_pRefEngine->GetEntityManager()->Create();
+	std::shared_ptr<Entity> cube = GetEntityManager()->Create();
 	cube->AddComponent<Transform>(glm::vec3(0, 0, -5));
 	cube->AddComponent<Mesh*>(pCubeBuffer);
 	cube->AddComponent<Material*>(pMaterial);
@@ -105,7 +100,7 @@ bool TestBed::Init()
 				sizeof(FBXVertexAttributes) / sizeof(VertexAttribute), FBXVertexAttributes
 				);
 
-			auto fbxModel = m_pRefEngine->GetEntityManager()->Create();
+			auto fbxModel = GetEntityManager()->Create();
 			fbxModel->AddComponent<Transform>(glm::vec3(0, 0, 3));
 			fbxModel->AddComponent<Mesh*>(pMeshBuffer);
 			fbxModel->AddComponent<Material*>(pMaterial);
@@ -118,7 +113,6 @@ bool TestBed::Init()
 	return true;
 }
 
-void TestBed::Run()
+void TestBed::DoUpdate(double deltaTime)
 {
-	m_pRefEngine->Run();
 }

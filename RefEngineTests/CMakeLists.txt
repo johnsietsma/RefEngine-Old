@@ -10,7 +10,6 @@ add_executable(RefEngineTests
 	src/ComponentContainerTests.cpp
 	src/ComponentManagerTests.cpp
     src/EntityManagerTests.cpp
-	src/IndexedIteratorTests.cpp
 	src/ProcessorTests.cpp
     src/VariadicHashTests.cpp
  )

@@ -19,16 +19,22 @@ public:
 
 	EntityId GetId() const { return m_entityId; }
 
-	template<typename TComponent, typename... TArgs>
-	TComponent& AddComponent(TArgs&... args) 
+	template<typename TComponent>
+	TComponent& AddComponent()
 	{
-		return m_componentManager->AddComponent<TComponent,TArgs...>(m_entityId, args...);
+		return m_componentManager->GetComponentContainer<TComponent>()->Add(m_entityId);
+	}
+
+	template<typename TComponent, typename... TArgs>
+	TComponent& AddComponent(TArgs&&... args) 
+	{
+		return m_componentManager->GetComponentContainer<TComponent>()->Add<TArgs...>(m_entityId, std::forward<TArgs...>(args...));
 	}
 
 	template<typename TComponent>
 	TComponent& GetComponent()
 	{
-		return GetComponentContainer<TComponent>()->Get(m_entityId);
+		return m_componentManager->GetComponentContainer<TComponent>()->Get(m_entityId);
 	}
 
 private:
