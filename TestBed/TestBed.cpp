@@ -1,15 +1,16 @@
 #include "TestBed.h"
 
-#include <AssetManager.h>
-#include <ComponentManager.h>
-#include <Entity.h>
-#include <EntityManager.h>
-#include <Material.h>
-#include <Mesh.h>
-#include <RefEngine.h>
-#include <Prims.h>
-#include <ProcessorManager.h>
-#include <Transform.h>
+#include "AssetManager.h"
+#include "ComponentManager.h"
+#include "Entity.h"
+#include "EntityManager.h"
+#include "GameTime.h"
+#include "Material.h"
+#include "Mesh.h"
+#include "RefEngine.h"
+#include "Prims.h"
+#include "Processor.h"
+#include "Transform.h"
 
 #include <FBXFile.h>
 #include <memory>
@@ -36,9 +37,30 @@ struct SpinComponent {
 	int spinSpeed;
 };
 
+class SpinProcessor : public Processor<SpinComponent,GameTime>
+{
+public:
+	virtual void DoProcess(const std::vector<EntityId>& entityIds, ComponentManager& componentManager, GameTime& gameTime)
+	{
+		auto spinContainer = componentManager.GetComponentContainer<SpinComponent>();
+		auto transformContainer = componentManager.GetComponentContainer<Transform>();
+
+		for (auto entityId : entityIds)
+		{
+			auto& spin = spinContainer->Get(entityId);
+			auto& trans = transformContainer->Get(entityId);
+			trans = glm::rotate<float>(trans.GetMartix(), 10 * gameTime.deltaTime, glm::vec3(0, 1.f, 0));
+		}
+	}
+
+private:
+	GameTime* m_gameTime;
+};
+
 
 TestBed::TestBed() :
-	m_pAssetManager( new AssetManager() )
+	m_pAssetManager( new AssetManager() ),
+	m_spinProcessor( new SpinProcessor() )
 {}
 
 bool TestBed::DoInit()
@@ -115,4 +137,5 @@ bool TestBed::DoInit()
 
 void TestBed::DoUpdate(double deltaTime)
 {
+	m_spinProcessor->Process(*GetComponentManager(), *GetTime());
 }

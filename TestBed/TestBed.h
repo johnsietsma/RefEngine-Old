@@ -7,6 +7,8 @@
 #include <vector>
 
 class FBXFile;
+class SpinProcessor;
+
 namespace reng {
 	class AssetManager;
 	class Entity;
@@ -24,4 +26,5 @@ private:
 
     std::unique_ptr<reng::AssetManager> m_pAssetManager;
 	std::vector<std::shared_ptr<reng::Entity>> m_entities;
+	std::shared_ptr<SpinProcessor> m_spinProcessor;
 };
