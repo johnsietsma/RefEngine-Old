@@ -1,6 +1,6 @@
 #include "Mesh.h"
 
-#include "pow2assert.h"
+#include "utils/pow2assert.h"
 
 using namespace reng;
 

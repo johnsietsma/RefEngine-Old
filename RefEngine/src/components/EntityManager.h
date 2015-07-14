@@ -1,9 +1,10 @@
 #pragma once
 
 #include "ComponentManager.h"
-#include "pow2assert.h"
 #include "StronglyTyped.h"
 #include "types.h"
+
+#include "utils/pow2assert.h"
 
 #include <algorithm>
 #include <atomic>

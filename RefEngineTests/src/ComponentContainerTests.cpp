@@ -1,6 +1,6 @@
 #include "gtest/gtest.h"
 
-#include "ComponentContainer.h"
+#include "components/ComponentContainer.h"
 
 #include <vector>
 #include <stdexcept>

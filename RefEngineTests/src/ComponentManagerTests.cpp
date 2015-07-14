@@ -1,9 +1,9 @@
 
 #include "gtest/gtest.h"
 
-#include "ComponentManager.h"
-#include "ComponentContainer.h"
-#include "Processor.h"
+#include "components/ComponentManager.h"
+#include "components/ComponentContainer.h"
+#include "components/Processor.h"
 
 #include <algorithm>
 #include <functional>

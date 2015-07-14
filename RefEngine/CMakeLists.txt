@@ -38,34 +38,7 @@ add_library(refeng
     src/Camera.h
     src/Color.cpp
     src/Color.h
-    src/ComponentContainer.h
-    src/ComponentManager.h
-    src/ComponentManager.cpp
-    src/Entity.h
-    src/Entity.cpp
-    src/EntityManager.cpp
-    src/EntityManager.h
     src/GameTime.h
-    src/gl_core_4_1.c
-    src/gl_core_4_1.h
-    src/GLHelpers.cpp
-    src/GLHelpers.h
-    src/Material.cpp
-    src/Material.h
-    src/memaligned.cpp
-    src/memaligned.h
-    src/Mesh.cpp
-    src/Mesh.h
-    src/OpenGLRenderer.cpp
-    src/OpenGLRenderer.h
-    src/OpenGLTypes.h
-    src/pow2assert.cpp
-    src/pow2assert.h
-    src/Prims.cpp
-    src/Prims.h
-    src/Processor.h
-    src/Processors.cpp
-    src/Processors.h
     src/ReadMe.txt
     src/RefEngine.cpp
     src/RefEngine.h
@@ -75,6 +48,37 @@ add_library(refeng
     src/types.h
     src/VariadicHash.cpp
     src/VariadicHash.h
+
+    src/components/ComponentContainer.h
+    src/components/ComponentManager.h
+    src/components/ComponentManager.cpp
+    src/components/Entity.h
+    src/components/Entity.cpp
+    src/components/EntityManager.cpp
+    src/components/EntityManager.h
+    src/components/Processor.h
+
+    src/graphics/gl_core_4_1.c
+    src/graphics/gl_core_4_1.h
+    src/graphics/GLHelpers.cpp
+    src/graphics/GLHelpers.h
+    src/graphics/Material.cpp
+    src/graphics/Material.h
+    src/graphics/Mesh.cpp
+    src/graphics/Mesh.h
+    src/graphics/OpenGLRenderer.cpp
+    src/graphics/OpenGLRenderer.h
+    src/graphics/OpenGLTypes.h
+    src/graphics/Prims.cpp
+    src/graphics/Prims.h
+    src/graphics/RenderProcessor.cpp
+    src/graphics/RenderProcessor.h
+
+    src/utils/memaligned.cpp
+    src/utils/memaligned.h
+    src/utils/pow2assert.cpp
+    src/utils/pow2assert.h
+
     ../dep/FBXLoader/FBXFile.cpp
     ../dep/aieutilities/aie/Gizmos.cpp
 )

@@ -1,7 +1,7 @@
 #pragma once
 
-#include "gl_core_4_1.h"
 #include "types.h"
+
 class Prims
 {
 public:

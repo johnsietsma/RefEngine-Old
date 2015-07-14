@@ -2,8 +2,6 @@
 
 #include "OpenGLTypes.h"
 
-#include "gl_core_4_1.h"
-
 namespace reng {
 
 class Mesh;

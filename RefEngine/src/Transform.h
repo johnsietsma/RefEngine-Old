@@ -1,7 +1,8 @@
 #pragma once
 
+#include "utils/memaligned.h"
+
 #include <glm/glm.hpp>
-#include <memaligned.h>
 
 namespace reng {
 

@@ -2,7 +2,7 @@
 
 #include "Camera.h"
 #include "Transform.h"
-#include "pow2assert.h"
+#include "utils/pow2assert.h"
 
 #include <glm/glm.hpp>
 #include <glm/gtc/type_ptr.hpp>

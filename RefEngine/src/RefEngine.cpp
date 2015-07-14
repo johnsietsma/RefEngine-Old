@@ -1,23 +1,19 @@
 #include "RefEngine.h"
 
-#include "Camera.h"
-#include "FBXFile.h"
 #include "AssetManager.h"
+#include "Camera.h"
 #include "Color.h"
-#include "ComponentManager.h"
-#include "EntityManager.h"
-#include <aie/Gizmos.h>
-#include "gl_core_4_1.h"
-#include "GLHelpers.h"
-#include "Material.h"
-#include "Mesh.h"
-#include "pow2assert.h"
-#include "OpenGLRenderer.h"
-#include "Prims.h"
-#include "Processors.h"
-#include "Transform.h"
 #include "GameTime.h"
 
+#include "components/EntityManager.h"
+
+#include "graphics/GLHelpers.h"
+#include "graphics/RenderProcessor.h"
+#include "graphics/OpenGLRenderer.h"
+
+#include "utils/pow2assert.h"
+
+#include <aie/Gizmos.h>
 #include <GLFW/glfw3.h>
 #include <glm/glm.hpp>
 #include <iostream>

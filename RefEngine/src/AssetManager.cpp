@@ -1,7 +1,7 @@
 #include "AssetManager.h"
 
 #include "CachingFactory.h"
-#include "GLHelpers.h"
+#include "graphics/GLHelpers.h"
 
 #include <exception>
 #include <string>

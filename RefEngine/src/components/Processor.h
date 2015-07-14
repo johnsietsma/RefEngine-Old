@@ -1,12 +1,12 @@
 #pragma once
 
-#include "ComponentManager.h"
+#include "components/ComponentManager.h"
 
 #include <vector>
 
 namespace reng {
 
-	template<typename TComponent, typename... TArgs>
+template<typename TComponent, typename... TArgs>
 class Processor
 {
 public:

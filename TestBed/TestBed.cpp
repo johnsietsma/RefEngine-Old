@@ -1,15 +1,15 @@
 #include "TestBed.h"
 
 #include "AssetManager.h"
-#include "ComponentManager.h"
-#include "Entity.h"
-#include "EntityManager.h"
+#include "components/ComponentManager.h"
+#include "components/Entity.h"
+#include "components/EntityManager.h"
 #include "GameTime.h"
-#include "Material.h"
-#include "Mesh.h"
+#include "graphics/Material.h"
+#include "graphics/Mesh.h"
 #include "RefEngine.h"
-#include "Prims.h"
-#include "Processor.h"
+#include "graphics/Prims.h"
+#include "components/Processor.h"
 #include "Transform.h"
 
 #include <FBXFile.h>
@@ -49,7 +49,7 @@ public:
 		{
 			auto& spin = spinContainer->Get(entityId);
 			auto& trans = transformContainer->Get(entityId);
-			trans = glm::rotate<float>(trans.GetMartix(), 10 * gameTime.deltaTime, glm::vec3(0, 1.f, 0));
+			trans = glm::rotate<float>(trans.GetMartix(), 10 * (float)gameTime.deltaTime, glm::vec3(0, 1.f, 0));
 		}
 	}
 };

@@ -1,8 +1,9 @@
 #pragma once
 
-#include "pow2assert.h"
 #include "StronglyTyped.h"
 #include "types.h"
+
+#include "utils/pow2assert.h"
 
 #include <map>
 #include <stdexcept>

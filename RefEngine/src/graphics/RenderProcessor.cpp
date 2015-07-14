@@ -1,9 +1,9 @@
-#include "Processors.h"
+#include "RenderProcessor.h"
 
 #include "Camera.h"
 #include "Mesh.h"
 #include "Material.h"
-#include "OpenGLRenderer.h"
+#include "graphics/OpenGLRenderer.h"
 #include "Transform.h"
 
 #include <utility>

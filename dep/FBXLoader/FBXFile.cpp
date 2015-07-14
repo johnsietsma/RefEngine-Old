@@ -1,6 +1,6 @@
 #include "FBXFile.h"
 
-#include "gl_core_4_1.h"
+#include "graphics/gl_core_4_1.h"
 
 #include <fbxsdk.h>
 #include <algorithm>
