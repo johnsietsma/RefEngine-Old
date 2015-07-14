@@ -52,9 +52,6 @@ public:
 			trans = glm::rotate<float>(trans.GetMartix(), 10 * gameTime.deltaTime, glm::vec3(0, 1.f, 0));
 		}
 	}
-
-private:
-	GameTime* m_gameTime;
 };
 
 
