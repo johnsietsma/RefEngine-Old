@@ -3,13 +3,14 @@
 #include<memory>
 #include <vector>
 
+#include "Camera.h"
+
 class FBXFile;
 struct GLFWwindow;
 
 namespace reng {
 
 class AssetManager;
-class Camera;
 class ComponentManager;
 class EntityManager;
 class GameTime;
@@ -39,6 +40,9 @@ public:
 	void Draw();
 
 protected:
+	GLFWwindow* GetWindow() { return m_pWindow;  }
+	Camera* GetCamera() { return m_pCamera.get(); }
+
 	virtual bool DoInit() = 0;
 	virtual void DoUpdate(double deltaTime) = 0;
 
@@ -46,6 +50,7 @@ private:
 	void DrawWorldGrid() const;
 
 	bool m_isValid;
+
 	GLFWwindow* m_pWindow;
 	std::unique_ptr<AssetManager> m_pAssetManager;
 	std::shared_ptr<Camera> m_pCamera;

@@ -29,6 +29,8 @@ ENDIF (APPLE)
 
 set(CMAKE_CXX_FLAGS "${CMAKE_CXX_FLAGS} ${GCC_CHAR_IS_UNSIGNED_CHAR} ${STD_C11}")
 
+add_definitions(-DGLM_SWIZZLE)
+
 add_library(refeng
     ../Readme.md
     src/AssetManager.cpp
@@ -38,6 +40,8 @@ add_library(refeng
     src/Camera.h
     src/Color.cpp
     src/Color.h
+	src/FlyInput.cpp
+	src/FlyInput.h
     src/GameTime.h
     src/ReadMe.txt
     src/RefEngine.cpp

@@ -56,17 +56,17 @@ public:
 
 
 TestBed::TestBed() :
-	m_pAssetManager( new AssetManager() ),
-	m_spinProcessor( new SpinProcessor() )
+	m_spinProcessor( new SpinProcessor() ),
+	m_flyInput(GetCamera())
 {}
 
 bool TestBed::DoInit()
 {
-	ShaderId vertShader = m_pAssetManager->LoadShader("data/shaders/default.vert", VertexShader);
-	ShaderId fragShader = m_pAssetManager->LoadShader("data/shaders/red.frag", FragmentShader);
+	ShaderId vertShader = m_assetManager.LoadShader("data/shaders/default.vert", VertexShader);
+	ShaderId fragShader = m_assetManager.LoadShader("data/shaders/red.frag", FragmentShader);
 	if (vertShader == ShaderId_Invalid || fragShader == ShaderId_Invalid) return false;
 
-	ProgramId programId = m_pAssetManager->LinkProgram(vertShader, fragShader);
+	ProgramId programId = m_assetManager.LinkProgram(vertShader, fragShader);
 	if (programId == ProgramId_Invalid) return false;
 
 	GameTime* pTime = GetTime();
@@ -134,5 +134,6 @@ bool TestBed::DoInit()
 
 void TestBed::DoUpdate(double deltaTime)
 {
+	m_flyInput.Update(GetWindow(), deltaTime);
 	m_spinProcessor->Process(*GetComponentManager(), *GetTime());
 }

@@ -40,10 +40,10 @@ RefEngine::RefEngine() :
 	m_isValid(false),
 	m_pAssetManager(new AssetManager()),
 	m_pCamera(new Camera(glm::vec3(4, 3, 3), glm::vec3(0), 45, 16 / 9.f)),
-	m_pEntityManager(new EntityManager() ),
+	m_pEntityManager(new EntityManager()),
 	m_pRenderer(new OpenGLRenderer()),
 	m_pTime(new GameTime()),
-	m_pRenderProcessor( new RenderProcessor(m_pCamera, m_pRenderer) )
+	m_pRenderProcessor(new RenderProcessor(m_pCamera.get(), m_pRenderer))
 {
 }
 
@@ -155,7 +155,7 @@ void RefEngine::Draw()
 	Gizmos::addTransform(glm::mat4(1));
 
 	DrawWorldGrid();
-	Gizmos::draw(m_pCamera->GetProjectionView());
+	Gizmos::draw(m_pCamera->GetProjectionViewMatrix());
 
 	auto componentManager = m_pEntityManager->GetComponentManager();
 	m_pRenderProcessor->Process(*componentManager);

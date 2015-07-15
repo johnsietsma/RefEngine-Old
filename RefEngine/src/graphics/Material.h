@@ -18,7 +18,7 @@ public:
 
 	ProgramId GetProgramId() const { return m_programId;  }
 
-	void UpdateUniforms( const Camera* pCamera, const glm::mat4x4& pTransform );
+	void UpdateUniforms( const glm::mat4x4& projectionViewMatrix, const glm::mat4x4& pTransform );
 private:
 	void UpdateProjectionView(const glm::mat4x4& projectionView);
 

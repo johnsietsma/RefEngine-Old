@@ -1,7 +1,9 @@
 #pragma once
 
 #include "AssetManager.h"
+#include "FlyInput.h"
 #include "RefEngine.h"
+
 
 #include <memory>
 #include <vector>
@@ -24,7 +26,8 @@ private:
 	void DoUpdate(double deltaTime) override;
 	bool DoInit() override;
 
-    std::unique_ptr<reng::AssetManager> m_pAssetManager;
+    reng::AssetManager m_assetManager;
+	reng::FlyInput m_flyInput;
 	std::vector<std::shared_ptr<reng::Entity>> m_entities;
 	std::shared_ptr<SpinProcessor> m_spinProcessor;
 };

@@ -17,9 +17,9 @@ m_textureId(textureId)
 	POW2_ASSERT(m_mvpLocation != UniformLocationId_Invalid);
 }
 
-void Material::UpdateUniforms(const Camera* pCamera, const glm::mat4x4& transform)
+void Material::UpdateUniforms(const glm::mat4x4& projectionViewMatrix, const glm::mat4x4& transform)
 {
-	glm::mat4 MVP = pCamera->GetProjectionView() * transform;
+	glm::mat4 MVP = projectionViewMatrix * transform;
 	UpdateProjectionView(MVP);
 }
 

@@ -11,9 +11,9 @@ namespace reng {
 class Camera;
 class OpenGLRenderer;
 
-class RenderProcessor : public Processor<Mesh*> {
+class FlyCameraProcessor : public Processor<Camera> {
 public:
-	RenderProcessor(const Camera* pCamera, std::shared_ptr<OpenGLRenderer> pRenderer) :
+	RenderProcessor(std::shared_ptr<Camera> pCamera, std::shared_ptr<OpenGLRenderer> pRenderer) :
 		m_pCamera(pCamera),
 		m_pRenderer(pRenderer)
 	{
@@ -22,7 +22,7 @@ public:
 private:
 	void DoProcess( const std::vector<EntityId>& entityIds, ComponentManager& componentManager ) override;
 
-	const Camera* m_pCamera;
+	std::shared_ptr<Camera> m_pCamera;
 	std::shared_ptr<OpenGLRenderer> m_pRenderer;
 };
 

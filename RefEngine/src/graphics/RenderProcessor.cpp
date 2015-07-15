@@ -25,7 +25,7 @@ void RenderProcessor::DoProcess(const std::vector<EntityId>& entityIds, Componen
 		m_pRenderer->UseProgram( pMaterial->GetProgramId() );
 
 		// TODO: Cache this
-		pMaterial->UpdateUniforms(m_pCamera.get(), transform.GetMartix());
+		pMaterial->UpdateUniforms(m_pCamera->GetProjectionViewMatrix(), transform.GetMartix());
 
 		m_pRenderer->Bind(*pMesh);
 		m_pRenderer->Draw(*pMesh);
