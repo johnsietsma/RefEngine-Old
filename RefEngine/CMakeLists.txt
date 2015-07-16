@@ -1,17 +1,29 @@
 cmake_minimum_required(VERSION 2.8 FATAL_ERROR)
 
-
 IF(APPLE)
     SET(FBX_SDK_DIR "/Applications/Autodesk/FBX SDK/2015.1/" CACHE PATH "The location of the FBX SDK" )
 ELSE(APPLE)
     SET(FBX_SDK_DIR "C:/Program Files/Autodesk/FBX/FBX SDK/2015.1/" CACHE PATH "The location of the FBX SDK" )
+    SET(PHYSX_SDK_DIR "C:/Physx/" CACHE PATH "The location of the PhysX SDK" )
 ENDIF()
 
+IF(APPLE)
+	SET(FBX_LIB_DIR ${FBX_SDK_DIR}/clang/)
+ELSE(APPLE)
+	SET(FBX_LIB_DIR ${FBX_SDK_DIR}/lib/vs2013/x86/)
+	SET(PHYSX_LIB_DIR ${PHYSX_SDK_DIR}/Lib/vc12win32/)
+ENDIF()
+
+
+SET(PHYSX_LIBRARIES 
+	PhysX3_x86.lib
+)
 
 include_directories(../dep/aieutilities)
 include_directories(../dep/glm)
 include_directories(../dep/glfw/include)
 include_directories(${FBX_SDK_DIR}/include)
+include_directories(${PHYSX_SDK_DIR}include)
 include_directories(../dep/FBXLoader)
 include_directories(../dep/stb)
 include_directories(src)
@@ -87,7 +99,13 @@ add_library(refeng
     ../dep/aieutilities/aie/Gizmos.cpp
 )
 
+source_group( Components src/components/ )
+source_group( Graphics src/graphics/ )
+source_group( Physics src/physics/ )
+source_group( Utils src/utils/ )
+
 target_include_directories (refeng PUBLIC ${CMAKE_CURRENT_SOURCE_DIR}\\src)
+target_link_libraries(refeng glfw ${GLFW_LIBRARIES})
 
 IF(APPLE)
    INCLUDE_DIRECTORIES ( /System/Library/Frameworks )
@@ -99,17 +117,17 @@ IF(APPLE)
    MARK_AS_ADVANCED (CARBON_LIBRARY CORE_VIDEO_LIBRARY COCOA_LIBRARY OpenGL_LIBRARY IOKIT_LIBRARY)
    SET(EXTRA_LIBS ${CARBON_LIBRARY} ${CORE_VIDEO_LIBRARY} ${COCOA_LIBRARY} ${OpenGL_LIBRARY} ${IOKIT_LIBRARY})
 
-   target_link_libraries(refeng ${FBX_SDK_DIR}/lib/clang/release/libfbxsdk.a)
-   target_link_libraries(refeng glfw ${GLFW_LIBRARIES})
+   target_link_libraries(refeng ${FBX_LIB_DIR}libfbxsdk.a)
 ELSE(APPLE)
    target_link_libraries(refeng opengl32.lib)
-   target_link_libraries(refeng glfw ${GLFW_LIBRARIES})
+   target_link_libraries(refeng optimized ${PHYSX_LIB_DIR}PhysX3_x86.lib)
+   target_link_libraries(refeng debug ${PHYSX_LIB_DIR}PhysX3DEBUG_x86.lib)
    if (USE_MSVC_RUNTIME_LIBRARY_DLL)
-	   target_link_libraries(refeng optimized ${FBX_SDK_DIR}/lib/vs2013/x86/release/libfbxsdk-md.lib)
-	   target_link_libraries(refeng debug ${FBX_SDK_DIR}/lib/vs2013/x86/debug/libfbxsdk-md.lib)
+	   target_link_libraries(refeng optimized ${FBX_LIB_DIR}release/libfbxsdk-md.lib)
+	   target_link_libraries(refeng debug ${FBX_LIB_DIR}debug/libfbxsdk-md.lib)
    else (USE_MSVC_RUNTIME_LIBRARY_DLL)
-   	   target_link_libraries(refeng optimized ${FBX_SDK_DIR}/lib/vs2013/x86/release/libfbxsdk-mt.lib)
-	   target_link_libraries(refeng debug ${FBX_SDK_DIR}/lib/vs2013/x86/debug/libfbxsdk-mt.lib)
+   	   target_link_libraries(refeng optimized ${FBX_LIB_DIR}release/libfbxsdk-mt.lib)
+	   target_link_libraries(refeng debug ${FBX_LIB_DIR}debug/libfbxsdk-mt.lib)
    endif()
 ENDIF (APPLE)
 

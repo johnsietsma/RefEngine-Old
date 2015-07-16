@@ -24,7 +24,7 @@ private:
 	void CalculateRotation(double deltaTime, double xOffset, double yOffset);
 
 	Camera* m_pCamera;
-	float m_flySpeed = 1;
+	float m_flySpeed = 5;
 	float m_rotationSpeed = 1;
 	bool m_rotateButtonClicked;
 	float m_cursorX, m_cursorY;

@@ -6,7 +6,6 @@ IF(APPLE)
 ELSE(APPLE)
 ENDIF (APPLE)
 
-
 set(CMAKE_CXX_FLAGS "${CMAKE_CXX_FLAGS} ${GCC_CHAR_IS_UNSIGNED_CHAR} ${STD_C11}")
 
 include_directories(../dep/glm)
@@ -22,6 +21,7 @@ add_executable(TestBed
     data/shaders/red.frag
     data/shaders/white.frag
 )
+
 target_link_libraries(TestBed refeng)
 
 # ---- Put the shaders in a folder group ----
