@@ -14,7 +14,7 @@ class SpinProcessor;
 namespace reng {
 	class AssetManager;
 	class Entity;
-	class PhysicsProcessor;
+	class PhysXProcessor;
 	class RefEngine;
 }
 
@@ -31,5 +31,5 @@ private:
 	reng::FlyInput m_flyInput;
 	std::vector<std::shared_ptr<reng::Entity>> m_entities;
 	std::shared_ptr<SpinProcessor> m_spinProcessor;
-	std::shared_ptr<reng::PhysicsProcessor> m_physicsProcessor;
+	std::shared_ptr<reng::PhysXProcessor> m_PhysXProcessor;
 };

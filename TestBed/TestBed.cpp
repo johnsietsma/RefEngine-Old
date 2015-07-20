@@ -1,11 +1,9 @@
 #include "TestBed.h"
 
 #include "TestPhysics.h"
-#include "Physics.h"
 
 #include "AssetManager.h"
 #include "GameTime.h"
-#include "Physics.h"
 #include "RefEngine.h"
 #include "Transform.h"
 
@@ -17,6 +15,8 @@
 #include "graphics/Material.h"
 #include "graphics/Mesh.h"
 #include "graphics/Prims.h"
+
+#include "physics/PhysXPhysics.h"
 
 #include <FBXFile.h>
 #include <memory>
@@ -66,12 +66,12 @@ public:
 TestBed::TestBed() :
 	m_flyInput(GetCamera()),
 	m_spinProcessor(new SpinProcessor()),
-	m_physicsProcessor(new PhysicsProcessor())
+	m_PhysXProcessor(new PhysXProcessor())
 {}
 
 bool TestBed::DoInit()
 {
-	m_physicsProcessor->InitVisualDebugger();
+	m_PhysXProcessor->InitVisualDebugger();
 
 	ShaderId vertShader = m_assetManager.LoadShader("data/shaders/default.vert", VertexShader);
 	ShaderId fragShader = m_assetManager.LoadShader("data/shaders/red.frag", FragmentShader);
@@ -140,7 +140,7 @@ bool TestBed::DoInit()
 
 	fbx->initialiseOpenGLTextures();
 
-	AddPhysicsObjects( GetComponentManager(), m_physicsProcessor.get() );
+	AddPhysicsObjects( GetComponentManager(), m_PhysXProcessor.get() );
 
 	return true;
 }
@@ -149,5 +149,5 @@ void TestBed::DoUpdate(double deltaTime)
 {
 	m_flyInput.Update(GetWindow(), deltaTime);
 	m_spinProcessor->Process(*GetComponentManager(), *GetTime());
-	m_physicsProcessor->Process(*GetComponentManager(), *GetTime());
+	m_PhysXProcessor->Process(*GetComponentManager(), *GetTime());
 }

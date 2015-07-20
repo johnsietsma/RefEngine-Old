@@ -52,8 +52,6 @@ add_library(refeng
     src/FlyInput.cpp
     src/FlyInput.h
     src/GameTime.h
-    src/Physics.cpp
-    src/Physics.h
 
     src/ReadMe.txt
     src/RefEngine.cpp
@@ -90,9 +88,13 @@ add_library(refeng
     src/graphics/RenderProcessor.cpp
     src/graphics/RenderProcessor.h
 
+    src/physics/PhysXPhysics.cpp
+    src/physics/PhysXPhysics.h
+
     src/utils/memaligned.cpp
     src/utils/memaligned.h
     src/utils/pow2assert.cpp
+
     src/utils/pow2assert.h
 
     ../dep/FBXLoader/FBXFile.cpp
