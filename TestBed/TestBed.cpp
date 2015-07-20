@@ -1,20 +1,28 @@
 #include "TestBed.h"
 
+#include "TestPhysics.h"
+#include "Physics.h"
+
 #include "AssetManager.h"
+#include "GameTime.h"
+#include "Physics.h"
+#include "RefEngine.h"
+#include "Transform.h"
+
 #include "components/ComponentManager.h"
 #include "components/Entity.h"
 #include "components/EntityManager.h"
-#include "GameTime.h"
+#include "components/Processor.h"
+
 #include "graphics/Material.h"
 #include "graphics/Mesh.h"
-#include "RefEngine.h"
 #include "graphics/Prims.h"
-#include "components/Processor.h"
-#include "Transform.h"
 
 #include <FBXFile.h>
 #include <memory>
 #include <glm/gtx/transform.hpp>
+
+
 
 using namespace reng;
 
@@ -40,7 +48,7 @@ struct SpinComponent {
 class SpinProcessor : public Processor<SpinComponent,GameTime>
 {
 public:
-	virtual void DoProcess(const std::vector<EntityId>& entityIds, ComponentManager& componentManager, GameTime& gameTime)
+	void DoProcess(const std::vector<EntityId>& entityIds, ComponentManager& componentManager, GameTime& gameTime) override
 	{
 		auto spinContainer = componentManager.GetComponentContainer<SpinComponent>();
 		auto transformContainer = componentManager.GetComponentContainer<Transform>();
@@ -56,12 +64,15 @@ public:
 
 
 TestBed::TestBed() :
-	m_spinProcessor( new SpinProcessor() ),
-	m_flyInput(GetCamera())
+	m_flyInput(GetCamera()),
+	m_spinProcessor(new SpinProcessor()),
+	m_physicsProcessor(new PhysicsProcessor())
 {}
 
 bool TestBed::DoInit()
 {
+	m_physicsProcessor->InitVisualDebugger();
+
 	ShaderId vertShader = m_assetManager.LoadShader("data/shaders/default.vert", VertexShader);
 	ShaderId fragShader = m_assetManager.LoadShader("data/shaders/red.frag", FragmentShader);
 	if (vertShader == ShaderId_Invalid || fragShader == ShaderId_Invalid) return false;
@@ -76,26 +87,26 @@ bool TestBed::DoInit()
 	Material* pMaterial = new Material(programId);
 
 	auto ent1 = GetEntityManager()->Create();
-	ent1->AddComponent<Transform>(glm::vec3(-2, 0, 0));
-	ent1->AddComponent<SpinComponent>();
-	ent1->AddComponent<Mesh*>(pTriBuffer);
-	ent1->AddComponent<Material*>(pMaterial);
+	ent1->EmplaceComponent<Transform>(glm::vec3(-2, 0, 0));
+	ent1->EmplaceComponent<SpinComponent>();
+	ent1->EmplaceComponent<Mesh*>(pTriBuffer);
+	ent1->EmplaceComponent<Material*>(pMaterial);
 	m_entities.emplace_back(std::move(ent1));
 	
 	auto ent2 = GetEntityManager()->Create();
-	ent2->AddComponent<Transform>(glm::vec3(2, 0, 0));
-	ent2->AddComponent<SpinComponent>();
-	ent2->AddComponent<Mesh*>(pTriBuffer);
-	ent2->AddComponent<Material*>(pMaterial);
+	ent2->EmplaceComponent<Transform>(glm::vec3(2, 0, 0));
+	ent2->EmplaceComponent<SpinComponent>();
+	ent2->EmplaceComponent<Mesh*>(pTriBuffer);
+	ent2->EmplaceComponent<Material*>(pMaterial);
 	m_entities.emplace_back(std::move(ent2));
 
 	// Add a cube
 	auto pCubeBuffer = Mesh::Create(Prims::Cube_NumberOfVerts, Prims::Cube_Vertices, Prims::Cube_NumberOfIndices, Prims::Cube_Indices);
 
 	std::shared_ptr<Entity> cube = GetEntityManager()->Create();
-	cube->AddComponent<Transform>(glm::vec3(0, 0, -5));
-	cube->AddComponent<Mesh*>(pCubeBuffer);
-	cube->AddComponent<Material*>(pMaterial);
+	cube->EmplaceComponent<Transform>(glm::vec3(0, 0, -5));
+	cube->EmplaceComponent<Mesh*>(pCubeBuffer);
+	cube->EmplaceComponent<Material*>(pMaterial);
 	m_entities.emplace_back(std::move(cube));
 
 	// Add a fbx model
@@ -120,14 +131,16 @@ bool TestBed::DoInit()
 				);
 
 			auto fbxModel = GetEntityManager()->Create();
-			fbxModel->AddComponent<Transform>(glm::vec3(0, 0, 3));
-			fbxModel->AddComponent<Mesh*>(pMeshBuffer);
-			fbxModel->AddComponent<Material*>(pMaterial);
+			fbxModel->EmplaceComponent<Transform>(glm::vec3(0, 0, 3));
+			fbxModel->EmplaceComponent<Mesh*>(pMeshBuffer);
+			fbxModel->EmplaceComponent<Material*>(pMaterial);
 			m_entities.emplace_back(std::move(fbxModel));
 		}
 	}
 
 	fbx->initialiseOpenGLTextures();
+
+	AddPhysicsObjects( GetComponentManager(), m_physicsProcessor.get() );
 
 	return true;
 }
@@ -136,4 +149,5 @@ void TestBed::DoUpdate(double deltaTime)
 {
 	m_flyInput.Update(GetWindow(), deltaTime);
 	m_spinProcessor->Process(*GetComponentManager(), *GetTime());
+	m_physicsProcessor->Process(*GetComponentManager(), *GetTime());
 }

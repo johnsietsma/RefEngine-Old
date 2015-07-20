@@ -5,6 +5,7 @@
 
 #include "utils/pow2assert.h"
 
+#include <functional>
 #include <map>
 #include <stdexcept>
 #include <utility>
@@ -81,22 +82,21 @@ public:
 
 	//! Make a new element, store it and return a reference to it.
 	//! Takes an index to associate with the element and arguments used to contruct it.
-	template< class... Args >
-	TComponent& Add( EntityId entityId, Args&&... args )
+	TComponent& Add( EntityId entityId, TComponent& component )
 	{
-		if (m_elementIndexMap.find(entityId) != m_elementIndexMap.end()) { throw std::invalid_argument("EntityId has already been added to the container."); }
+		return DoAdd(entityId, [&, component]() {
+			// Add a new element to the templated container map
+			m_components.push_back(component);
+		});
+	}
 
-		// Add a new element to the templated container map
-		m_components.emplace_back(args...);
-
-		// Store the associated entity
-		m_entityIds.push_back(entityId);
-
-		// Store the associated index of the element for this element
-		size_t componentIndex = m_components.size() - 1;
-		m_elementIndexMap[entityId] = componentIndex;
-
-		return m_components.back();
+	template< class... Args >
+	TComponent& Emplace(EntityId entityId, Args&&... args)
+	{
+		return DoAdd(entityId, [&, args...]() {
+			// Emplace a new element to the templated container map
+			m_components.emplace_back(args...);
+		});
 	}
 
 	//! Remove an element
@@ -115,6 +115,24 @@ public:
 	}
 
 private:
+	//! Make a new element, store it and return a reference to it.
+	TComponent& DoAdd(EntityId entityId, std::function<void()> addFunc)
+	{
+		if (m_elementIndexMap.find(entityId) != m_elementIndexMap.end()) { throw std::invalid_argument("EntityId has already been added to the container."); }
+
+		// Add a new element to the templated container map
+		addFunc();
+
+		// Store the associated entity
+		m_entityIds.push_back(entityId);
+
+		// Store the associated index of the element for this element
+		size_t componentIndex = m_components.size() - 1;
+		m_elementIndexMap[entityId] = componentIndex;
+
+		return m_components.back();
+	}
+
 	std::vector<TComponent> m_components; // All the components
 	std::vector<EntityId> m_entityIds;  // All the component's EntityIds. Indexes provide a one to one mapping from components.
 

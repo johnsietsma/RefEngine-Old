@@ -42,10 +42,10 @@ TEST(processor_test, test_process)
 	EntityId id1(1);
 	EntityId id2(2);
 
-	cm.GetComponentContainer<Transform>()->Add(id1);
+	cm.GetComponentContainer<Transform>()->Emplace(id1);
 
-	cm.GetComponentContainer<Transform>()->Add(id2);
-	cm.GetComponentContainer<SpinComponent>()->Add(id2);
+	cm.GetComponentContainer<Transform>()->Emplace(id2);
+	cm.GetComponentContainer<SpinComponent>()->Emplace(id2);
 
 	SpinProcessor spinProcessor;
 	EXPECT_FALSE(cm.GetComponentContainer<Transform>()->GetAll()[0].processed);

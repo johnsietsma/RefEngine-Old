@@ -10,11 +10,14 @@ set(CMAKE_CXX_FLAGS "${CMAKE_CXX_FLAGS} ${GCC_CHAR_IS_UNSIGNED_CHAR} ${STD_C11}"
 
 include_directories(../dep/glm)
 include_directories(../dep/FBXLoader)
+include_directories(${PHYSX_INCLUDE_DIR})
 
 add_executable(TestBed
     Main.cpp
 	TestBed.cpp
-	Testbed.h
+	TestBed.h
+	TestPhysics.cpp
+	TestPhysics.h
     data/shaders/default.vert
     data/shaders/passthrough.vert
     data/shaders/diffuse.frag
@@ -30,4 +33,8 @@ source_group(data\\shaders FILES ${frag_shaders})
 
 add_custom_command(TARGET TestBed POST_BUILD
     COMMAND ${CMAKE_COMMAND} -E copy_directory ${CMAKE_CURRENT_SOURCE_DIR}/data $<TARGET_FILE_DIR:TestBed>/../data COMMENT "Copying data to output directory"
+)
+
+add_custom_command(TARGET TestBed POST_BUILD
+    COMMAND ${CMAKE_COMMAND} -E copy_directory "$<$<CONFIG:debug>:${PHYSX_BIN_DIR}/debug/>$<$<CONFIG:release>:${PHYSX_BIN_DIR/release}>" $<TARGET_FILE_DIR:TestBed> COMMENT "Copy PhysX dlls"
 )

@@ -8,22 +8,19 @@ ELSE(APPLE)
 ENDIF()
 
 IF(APPLE)
-	SET(FBX_LIB_DIR ${FBX_SDK_DIR}/clang/)
+  SET(FBX_LIB_DIR ${FBX_SDK_DIR}/clang/)
 ELSE(APPLE)
-	SET(FBX_LIB_DIR ${FBX_SDK_DIR}/lib/vs2013/x86/)
-	SET(PHYSX_LIB_DIR ${PHYSX_SDK_DIR}/Lib/vc12win32/)
+  SET(FBX_LIB_DIR ${FBX_SDK_DIR}/lib/vs2013/x86/)
+  SET(PHYSX_LIB_DIR ${PHYSX_SDK_DIR}/Lib/vc12win32/)
+  SET(PHYSX_INCLUDE_DIR ${PHYSX_SDK_DIR}/include CACHE STRING "PhysX header path")
+  SET(PHYSX_BIN_DIR ${PHYSX_SDK_DIR}/bin CACHE STRING "PhysX dll path")
 ENDIF()
-
-
-SET(PHYSX_LIBRARIES 
-	PhysX3_x86.lib
-)
 
 include_directories(../dep/aieutilities)
 include_directories(../dep/glm)
 include_directories(../dep/glfw/include)
 include_directories(${FBX_SDK_DIR}/include)
-include_directories(${PHYSX_SDK_DIR}include)
+include_directories(${PHYSX_INCLUDE_DIR})
 include_directories(../dep/FBXLoader)
 include_directories(../dep/stb)
 include_directories(src)
@@ -52,9 +49,12 @@ add_library(refeng
     src/Camera.h
     src/Color.cpp
     src/Color.h
-	src/FlyInput.cpp
-	src/FlyInput.h
+    src/FlyInput.cpp
+    src/FlyInput.h
     src/GameTime.h
+    src/Physics.cpp
+    src/Physics.h
+
     src/ReadMe.txt
     src/RefEngine.cpp
     src/RefEngine.h
@@ -120,14 +120,23 @@ IF(APPLE)
    target_link_libraries(refeng ${FBX_LIB_DIR}libfbxsdk.a)
 ELSE(APPLE)
    target_link_libraries(refeng opengl32.lib)
+
    target_link_libraries(refeng optimized ${PHYSX_LIB_DIR}PhysX3_x86.lib)
+   target_link_libraries(refeng optimized ${PHYSX_LIB_DIR}PhysX3Common_x86.lib)
+   target_link_libraries(refeng optimized ${PHYSX_LIB_DIR}PhysX3Extensions.lib)
+   target_link_libraries(refeng optimized ${PHYSX_LIB_DIR}PhysXVisualDebuggerSDK.lib)
+
    target_link_libraries(refeng debug ${PHYSX_LIB_DIR}PhysX3DEBUG_x86.lib)
+   target_link_libraries(refeng debug ${PHYSX_LIB_DIR}PhysX3CommonDEBUG_x86.lib)
+   target_link_libraries(refeng debug ${PHYSX_LIB_DIR}PhysX3ExtensionsDEBUG.lib)
+   target_link_libraries(refeng debug ${PHYSX_LIB_DIR}PhysXVisualDebuggerSDKDEBUG.lib)
+
    if (USE_MSVC_RUNTIME_LIBRARY_DLL)
-	   target_link_libraries(refeng optimized ${FBX_LIB_DIR}release/libfbxsdk-md.lib)
-	   target_link_libraries(refeng debug ${FBX_LIB_DIR}debug/libfbxsdk-md.lib)
+     target_link_libraries(refeng optimized ${FBX_LIB_DIR}release/libfbxsdk-md.lib)
+     target_link_libraries(refeng debug ${FBX_LIB_DIR}debug/libfbxsdk-md.lib)
    else (USE_MSVC_RUNTIME_LIBRARY_DLL)
-   	   target_link_libraries(refeng optimized ${FBX_LIB_DIR}release/libfbxsdk-mt.lib)
-	   target_link_libraries(refeng debug ${FBX_LIB_DIR}debug/libfbxsdk-mt.lib)
+       target_link_libraries(refeng optimized ${FBX_LIB_DIR}release/libfbxsdk-mt.lib)
+     target_link_libraries(refeng debug ${FBX_LIB_DIR}debug/libfbxsdk-mt.lib)
    endif()
 ENDIF (APPLE)
 
