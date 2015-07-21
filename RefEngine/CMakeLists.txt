@@ -52,7 +52,8 @@ add_library(refeng
     src/FlyInput.cpp
     src/FlyInput.h
     src/GameTime.h
-
+	src/GizmosComponent.cpp
+	src/GizmosComponent.h
     src/ReadMe.txt
     src/RefEngine.cpp
     src/RefEngine.h
@@ -88,8 +89,10 @@ add_library(refeng
     src/graphics/RenderProcessor.cpp
     src/graphics/RenderProcessor.h
 
-    src/physics/PhysXPhysics.cpp
-    src/physics/PhysXPhysics.h
+    src/physics/PhysicsComponent.cpp
+    src/physics/PhysicsComponent.h
+    src/physics/PhysXComponent.cpp
+    src/physics/PhysXComponent.h
 
     src/utils/memaligned.cpp
     src/utils/memaligned.h

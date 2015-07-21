@@ -28,6 +28,8 @@ public:
 	void SetMatrix( const glm::mat4x4& transform )  { m_globalTransform = transform; }
 	void SetPosition(const glm::vec3& position) { m_globalTransform[3] = glm::vec4(position, 1); }
 
+	void Translate(const glm::vec3& positionDelta) { SetPosition(GetPosition() + positionDelta); }
+
 	ALIGNED_NEW_OP_16
 	ALIGNED_DELETE_OP
 

@@ -2,7 +2,7 @@
 #include "GameTime.h"
 #include "components/Entity.h"
 #include "components/ComponentManager.h"
-#include "physics/PhysXPhysics.h"
+#include "physics/PhysXComponent.h"
 #include "utils/memaligned.h"
 
 #include <PxPhysicsAPI.h>

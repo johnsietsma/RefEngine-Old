@@ -3,6 +3,8 @@
 namespace reng
 {
 	class ComponentManager;
+	class EntityManager;
+	class PhysicsProcessor;
 	class PhysXProcessor;
 }
 
@@ -12,5 +14,6 @@ namespace physx
 	class PxScene;
 }
 
-void AddPhysicsObjects(reng::ComponentManager* componentManager, reng::PhysXProcessor* processor);
+void AddPhysXObjects(reng::EntityManager* entityManager, reng::PhysXProcessor* processor);
+void AddPhysicsObjects(reng::EntityManager* entityManager, reng::PhysicsProcessor* processor);
 

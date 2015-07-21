@@ -34,7 +34,7 @@ public:
 	template<typename TComponent, typename... TArgs>
 	TComponent& EmplaceComponent(TArgs&&... args) 
 	{
-		return m_componentManager->GetComponentContainer<TComponent>()->Emplace<TArgs...>(m_entityId, std::forward<TArgs...>(args...));
+		return m_componentManager->GetComponentContainer<TComponent>()->Emplace<TArgs...>(m_entityId, std::forward<TArgs>(args)...);
 	}
 
 	template<typename TComponent>

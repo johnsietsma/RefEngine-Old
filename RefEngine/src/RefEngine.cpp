@@ -101,7 +101,7 @@ bool RefEngine::Init()
 	glfwWindowHint(GLFW_OPENGL_PROFILE, GLFW_OPENGL_CORE_PROFILE);
 	glfwWindowHint(GLFW_OPENGL_FORWARD_COMPAT, GL_TRUE);
 
-	m_pWindow = glfwCreateWindow(640, 480, "TestBed", nullptr, nullptr);
+	m_pWindow = glfwCreateWindow(1024, 780, "RefEng", nullptr, nullptr);
 	if (m_pWindow == nullptr) return false;
 
 	glfwSetErrorCallback(errorCallback);
@@ -151,14 +151,14 @@ void RefEngine::Draw()
 
 	glClear(GL_COLOR_BUFFER_BIT | GL_DEPTH_BUFFER_BIT);
 
-	Gizmos::clear();
-	Gizmos::addTransform(glm::mat4(1));
 
+	Gizmos::addTransform(glm::mat4(1));
 	DrawWorldGrid();
-	Gizmos::draw(m_pCamera->GetProjectionViewMatrix());
 
 	auto componentManager = m_pEntityManager->GetComponentManager();
 	m_pRenderProcessor->Process(*componentManager);
+
+	Gizmos::draw(m_pCamera->GetProjectionViewMatrix());
 
 	glfwSwapBuffers(m_pWindow);
 }

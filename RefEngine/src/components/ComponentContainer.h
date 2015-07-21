@@ -53,6 +53,12 @@ public:
 
 	virtual ~ComponentContainer() = default;
 
+	bool Has(EntityId entityId)
+	{
+		auto findIter = m_elementIndexMap.find(entityId);
+		return findIter != m_elementIndexMap.end();
+	}
+
 	//! Get all the components stored in this container.
 	std::vector<TComponent>& GetAll()
 	{
