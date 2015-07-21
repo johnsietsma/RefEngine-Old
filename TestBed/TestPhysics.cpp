@@ -29,7 +29,7 @@ void AddPhysicsObjects(reng::EntityManager* entityManager, PhysicsProcessor* pro
 {
 	auto boxEntity = entityManager->Create();
 	boxEntity->EmplaceComponent<Transform>( glm::vec3(0) );
-	boxEntity->EmplaceComponent<RigidbodyComponent>( 10.f, glm::vec3(0,0.1f,0) );
+	boxEntity->EmplaceComponent<RigidbodyComponent>( 10.f, glm::vec3(20,100,20) );
 	boxEntity->EmplaceComponent<PhysicsComponent>(PhysicsComponent::GemometryType::Box);
 	boxEntity->EmplaceComponent<AABBGizmoComponent>(glm::vec3(1, 1, 1), glm::vec4(1, 0, 0, 1));
 }

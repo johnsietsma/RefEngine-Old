@@ -26,6 +26,7 @@ void PhysicsProcessor::DoProcess(const std::vector<EntityId>& entityIds, Compone
 		auto& rigidbody = rigidbodyContainer->Get(entityId);
 		auto& transform = transformContainer->Get(entityId);
 
+		rigidbody.velocity.y += m_gravity;
 		transform.Translate( rigidbody.velocity * (float)time.deltaTime );
 	}
 }

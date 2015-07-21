@@ -51,7 +51,7 @@ public:
 	virtual void DoProcess(const std::vector<reng::EntityId>& entityIds, reng::ComponentManager& componentManager, GameTime& time) override;
 
 private:
-	float gravity = -9.8f;
+	float m_gravity = -9.8f;
 };
 
 }

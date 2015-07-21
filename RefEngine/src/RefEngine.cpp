@@ -39,7 +39,7 @@ void keyCallback(GLFWwindow* m_pWindow, int key, int /*scanCode*/, int action, i
 RefEngine::RefEngine() :
 	m_isValid(false),
 	m_pAssetManager(new AssetManager()),
-	m_pCamera(new Camera(glm::vec3(4, 3, 3), glm::vec3(0), 45, 16 / 9.f)),
+	m_pCamera(new Camera(glm::vec3(8, 10, -15), glm::vec3(0), 45, 16 / 9.f)),
 	m_pEntityManager(new EntityManager()),
 	m_pRenderer(new OpenGLRenderer()),
 	m_pTime(new GameTime()),
@@ -67,7 +67,7 @@ void RefEngine::Run()
 	POW2_ASSERT_MSG(m_isValid, "Call Init() first and check return code.");
 
 	double currentTime = glfwGetTime();
-	double deltaTime = 0.01;
+	double deltaTime = 1/60.f;
 	double elapsedTime = 0;
 	double accumulator = 0.0;
 	bool isRunning = true;
