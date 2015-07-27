@@ -16,15 +16,21 @@ void AddPhysXObjects(reng::EntityManager* entityManager, PhysXProcessor* process
 {
 	auto& pose = PxTransform(PxVec3(0), PxQuat(PxHalfPi, PxVec3(0, 0, 1)) );
 	auto actor = processor->AddStaticActor(pose, PxPlaneGeometry());
-	auto physxEntity1 = entityManager->Create();
-	physxEntity1->EmplaceComponent<PhysXComponent>(actor);
-	physxEntity1->EmplaceComponent<PhysXGizmoComponent>();
+	auto physxEntity = entityManager->Create();
+	physxEntity->EmplaceComponent<PhysXComponent>(actor);
+	physxEntity->EmplaceComponent<PhysXGizmoComponent>();
 
 	pose = PxTransform( PxVec3(0, 5, 0) );
 	actor = processor->AddDynamicActor(pose, PxBoxGeometry(2, 2, 2), 10);
-	auto physxEntity2 = entityManager->Create();
-	physxEntity2->EmplaceComponent<PhysXComponent>(actor);
-	physxEntity2->EmplaceComponent<PhysXGizmoComponent>();
+	physxEntity = entityManager->Create();
+	physxEntity->EmplaceComponent<PhysXComponent>(actor);
+	physxEntity->EmplaceComponent<PhysXGizmoComponent>();
+
+	pose = PxTransform(PxVec3(0, 10, 0));
+	actor = processor->AddDynamicActor(pose, PxSphereGeometry(2), 10);
+	physxEntity = entityManager->Create();
+	physxEntity->EmplaceComponent<PhysXComponent>(actor);
+	physxEntity->EmplaceComponent<PhysXGizmoComponent>();
 }
 
 

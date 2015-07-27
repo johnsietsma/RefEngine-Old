@@ -17,8 +17,7 @@ void AddBox(PxShape* shape, const PxRigidActor* actor)
 {
 	PxBoxGeometry geometry;
 	float width = 1, height = 1, length = 1;
-	bool status = shape->getBoxGeometry(geometry);
-	if (!status) return;
+	if (!shape->getBoxGeometry(geometry)) return;
 	glm::vec3 extents(geometry.halfExtents.x, geometry.halfExtents.y, geometry.halfExtents.z);
 	PxMat44 m(PxShapeExt::getGlobalPose(*shape, *actor));
 	glm::mat4x4 M(
@@ -39,7 +38,6 @@ void AddBox(PxShape* shape, const PxRigidActor* actor)
 void AddPlane(PxShape* shape, const PxRigidActor* actor)
 {
 	PxTransform transform(PxShapeExt::getGlobalPose(*shape, *actor));
-	//PxPlane plane(PxPlaneEquationFromTransform(transform));
 
 	PxMat44 m(PxShapeExt::getGlobalPose(*shape, *actor));
 	glm::mat4x4 M(
@@ -56,6 +54,20 @@ void AddPlane(PxShape* shape, const PxRigidActor* actor)
 }
 
 
+void AddSphere(PxShape* shape, const PxRigidActor* actor)
+{
+	PxTransform transform(PxShapeExt::getGlobalPose(*shape, *actor));
+
+	PxSphereGeometry geometry;
+	if (!shape->getSphereGeometry(geometry))  return;
+
+	PxMat44 m(PxShapeExt::getGlobalPose(*shape, *actor));
+	glm::vec3 pos(m[3][0], m[3][1], m[3][2]);
+
+	Gizmos::addSphere(pos, geometry.radius, 10, 10, glm::vec4(1, 0, 0, 1));
+}
+
+
 void AddWidget(PxShape* shape, const PxRigidActor* actor)
 {
 	PxGeometryType::Enum type = shape->getGeometryType();
@@ -66,6 +78,8 @@ void AddWidget(PxShape* shape, const PxRigidActor* actor)
 		break;
 	case PxGeometryType::ePLANE:
 		AddPlane(shape, actor);
+	case PxGeometryType::eSPHERE:
+		AddSphere(shape, actor);
 	}
 
 }
