@@ -59,17 +59,17 @@ public:
 		return findIter != m_elementIndexMap.end();
 	}
 
-	//! Get all the components stored in this container.
-	std::vector<TComponent>& GetAll()
-	{
-		return m_components;
-	}
-
 	//! Get the component associated with the given entity.
 	TComponent& Get(EntityId entityId)
 	{
 		uint componentIndex = m_elementIndexMap.at(entityId);
 		return m_components[componentIndex];
+	}
+
+	//! Get all the components stored in this container.
+	std::vector<TComponent>& GetAll()
+	{
+		return m_components;
 	}
 
 	//! Returns the EntityId associated with the component at the given index.

@@ -20,28 +20,33 @@ struct Plane {};
 struct Box {};
 struct Sphere {};
 
-struct RigidbodyComponent
+class RigidbodyComponent
 {
-	RigidbodyComponent(float a_mass, const glm::vec3& a_velocity) :
-		mass(a_mass),
-		velocity(a_velocity)
+public:
+	RigidbodyComponent(float mass, const glm::vec3& velocity) :
+		m_mass(mass),
+		m_velocity(velocity)
 	{}
 
-	float mass;
-	glm::vec3 velocity;
+	const glm::vec3& GetVelocity() const { return m_velocity; }
+
+	void SetVelocity(const glm::vec3& velocity) { m_velocity = velocity;  }
+	void ApplyForce(const glm::vec3& force) { m_velocity += force/m_mass; }
+
+private:
+	float m_mass;
+	glm::vec3 m_velocity;
 };
 
 struct PhysicsComponent
 {
 	enum class GemometryType { None, Plane, Box, Sphere };
 
-	PhysicsComponent(GemometryType a_geoType, bool a_isStatic=false) :
-		geometryType(a_geoType),
-		isStatic(a_isStatic)
+	PhysicsComponent(GemometryType a_geoType) :
+		geometryType(a_geoType)
 	{}
 
 	GemometryType geometryType;
-	bool isStatic;
 };
 
 
@@ -51,7 +56,7 @@ public:
 	virtual void DoProcess(const std::vector<reng::EntityId>& entityIds, reng::ComponentManager& componentManager, GameTime& time) override;
 
 private:
-	float m_gravity = -9.8f;
+	glm::vec3 m_gravity{ 0, -9.8f, 0 };
 };
 
 }

@@ -33,12 +33,6 @@ class ConsoleErrorCallback : public PxErrorCallback
 	}
 };
 
-PhysXComponent::PhysXComponent(const PxTransform& transform, const PxGeometry& geometry, const PxMaterial& material, float density)
-{
-}
-
-
-
 PhysXProcessor::PhysXProcessor() :
 	m_allocator(new AlignedAllocatorCallback()),
 	m_errorCallback(new ConsoleErrorCallback()),
@@ -73,7 +67,7 @@ void PhysXProcessor::InitVisualDebugger()
 }
 
 
-physx::PxActor* PhysXProcessor::AddStaticActor( const PxTransform& transform, const PxGeometry& geometry )
+physx::PxRigidActor* PhysXProcessor::AddStaticActor( const PxTransform& transform, const PxGeometry& geometry )
 {
 	auto actor = PxCreateStatic(*m_physics, transform, geometry, *m_material);
 	m_scene->addActor(*actor);
@@ -81,7 +75,7 @@ physx::PxActor* PhysXProcessor::AddStaticActor( const PxTransform& transform, co
 
 }
 
-physx::PxActor* PhysXProcessor::AddDynamicActor(const PxTransform& transform, const PxGeometry& geometry, float density)
+physx::PxRigidActor* PhysXProcessor::AddDynamicActor(const PxTransform& transform, const PxGeometry& geometry, float density)
 {
 	auto actor = PxCreateDynamic(*m_physics, transform, geometry, *m_material, density);
 	m_scene->addActor(*actor);

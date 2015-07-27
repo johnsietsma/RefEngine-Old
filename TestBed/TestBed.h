@@ -15,6 +15,7 @@ namespace reng {
 	class AssetManager;
 	class Entity;
 	class AABBGizmoProcessor;
+	class PhysXGizmoProcessor;
 	class PhysXProcessor;
 	class PhysicsProcessor;
 	class RefEngine;
@@ -36,4 +37,5 @@ private:
 	std::shared_ptr<reng::PhysXProcessor> m_physXProcessor;
 	std::shared_ptr<reng::PhysicsProcessor> m_physicsProcessor;
 	std::shared_ptr<reng::AABBGizmoProcessor> m_gizmoProcessor;
+	std::shared_ptr<reng::PhysXGizmoProcessor> m_physXGizmoProcessor;
 };

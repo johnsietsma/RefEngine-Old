@@ -19,6 +19,7 @@
 
 #include "physics/PhysicsComponent.h"
 #include "physics/PhysXComponent.h"
+#include "physics/PhysXGizmoComponent.h"
 
 #include <FBXFile.h>
 #include <memory>
@@ -70,7 +71,8 @@ TestBed::TestBed() :
 	m_spinProcessor(new SpinProcessor()),
 	m_physXProcessor(new PhysXProcessor()),
 	m_physicsProcessor(new PhysicsProcessor()),
-	m_gizmoProcessor(new AABBGizmoProcessor())
+	m_gizmoProcessor(new AABBGizmoProcessor()),
+	m_physXGizmoProcessor(new PhysXGizmoProcessor())
 {}
 
 bool TestBed::DoInit()
@@ -157,4 +159,5 @@ void TestBed::DoUpdate(double deltaTime)
 	m_physXProcessor->Process(*GetComponentManager(), *GetTime());
 	m_physicsProcessor->Process(*GetComponentManager(), *GetTime());
 	m_gizmoProcessor->Process(*GetComponentManager());
+	m_physXGizmoProcessor->Process(*GetComponentManager());
 }

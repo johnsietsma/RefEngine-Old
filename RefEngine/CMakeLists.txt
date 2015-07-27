@@ -93,6 +93,8 @@ add_library(refeng
     src/physics/PhysicsComponent.h
     src/physics/PhysXComponent.cpp
     src/physics/PhysXComponent.h
+	src/physics/PhysXGizmoComponent.cpp
+    src/physics/PhysXGizmoComponent.h
 
     src/utils/memaligned.cpp
     src/utils/memaligned.h
