@@ -79,6 +79,7 @@ void PhysXTriggerShapeProcessor::DoProcess(const std::vector<EntityId>& entityId
 				triggerShape.pShape->setFlag(PxShapeFlag::eTRIGGER_SHAPE, false);
 				triggerShape.pShape->setFlag(PxShapeFlag::eSIMULATION_SHAPE, true);
 				pRigidBody->setRigidBodyFlag(PxRigidBodyFlag::eKINEMATIC, false);
+				triggerShape.isTriggered = false;
 			}
 
 		}
