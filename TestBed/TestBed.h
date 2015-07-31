@@ -17,6 +17,7 @@ namespace reng {
 	class AABBGizmoProcessor;
 	class PhysXGizmoProcessor;
 	class PhysXProcessor;
+	class PhysXTriggerShapeProcessor;
 	class PhysicsProcessor;
 	class RefEngine;
 }
@@ -35,6 +36,7 @@ private:
 	std::vector<std::shared_ptr<reng::Entity>> m_entities;
 	std::shared_ptr<SpinProcessor> m_spinProcessor;
 	std::shared_ptr<reng::PhysXProcessor> m_physXProcessor;
+	std::shared_ptr<reng::PhysXTriggerShapeProcessor> m_physXTriggerShapeProcessor;
 	std::shared_ptr<reng::PhysicsProcessor> m_physicsProcessor;
 	std::shared_ptr<reng::AABBGizmoProcessor> m_gizmoProcessor;
 	std::shared_ptr<reng::PhysXGizmoProcessor> m_physXGizmoProcessor;

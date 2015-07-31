@@ -39,7 +39,7 @@ void keyCallback(GLFWwindow* m_pWindow, int key, int /*scanCode*/, int action, i
 RefEngine::RefEngine() :
 	m_isValid(false),
 	m_pAssetManager(new AssetManager()),
-	m_pCamera(new Camera(glm::vec3(8, 10, -15), glm::vec3(0), 45, 16 / 9.f)),
+	m_pCamera(new Camera(glm::vec3(15, 18, -20), glm::vec3(0,5,0), 45, 16 / 9.f)),
 	m_pEntityManager(new EntityManager()),
 	m_pRenderer(new OpenGLRenderer()),
 	m_pTime(new GameTime()),

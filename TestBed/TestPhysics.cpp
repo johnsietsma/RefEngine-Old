@@ -5,6 +5,7 @@
 #include "components/EntityManager.h"
 #include "physics/PhysicsComponent.h"
 #include "physics/PhysXComponent.h"
+#include "physics/PhysXTriggerShapeComponent.h"
 #include "physics/PhysXGizmoComponent.h"
 
 #include <PxPhysicsAPI.h>
@@ -15,18 +16,20 @@ using namespace physx;
 void AddPhysXObjects(reng::EntityManager* entityManager, PhysXProcessor* processor)
 {
 	auto& pose = PxTransform(PxVec3(0), PxQuat(PxHalfPi, PxVec3(0, 0, 1)) );
-	auto actor = processor->AddStaticActor(pose, PxPlaneGeometry());
+	PxRigidActor* actor = processor->AddStaticActor(pose, PxPlaneGeometry());
 	auto physxEntity = entityManager->Create();
 	physxEntity->EmplaceComponent<PhysXComponent>(actor);
 	physxEntity->EmplaceComponent<PhysXGizmoComponent>();
 
 	pose = PxTransform( PxVec3(0, 5, 0) );
 	actor = processor->AddDynamicActor(pose, PxBoxGeometry(2, 2, 2), 10);
+	static_cast<PxRigidDynamic*>(actor)->setRigidBodyFlag( PxRigidBodyFlag::eKINEMATIC, true );
 	physxEntity = entityManager->Create();
 	physxEntity->EmplaceComponent<PhysXComponent>(actor);
+	physxEntity->EmplaceComponent<PhysXTriggerShapeComponent>(processor->GetScene(), actor);
 	physxEntity->EmplaceComponent<PhysXGizmoComponent>();
 
-	pose = PxTransform(PxVec3(0, 10, 0));
+	pose = PxTransform(PxVec3(0, 15, 0));
 	actor = processor->AddDynamicActor(pose, PxSphereGeometry(2), 10);
 	physxEntity = entityManager->Create();
 	physxEntity->EmplaceComponent<PhysXComponent>(actor);

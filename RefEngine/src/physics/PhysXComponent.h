@@ -27,10 +27,10 @@ class GameTime;
 
 struct PhysXComponent
 {
-	PhysXComponent(const physx::PxRigidActor* a_actor) : actor(a_actor)
+	PhysXComponent(physx::PxRigidActor* a_actor) : actor(a_actor)
 	{}
 
-	const physx::PxRigidActor* actor;
+	physx::PxRigidActor* actor;
 };
 
 class PhysXProcessor : public reng::Processor<PhysXComponent, GameTime>

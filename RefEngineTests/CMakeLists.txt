@@ -3,6 +3,7 @@ cmake_minimum_required(VERSION 2.8)
 #project(RefEngineTests)
 
 enable_testing()
+set(gtest_force_shared_crt ON)
 include_directories(${gtest_SOURCE_DIR}/include ${gtest_SOURCE_DIR})
 
 add_executable(RefEngineTests

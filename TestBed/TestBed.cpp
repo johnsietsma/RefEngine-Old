@@ -19,6 +19,7 @@
 
 #include "physics/PhysicsComponent.h"
 #include "physics/PhysXComponent.h"
+#include "physics/PhysXTriggerShapeComponent.h"
 #include "physics/PhysXGizmoComponent.h"
 
 #include <FBXFile.h>
@@ -70,6 +71,7 @@ TestBed::TestBed() :
 	m_flyInput(GetCamera()),
 	m_spinProcessor(new SpinProcessor()),
 	m_physXProcessor(new PhysXProcessor()),
+	m_physXTriggerShapeProcessor(new PhysXTriggerShapeProcessor()),
 	m_physicsProcessor(new PhysicsProcessor()),
 	m_gizmoProcessor(new AABBGizmoProcessor()),
 	m_physXGizmoProcessor(new PhysXGizmoProcessor())
@@ -157,6 +159,7 @@ void TestBed::DoUpdate(double deltaTime)
 	m_flyInput.Update(GetWindow(), deltaTime);
 	m_spinProcessor->Process(*GetComponentManager(), *GetTime());
 	m_physXProcessor->Process(*GetComponentManager(), *GetTime());
+	m_physXTriggerShapeProcessor->Process(*GetComponentManager());
 	m_physicsProcessor->Process(*GetComponentManager(), *GetTime());
 	m_gizmoProcessor->Process(*GetComponentManager());
 	m_physXGizmoProcessor->Process(*GetComponentManager());
