@@ -42,76 +42,52 @@ add_definitions(-DGLM_SWIZZLE)
 
 add_library(refeng
     ../Readme.md
-    src/AssetManager.cpp
-    src/AssetManager.h
-    src/CachingFactory.h
-    src/Camera.cpp
-    src/Camera.h
-    src/Color.cpp
-    src/Color.h
-    src/FlyInput.cpp
-    src/FlyInput.h
-    src/GameTime.h
-	src/GizmosComponent.cpp
-	src/GizmosComponent.h
-    src/ReadMe.txt
-    src/RefEngine.cpp
-    src/RefEngine.h
-    src/StronglyTyped.h
-    src/targetver.h
-    src/Transform.h
-    src/types.h
-    src/VariadicHash.cpp
-    src/VariadicHash.h
+    AssetManager.cpp
+    AssetManager.h
+    CachingFactory.h
+    Camera.cpp
+    Camera.h
+    Color.cpp
+    Color.h
+    FlyInput.cpp
+    FlyInput.h
+    GameTime.h
+    ReadMe.txt
+    RefEngine.cpp
+    RefEngine.h
+    StronglyTyped.h
+    targetver.h
+    Transform.h
+    types.h
+    VariadicHash.cpp
+    VariadicHash.h
 
-    src/components/ComponentContainer.h
-    src/components/ComponentManager.h
-    src/components/ComponentManager.cpp
-    src/components/Entity.h
-    src/components/Entity.cpp
-    src/components/EntityManager.cpp
-    src/components/EntityManager.h
-    src/components/Processor.h
+    graphics/gl_core_4_4.c
+    graphics/gl_core_4_4.h
+    graphics/GLHelpers.cpp
+    graphics/GLHelpers.h
+    graphics/Material.cpp
+    graphics/Material.h
+    graphics/Mesh.cpp
+    graphics/Mesh.h
+    graphics/OpenGLRenderer.cpp
+    graphics/OpenGLRenderer.h
+    graphics/OpenGLTypes.h
+    graphics/Prims.cpp
+    graphics/Prims.h
 
-    src/graphics/gl_core_4_1.c
-    src/graphics/gl_core_4_1.h
-    src/graphics/GLHelpers.cpp
-    src/graphics/GLHelpers.h
-    src/graphics/Material.cpp
-    src/graphics/Material.h
-    src/graphics/Mesh.cpp
-    src/graphics/Mesh.h
-    src/graphics/OpenGLRenderer.cpp
-    src/graphics/OpenGLRenderer.h
-    src/graphics/OpenGLTypes.h
-    src/graphics/Prims.cpp
-    src/graphics/Prims.h
-    src/graphics/RenderProcessor.cpp
-    src/graphics/RenderProcessor.h
-
-    src/physics/PhysicsComponent.cpp
-    src/physics/PhysicsComponent.h
-    src/physics/PhysXComponent.cpp
-    src/physics/PhysXComponent.h
-	src/physics/PhysXTriggerShapeComponent.cpp
-    src/physics/PhysXTriggerShapeComponent.h
-	src/physics/PhysXGizmoComponent.cpp
-    src/physics/PhysXGizmoComponent.h
-
-    src/utils/memaligned.cpp
-    src/utils/memaligned.h
-    src/utils/pow2assert.cpp
-
-    src/utils/pow2assert.h
+    utils/memaligned.cpp
+    utils/memaligned.h
+    utils/pow2assert.cpp
+    utils/pow2assert.h
 
     ../dep/FBXLoader/FBXFile.cpp
     ../dep/aieutilities/aie/Gizmos.cpp
 )
 
-source_group( Components src/components/ )
-source_group( Graphics src/graphics/ )
-source_group( Physics src/physics/ )
-source_group( Utils src/utils/ )
+source_group( Components components/ )
+source_group( Graphics graphics/ )
+source_group( Utils utils/ )
 
 target_include_directories (refeng PUBLIC ${CMAKE_CURRENT_SOURCE_DIR}\\src)
 target_link_libraries(refeng glfw ${GLFW_LIBRARIES})
@@ -129,16 +105,6 @@ IF(APPLE)
    target_link_libraries(refeng ${FBX_LIB_DIR}libfbxsdk.a)
 ELSE(APPLE)
    target_link_libraries(refeng opengl32.lib)
-
-   target_link_libraries(refeng optimized ${PHYSX_LIB_DIR}PhysX3_x86.lib)
-   target_link_libraries(refeng optimized ${PHYSX_LIB_DIR}PhysX3Common_x86.lib)
-   target_link_libraries(refeng optimized ${PHYSX_LIB_DIR}PhysX3Extensions.lib)
-   target_link_libraries(refeng optimized ${PHYSX_LIB_DIR}PhysXVisualDebuggerSDK.lib)
-
-   target_link_libraries(refeng debug ${PHYSX_LIB_DIR}PhysX3DEBUG_x86.lib)
-   target_link_libraries(refeng debug ${PHYSX_LIB_DIR}PhysX3CommonDEBUG_x86.lib)
-   target_link_libraries(refeng debug ${PHYSX_LIB_DIR}PhysX3ExtensionsDEBUG.lib)
-   target_link_libraries(refeng debug ${PHYSX_LIB_DIR}PhysXVisualDebuggerSDKDEBUG.lib)
 
    if (USE_MSVC_RUNTIME_LIBRARY_DLL)
      target_link_libraries(refeng optimized ${FBX_LIB_DIR}release/libfbxsdk-md.lib)

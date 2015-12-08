@@ -1,6 +1,6 @@
 #include "GLHelpers.h"
 
-#include "graphics/gl_core_4_1.h"
+#include "graphics/gl_core_4_4.h"
 #include "utils/pow2assert.h"
 
 //#define STB_IMAGE_IMPLEMENTATION
@@ -15,7 +15,6 @@ using namespace reng;
 
 // ---- Local helpers ----
 
-#ifdef GL_VERSION_4_4
 void APIENTRY openglCallbackFunction(GLenum source,
 		GLenum type,
 		GLuint id,
@@ -66,7 +65,6 @@ void APIENTRY openglCallbackFunction(GLenum source,
 	cout << endl;
 	cout << "---------------------opengl-callback-end--------------" << endl;
 }
-#endif
 
 string readFile(const char* fileName)
 {
@@ -194,7 +192,6 @@ Texture GLHelpers::LoadTexture( const char* fileName )
 
 void GLHelpers::TurnOnDebugLogging()
 {
-#ifdef GL_VERSION_4_4
     glEnable(GL_DEBUG_OUTPUT_SYNCHRONOUS);
 	glDebugMessageCallback(openglCallbackFunction, nullptr);
 	GLuint unusedIds = 0;
@@ -204,5 +201,4 @@ void GLHelpers::TurnOnDebugLogging()
 		0,
 		&unusedIds,
 		true);
-#endif
 }

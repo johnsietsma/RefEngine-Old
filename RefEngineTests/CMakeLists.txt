@@ -7,12 +7,8 @@ set(gtest_force_shared_crt ON)
 include_directories(${gtest_SOURCE_DIR}/include ${gtest_SOURCE_DIR})
 
 add_executable(RefEngineTests
-    src/CachingFactoryTests.cpp
-	src/ComponentContainerTests.cpp
-	src/ComponentManagerTests.cpp
-    src/EntityManagerTests.cpp
-	src/ProcessorTests.cpp
-    src/VariadicHashTests.cpp
+    CachingFactoryTests.cpp
+    VariadicHashTests.cpp
  )
 
 IF(APPLE)

@@ -5,12 +5,8 @@
 #include "Color.h"
 #include "GameTime.h"
 
-#include "components/EntityManager.h"
-
 #include "graphics/GLHelpers.h"
-#include "graphics/RenderProcessor.h"
 #include "graphics/OpenGLRenderer.h"
-
 #include "utils/pow2assert.h"
 
 #include <aie/Gizmos.h>
@@ -40,10 +36,8 @@ RefEngine::RefEngine() :
 	m_isValid(false),
 	m_pAssetManager(new AssetManager()),
 	m_pCamera(new Camera(glm::vec3(15, 18, -20), glm::vec3(0,5,0), 45, 16 / 9.f)),
-	m_pEntityManager(new EntityManager()),
 	m_pRenderer(new OpenGLRenderer()),
-	m_pTime(new GameTime()),
-	m_pRenderProcessor(new RenderProcessor(m_pCamera.get(), m_pRenderer))
+	m_pTime(new GameTime())
 {
 }
 
@@ -59,8 +53,6 @@ RefEngine::~RefEngine()
 
 	m_isValid = false;
 }
-
-ComponentManager* RefEngine::GetComponentManager() const { return m_pEntityManager->GetComponentManager(); }
 
 void RefEngine::Run()
 {
@@ -151,12 +143,8 @@ void RefEngine::Draw()
 
 	glClear(GL_COLOR_BUFFER_BIT | GL_DEPTH_BUFFER_BIT);
 
-
 	Gizmos::addTransform(glm::mat4(1));
 	DrawWorldGrid();
-
-	auto componentManager = m_pEntityManager->GetComponentManager();
-	m_pRenderProcessor->Process(*componentManager);
 
 	Gizmos::draw(m_pCamera->GetProjectionViewMatrix());
 

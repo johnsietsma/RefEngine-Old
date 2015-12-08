@@ -16,8 +16,6 @@ add_executable(TestBed
     Main.cpp
 	TestBed.cpp
 	TestBed.h
-	TestPhysics.cpp
-	TestPhysics.h
     data/shaders/default.vert
     data/shaders/passthrough.vert
     data/shaders/diffuse.frag

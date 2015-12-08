@@ -4,23 +4,12 @@
 
 #include "AssetManager.h"
 #include "GameTime.h"
-#include "GizmosComponent.h"
 #include "RefEngine.h"
 #include "Transform.h"
-
-#include "components/ComponentManager.h"
-#include "components/Entity.h"
-#include "components/EntityManager.h"
-#include "components/Processor.h"
 
 #include "graphics/Material.h"
 #include "graphics/Mesh.h"
 #include "graphics/Prims.h"
-
-#include "physics/PhysicsComponent.h"
-#include "physics/PhysXComponent.h"
-#include "physics/PhysXTriggerShapeComponent.h"
-#include "physics/PhysXGizmoComponent.h"
 
 #include <FBXFile.h>
 #include <memory>
@@ -43,44 +32,15 @@ static const VertexAttribute FBXVertexAttributes[9] = {
 };
 
 
-struct SpinComponent {
-	SpinComponent() = default;
-	SpinComponent(int s) : spinSpeed(s) {}
-	int spinSpeed;
-};
-
-class SpinProcessor : public Processor<SpinComponent,GameTime>
-{
-public:
-	void DoProcess(const std::vector<EntityId>& entityIds, ComponentManager& componentManager, GameTime& gameTime) override
-	{
-		auto spinContainer = componentManager.GetComponentContainer<SpinComponent>();
-		auto transformContainer = componentManager.GetComponentContainer<Transform>();
-
-		for (auto entityId : entityIds)
-		{
-			auto& spin = spinContainer->Get(entityId);
-			auto& trans = transformContainer->Get(entityId);
-			trans = glm::rotate<float>(trans.GetMartix(), 10 * (float)gameTime.deltaTime, glm::vec3(0, 1.f, 0));
-		}
-	}
-};
+//trans = glm::rotate<float>(trans.GetMartix(), 10 * (float)gameTime.deltaTime, glm::vec3(0, 1.f, 0));
 
 
 TestBed::TestBed() :
-	m_flyInput(GetCamera()),
-	m_spinProcessor(new SpinProcessor()),
-	m_physXProcessor(new PhysXProcessor()),
-	m_physXTriggerShapeProcessor(new PhysXTriggerShapeProcessor()),
-	m_physicsProcessor(new PhysicsProcessor()),
-	m_gizmoProcessor(new AABBGizmoProcessor()),
-	m_physXGizmoProcessor(new PhysXGizmoProcessor())
+	m_flyInput(GetCamera())
 {}
 
 bool TestBed::DoInit()
 {
-	m_physXProcessor->InitVisualDebugger();
-
 	ShaderId vertShader = m_assetManager.LoadShader("data/shaders/default.vert", VertexShader);
 	ShaderId fragShader = m_assetManager.LoadShader("data/shaders/red.frag", FragmentShader);
 	if (vertShader == ShaderId_Invalid || fragShader == ShaderId_Invalid) return false;
@@ -94,7 +54,7 @@ bool TestBed::DoInit()
 	Mesh* pTriBuffer = Mesh::Create<>(Prims::Triangle_NumberOfVerts, Prims::Triangle_Vertices);
 	Material* pMaterial = new Material(programId);
 
-	auto ent1 = GetEntityManager()->Create();
+	/*auto ent1 = GetEntityManager()->Create();
 	ent1->EmplaceComponent<Transform>(glm::vec3(-2, 0, 0));
 	ent1->EmplaceComponent<SpinComponent>();
 	ent1->EmplaceComponent<Mesh*>(pTriBuffer);
@@ -150,17 +110,11 @@ bool TestBed::DoInit()
 
 	AddPhysXObjects(GetEntityManager(), m_physXProcessor.get());
 	AddPhysicsObjects(GetEntityManager(), m_physicsProcessor.get());
-
+    */
 	return true;
 }
 
 void TestBed::DoUpdate(double deltaTime)
 {
 	m_flyInput.Update(GetWindow(), deltaTime);
-	m_spinProcessor->Process(*GetComponentManager(), *GetTime());
-	m_physXProcessor->Process(*GetComponentManager(), *GetTime());
-	m_physXTriggerShapeProcessor->Process(*GetComponentManager());
-	m_physicsProcessor->Process(*GetComponentManager(), *GetTime());
-	m_gizmoProcessor->Process(*GetComponentManager());
-	m_physXGizmoProcessor->Process(*GetComponentManager());
 }
