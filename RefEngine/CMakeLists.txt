@@ -89,7 +89,7 @@ source_group( Components components/ )
 source_group( Graphics graphics/ )
 source_group( Utils utils/ )
 
-target_include_directories (refeng PUBLIC ${CMAKE_CURRENT_SOURCE_DIR}\\src)
+target_include_directories (refeng PUBLIC ${CMAKE_CURRENT_SOURCE_DIR}\\)
 target_link_libraries(refeng glfw ${GLFW_LIBRARIES})
 
 IF(APPLE)
