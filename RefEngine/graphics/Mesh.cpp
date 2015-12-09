@@ -15,7 +15,7 @@ numberOfIndices(numberOfIndices)
 }
 
 
-std::shared_ptr<Mesh> Mesh::CreateMesh(
+std::shared_ptr<Mesh> Mesh::CreateMesh_Impl(
 	size_t vertexSize, uint numberOfVerts, const void* verts,
 	size_t indexSize, GLenum indexType, uint numberOfIndices, const void* indices,
 	size_t numberOfVertexAttributes, const VertexAttribute vertexAttributes[]

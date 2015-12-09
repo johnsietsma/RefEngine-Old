@@ -1,28 +1,27 @@
 #include "Prims.h"
 
-const float Prims::Triangle_Vertices[] = {
+#include <vector>
+
+const  std::vector<float> Prims::Triangle_Vertices {
 	-1.f, -1.f, 0.f,
 	1.f, -1.f, 0.f,
 	0.f, 1.f, 0.f
 };
 
-const uint Prims::Triangle_NumberOfVerts = sizeof(Prims::Triangle_Vertices) / sizeof(float);
-
-const float Prims::Cube_Vertices[] = {
+const std::vector<float> Prims::Cube_Vertices {
 	// front
-	-1.0, -1.0, 1.0,
-	1.0, -1.0, 1.0,
-	1.0, 1.0, 1.0,
-	-1.0, 1.0, 1.0,
+	-1.0f, -1.0f, 1.0f,
+	1.0f, -1.0f, 1.0f,
+	1.0f, 1.0f, 1.0f,
+	-1.0f, 1.0f, 1.0f,
 	// back
-	-1.0, -1.0, -1.0,
-	1.0, -1.0, -1.0,
-	1.0, 1.0, -1.0,
-	-1.0, 1.0, -1.0,
+	-1.0f, -1.0f, -1.0f,
+	1.0f, -1.0f, -1.0f,
+	1.0f, 1.0f, -1.0f,
+	-1.0f, 1.0f, -1.0f,
 };
 
-
-const uint Prims::Cube_Indices[] = {
+const std::vector<uint> Prims::Cube_Indices {
 	// front
 	0, 1, 2,
 	2, 3, 0,
@@ -43,18 +42,15 @@ const uint Prims::Cube_Indices[] = {
 	6, 2, 1,
 };
 
-const float Prims::Cube_Colors[] = {
+const std::vector<float> Prims::Cube_Colors {
 	// front colors
-	1.0, 0.0, 0.0,
-	0.0, 1.0, 0.0,
-	0.0, 0.0, 1.0,
-	1.0, 1.0, 1.0,
+	1.0f, 0.0f, 0.0f,
+	0.0f, 1.0f, 0.0f,
+	0.0f, 0.0f, 1.0f,
+	1.0f, 1.0f, 1.0f,
 	// back colors
-	1.0, 0.0, 0.0,
-	0.0, 1.0, 0.0,
-	0.0, 0.0, 1.0,
-	1.0, 1.0, 1.0,
+	1.0f, 0.0f, 0.0f,
+	0.0f, 1.0f, 0.0f,
+	0.0f, 0.0f, 1.0f,
+	1.0f, 1.0f, 1.0f,
 };
-
-const uint Prims::Cube_NumberOfVerts = sizeof(Prims::Cube_Vertices) / sizeof(float);
-const uint Prims::Cube_NumberOfIndices = sizeof(Prims::Cube_Indices) / sizeof(uint);

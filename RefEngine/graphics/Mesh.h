@@ -4,6 +4,7 @@
 #include "types.h"
 
 #include <memory>
+#include <vector>
 
 namespace reng {
 
@@ -34,9 +35,9 @@ public:
 
 	// Create vertex only buffers
 	template<typename VertT>
-	static std::shared_ptr<Mesh> Create(uint numberOfVerts, const VertT verts[]) {
-		return CreateMesh(
-			sizeof(VertT), numberOfVerts, verts,
+	static std::shared_ptr<Mesh> Create(const std::vector<VertT> verts) {
+        return CreateMesh_Impl(
+			sizeof(VertT), verts.size(), &(verts[0]),
 			0, 0, 0, nullptr,
 			0, nullptr
 			);
@@ -48,7 +49,7 @@ public:
 		uint numberOfVerts, const VertT verts[],
 		uint numberOfIndices, const IndexT indices[]
 		) {
-		return CreateMesh(
+        return CreateMesh_Impl(
 			sizeof(VertT), numberOfVerts, verts,
 			sizeof(IndexT), reng::GLEnumValue<IndexT>::value, numberOfIndices, indices,
 			0, nullptr
@@ -56,23 +57,33 @@ public:
 	}
 
 	// Create indexed vertex buffers, each vertex has a number of attributes.
-	template<typename VertT, typename IndexT>
-	static std::shared_ptr<Mesh> Create(
-		uint numberOfVerts, const VertT verts[],
-		uint numberOfIndices, const IndexT indices[],
-		size_t numberOfVertexAttributes, const VertexAttribute vertexAttributes[]
-		) {
-		return CreateMesh(
-			sizeof(VertT), numberOfVerts, verts,
-			sizeof(IndexT), reng::GLEnumValue<IndexT>::value, numberOfIndices, indices,
-			numberOfVertexAttributes, vertexAttributes
-			);
-	}
+    template<typename VertT, typename IndexT>
+    static std::shared_ptr<Mesh> Create(const std::vector<VertT>& vertices,
+        const std::vector<IndexT>& indices )
+    {
+        return CreateMesh_Impl(
+            sizeof(VertT), vertices.size(), &(vertices[0]),
+            sizeof(IndexT), reng::GLEnumValue<IndexT>::value, indices.size(), &(indices[0]),
+            0, nullptr
+            );
+    }
+
+    template<typename VertT, typename IndexT>
+    static std::shared_ptr<Mesh> Create( const std::vector<VertT>& vertices,
+        const std::vector<IndexT>& indices,
+        const std::vector<VertexAttribute>& vertexAttributes )
+    {
+        return CreateMesh_Impl(
+            sizeof(VertT), vertices.size(), &(vertices[0]),
+            sizeof(IndexT), reng::GLEnumValue<IndexT>::value, indices.size(), &(indices[0]),
+            vertexAttributes.size(), &(vertexAttributes[0])
+            );
+    }
 
     Mesh(IBOId iboId, VAOId vaoId, VBOId vboId, GLuint numberOfVerts, GLuint numberOfIndices, GLenum indexType);
 
 private:
-	static std::shared_ptr<Mesh> CreateMesh(
+	static std::shared_ptr<Mesh> CreateMesh_Impl(
 		size_t vertexSize, uint numberOfVerts, const void* verts,
 		size_t indexSize, GLenum indexType, uint numberOfIndices, const void* indices,
 		size_t numberOfVertexAttributes, const VertexAttribute vertexAttributes[]

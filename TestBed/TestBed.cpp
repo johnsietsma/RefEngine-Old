@@ -14,6 +14,7 @@
 #include "graphics/Prims.h"
 
 #include <FBXFile.h>
+#include <array>
 #include <memory>
 #include <glm/gtx/transform.hpp>
 
@@ -21,7 +22,7 @@
 
 using namespace reng;
 
-static const VertexAttribute FBXVertexAttributes[9] = {
+static const std::vector<VertexAttribute> FBXVertexAttributes {
 	VertexAttribute::Create<glm::vec4>(4, offsetof(FBXVertex, position), GL_FLOAT),
 	VertexAttribute::Create<glm::vec4>(4, offsetof(FBXVertex, colour), GL_FLOAT),
 	VertexAttribute::Create<glm::vec4>(4, offsetof(FBXVertex, normal), GL_FLOAT),
@@ -61,8 +62,8 @@ bool TestBed::DoInit()
 	if (programId == ProgramId_Invalid) return false;
 
 	// Put in a couple of tris
-	std::shared_ptr<Mesh> pTriBuffer = Mesh::Create<>(Prims::Triangle_NumberOfVerts, Prims::Triangle_Vertices);
-    std::shared_ptr<Mesh> pCubeBuffer = Mesh::Create(Prims::Cube_NumberOfVerts, Prims::Cube_Vertices, Prims::Cube_NumberOfIndices, Prims::Cube_Indices);
+	std::shared_ptr<Mesh> pTriBuffer = Mesh::Create<>(Prims::Triangle_Vertices);
+    std::shared_ptr<Mesh> pCubeBuffer = Mesh::Create(Prims::Cube_Vertices, Prims::Cube_Indices);
 
     std::shared_ptr<Material> pMaterial = std::make_shared<Material>(programId);
 
@@ -88,12 +89,7 @@ bool TestBed::DoInit()
 			}
 
 
-			auto pMeshBuffer = Mesh::Create(
-				pMesh->m_vertices.size(), &(pMesh->m_vertices[0]),
-				numIndices, pIndices,
-				sizeof(FBXVertexAttributes) / sizeof(VertexAttribute), FBXVertexAttributes
-				);
-
+            auto pMeshBuffer = Mesh::Create(pMesh->m_vertices, pMesh->m_indices, FBXVertexAttributes);
             EmplaceGameObject<RenderableGameObject>(glm::vec3(0, 0, 3), pMeshBuffer, pMaterial);
 		}
 	}

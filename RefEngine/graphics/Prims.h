@@ -2,18 +2,15 @@
 
 #include "types.h"
 
+#include <vector>
+
 class Prims
 {
 public:
 	Prims() = delete;
 
-	static const float Triangle_Vertices[];
-	static const uint Triangle_NumberOfVerts;
-
-	static const float Cube_Vertices[];
-	static const uint Cube_Indices[];
-	static const float Cube_Colors[];
-	static const uint Cube_NumberOfVerts;
-	static const uint Cube_NumberOfIndices;
+	static const std::vector<float> Triangle_Vertices;
+    static const std::vector<float> Cube_Vertices;
+    static const std::vector<uint> Cube_Indices;
+	static const std::vector<float> Cube_Colors;
 };
-
