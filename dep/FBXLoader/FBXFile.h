@@ -412,13 +412,13 @@ private:
 
 	glm::vec4								m_ambientLight;
 	std::vector<FBXMeshNode*>				m_meshes;
-	std::map<std::string, FBXLightNode*>		m_lights;
+	std::map<std::string, FBXLightNode*>	m_lights;
 	std::map<std::string, FBXCameraNode*>	m_cameras;
 	std::map<std::string, FBXMaterial*>		m_materials;
 	std::map<std::string, FBXTexture*>		m_textures;
 
 	std::vector<FBXSkeleton*>				m_skeletons;
-	std::map<std::string, FBXAnimation*>		m_animations;
+	std::map<std::string, FBXAnimation*>	m_animations;
 
 	ImportAssistor*							m_importAssistor;
 
