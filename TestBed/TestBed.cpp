@@ -4,6 +4,8 @@
 
 #include "AssetManager.h"
 #include "GameTime.h"
+#include "IGameObject.h"
+#include "graphics\OpenGLRenderer.h"
 #include "RefEngine.h"
 #include "Transform.h"
 
@@ -34,6 +36,38 @@ static const VertexAttribute FBXVertexAttributes[9] = {
 
 //trans = glm::rotate<float>(trans.GetMartix(), 10 * (float)gameTime.deltaTime, glm::vec3(0, 1.f, 0));
 
+class SpinObject : public IGameObject {
+public:
+    SpinObject(glm::vec3 pos, std::shared_ptr<Mesh> pMesh, std::shared_ptr<Material> pMaterial) :
+        m_transform(pos),
+        m_pMesh(pMesh),
+        m_pMaterial(pMaterial)
+    {}
+
+    void Update( double deltaTime ) override {
+        m_transform = glm::rotate<float>(m_transform.GetMartix(), (float)(spinSpeed * deltaTime), glm::vec3(0, 1.f, 0));
+    }
+
+    void Draw( OpenGLRenderer* pRenderer, Camera* pCamera ) const override
+    {
+        pRenderer->UseProgram(m_pMaterial->GetProgramId());
+
+        // TODO: Cache this
+        m_pMaterial->UpdateUniforms(pCamera->GetProjectionViewMatrix(), m_transform.GetMartix());
+
+        pRenderer->Bind(*m_pMesh);
+        pRenderer->Draw(*m_pMesh);
+
+        pRenderer->Unbind();
+        pRenderer->UnuseProgram();
+    }
+
+    Transform m_transform;
+    std::shared_ptr<Mesh> m_pMesh;
+    std::shared_ptr<Material> m_pMaterial;
+    float spinSpeed = 10;
+};
+
 
 TestBed::TestBed() :
 	m_flyInput(GetCamera())
@@ -51,8 +85,11 @@ bool TestBed::DoInit()
 	GameTime* pTime = GetTime();
 
 	// Put in a couple of tris
-	Mesh* pTriBuffer = Mesh::Create<>(Prims::Triangle_NumberOfVerts, Prims::Triangle_Vertices);
-	Material* pMaterial = new Material(programId);
+	std::shared_ptr<Mesh> pTriBuffer = Mesh::Create<>(Prims::Triangle_NumberOfVerts, Prims::Triangle_Vertices);
+	std::shared_ptr<Material> pMaterial = std::make_shared<Material>(programId);
+
+    EmplaceGameObject<SpinObject>(glm::vec3(-2, 0, 0), pTriBuffer, pMaterial);
+
 
 	/*auto ent1 = GetEntityManager()->Create();
 	ent1->EmplaceComponent<Transform>(glm::vec3(-2, 0, 0));

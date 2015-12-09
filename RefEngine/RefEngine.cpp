@@ -4,9 +4,11 @@
 #include "Camera.h"
 #include "Color.h"
 #include "GameTime.h"
+#include "IGameObject.h"
 
 #include "graphics/GLHelpers.h"
 #include "graphics/OpenGLRenderer.h"
+
 #include "utils/pow2assert.h"
 
 #include <aie/Gizmos.h>
@@ -43,40 +45,7 @@ RefEngine::RefEngine() :
 
 RefEngine::~RefEngine()
 {
-	if (m_pWindow != nullptr) {
-		glfwDestroyWindow(m_pWindow);
-		m_pWindow = nullptr;
-	}
-	if (m_isValid) { glfwTerminate(); }
-
-	Gizmos::destroy();
-
-	m_isValid = false;
-}
-
-void RefEngine::Run()
-{
-	POW2_ASSERT_MSG(m_isValid, "Call Init() first and check return code.");
-
-	double currentTime = glfwGetTime();
-	double deltaTime = 1/60.f;
-	double elapsedTime = 0;
-	double accumulator = 0.0;
-	bool isRunning = true;
-
-	while (isRunning) {
-		double newTime = glfwGetTime();
-		double frameTime = newTime - currentTime; 
-		if (frameTime > 0.25) frameTime = 0.25; 
-		currentTime = newTime;  
-		accumulator += frameTime;
-		while (accumulator >= deltaTime && isRunning) {
-			isRunning = Update(deltaTime); 
-			elapsedTime += deltaTime; 
-			accumulator -= deltaTime; 
-		}  
-		Draw(); 
-	}
+    if (m_isValid) Destroy();
 }
 
 bool RefEngine::Init()
@@ -100,8 +69,9 @@ bool RefEngine::Init()
 	glfwSetKeyCallback(m_pWindow, keyCallback);
 	glfwMakeContextCurrent(m_pWindow);
 	glfwSwapInterval(1);
-	int width, height;
-	glfwGetFramebufferSize(m_pWindow, &width, &height);
+
+	//int width, height;
+	//glfwGetFramebufferSize(m_pWindow, &width, &height);
 
 	if (ogl_LoadFunctions() == ogl_LOAD_FAILED) return false;
 
@@ -110,7 +80,9 @@ bool RefEngine::Init()
 
 	printf("Supported GLSL version is %s.\n", (char *)glGetString(GL_SHADING_LANGUAGE_VERSION));
 
+#ifdef DEBUG
 	GLHelpers::TurnOnDebugLogging();
+#endif
 
 	Gizmos::create();
 
@@ -119,6 +91,46 @@ bool RefEngine::Init()
 	m_isValid = true;
 
 	return true;
+}
+
+void RefEngine::Destroy()
+{
+    POW2_ASSERT(m_isValid);
+
+    if (m_pWindow != nullptr) {
+        glfwDestroyWindow(m_pWindow);
+        m_pWindow = nullptr;
+    }
+    if (m_isValid) { glfwTerminate(); }
+
+    Gizmos::destroy();
+
+    m_isValid = false;
+}
+
+void RefEngine::Run()
+{
+    POW2_ASSERT_MSG(m_isValid, "Call Init() first and check return code.");
+
+    double currentTime = glfwGetTime();
+    double deltaTime = 1 / 60.f;
+    double elapsedTime = 0;
+    double accumulator = 0.0;
+    bool isRunning = true;
+
+    while (isRunning) {
+        double newTime = glfwGetTime();
+        double frameTime = newTime - currentTime;
+        if (frameTime > 0.25) frameTime = 0.25;
+        currentTime = newTime;
+        accumulator += frameTime;
+        while (accumulator >= deltaTime && isRunning) {
+            isRunning = Update(deltaTime);
+            elapsedTime += deltaTime;
+            accumulator -= deltaTime;
+        }
+        Draw();
+    }
 }
 
 bool RefEngine::Update(double deltaTime)
@@ -132,6 +144,11 @@ bool RefEngine::Update(double deltaTime)
 	glfwPollEvents();
 
 	DoUpdate(deltaTime);
+
+    for (auto& gameObject : m_gameObjects) 
+    {
+        gameObject->Update(deltaTime);
+    }
 
 	return true;
 }
@@ -148,7 +165,16 @@ void RefEngine::Draw()
 
 	Gizmos::draw(m_pCamera->GetProjectionViewMatrix());
 
+    for (const auto& gameObject : m_gameObjects)
+    {
+        gameObject->Draw(m_pRenderer.get(), m_pCamera.get());
+    }
+
 	glfwSwapBuffers(m_pWindow);
+}
+
+void RefEngine::AddGameObject(IGameObject* pGameObject) {
+    m_gameObjects.emplace_back(pGameObject);
 }
 
 

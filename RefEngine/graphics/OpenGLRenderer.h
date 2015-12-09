@@ -20,12 +20,11 @@ public:
 	void UseProgram(ProgramId programId);
 	void Bind(const Mesh& mesh);
 	void Draw(const Mesh& mesh);
-	void UnbindAll();
+	void Unbind();
 	void UnuseProgram();
 
 private:
 	OpenGLState m_state;
-
 };
 
 }

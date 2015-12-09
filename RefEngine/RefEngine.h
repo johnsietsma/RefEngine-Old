@@ -11,12 +11,9 @@ struct GLFWwindow;
 namespace reng {
 
 class AssetManager;
-class ComponentManager;
-class EntityManager;
 class GameTime;
-class RenderProcessor;
+class IGameObject;
 class OpenGLRenderer;
-class ProcessorManager;
 
 class RefEngine
 {
@@ -24,20 +21,17 @@ public:
 	RefEngine();
 	~RefEngine();
 
-	// Disallow copying and moving
-	RefEngine( const RefEngine& ) = delete;
-	RefEngine( RefEngine&& ) = delete;
-	RefEngine& operator=( const RefEngine& ) = delete;
-	RefEngine& operator=( RefEngine&& ) = delete;
-
 	GameTime* GetTime() const { return m_pTime.get(); }
-	ComponentManager* GetComponentManager() const;
-	EntityManager* GetEntityManager() const { return m_pEntityManager.get(); }
 
-	void Run();
-	bool Init();
-	bool Update(double deltaTime);
-	void Draw();
+    bool Init();
+    void Run();
+
+    void AddGameObject(IGameObject* pGameObject);
+    
+    template<class T,class ...TArgs>
+    void EmplaceGameObject(TArgs... args) {
+        m_gameObjects.emplace_back( std::make_unique<T>(args...) );
+    }
 
 protected:
 	GLFWwindow* GetWindow() { return m_pWindow;  }
@@ -45,21 +39,20 @@ protected:
 
 	virtual bool DoInit() = 0;
 	virtual void DoUpdate(double deltaTime) = 0;
-
 private:
+    bool Update(double deltaTime);
+    void Draw();
 	void DrawWorldGrid() const;
+    void Destroy();
 
 	bool m_isValid;
 
 	GLFWwindow* m_pWindow;
 	std::unique_ptr<AssetManager> m_pAssetManager;
 	std::shared_ptr<Camera> m_pCamera;
-	std::shared_ptr<EntityManager> m_pEntityManager;
 	std::shared_ptr<GameTime> m_pTime;
-	std::shared_ptr<ProcessorManager> m_pProcessor;
 	std::shared_ptr<OpenGLRenderer> m_pRenderer;
-
-	std::shared_ptr<RenderProcessor> m_pRenderProcessor;
+    std::vector<std::unique_ptr<IGameObject>> m_gameObjects;
 };
 
 }

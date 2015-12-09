@@ -45,7 +45,7 @@ void OpenGLRenderer::Draw(const Mesh& mesh )
 	}
 }
 
-void OpenGLRenderer::UnbindAll()
+void OpenGLRenderer::Unbind()
 {
 	glBindBuffer(GL_ARRAY_BUFFER, 0);
 	m_state.vboId = VBOId_Invalid;

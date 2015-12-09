@@ -15,7 +15,7 @@ numberOfIndices(numberOfIndices)
 }
 
 
-Mesh* Mesh::CreateMesh(
+std::shared_ptr<Mesh> Mesh::CreateMesh(
 	size_t vertexSize, uint numberOfVerts, const void* verts,
 	size_t indexSize, GLenum indexType, uint numberOfIndices, const void* indices,
 	size_t numberOfVertexAttributes, const VertexAttribute vertexAttributes[]
@@ -63,5 +63,5 @@ Mesh* Mesh::CreateMesh(
 	glBindBuffer(GL_ARRAY_BUFFER, 0);
 	glBindBuffer(GL_ELEMENT_ARRAY_BUFFER, 0);
 
-	return new Mesh(indexBufferObjectId, vertexArrayObjectId, vertexBufferId, numberOfVerts, numberOfIndices, indexType);
+	return std::make_shared<Mesh>(indexBufferObjectId, vertexArrayObjectId, vertexBufferId, numberOfVerts, numberOfIndices, indexType);
 }

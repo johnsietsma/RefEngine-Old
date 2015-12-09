@@ -51,6 +51,7 @@ add_library(refeng
     Color.h
     FlyInput.cpp
     FlyInput.h
+    IGameObject.h
     GameTime.h
     ReadMe.txt
     RefEngine.cpp

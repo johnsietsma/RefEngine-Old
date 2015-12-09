@@ -3,6 +3,8 @@
 #include "OpenGlTypes.h"
 #include "types.h"
 
+#include <memory>
+
 namespace reng {
 
 struct VertexAttribute {
@@ -32,7 +34,7 @@ public:
 
 	// Create vertex only buffers
 	template<typename VertT>
-	static Mesh* Create(uint numberOfVerts, const VertT verts[]) {
+	static std::shared_ptr<Mesh> Create(uint numberOfVerts, const VertT verts[]) {
 		return CreateMesh(
 			sizeof(VertT), numberOfVerts, verts,
 			0, 0, 0, nullptr,
@@ -42,7 +44,7 @@ public:
 
 	// Create indexed vertex buffers, each vertex has a position attribute
 	template<typename VertT, typename IndexT>
-	static Mesh* Create(
+	static std::shared_ptr<Mesh> Create(
 		uint numberOfVerts, const VertT verts[],
 		uint numberOfIndices, const IndexT indices[]
 		) {
@@ -55,7 +57,7 @@ public:
 
 	// Create indexed vertex buffers, each vertex has a number of attributes.
 	template<typename VertT, typename IndexT>
-	static Mesh* Create(
+	static std::shared_ptr<Mesh> Create(
 		uint numberOfVerts, const VertT verts[],
 		uint numberOfIndices, const IndexT indices[],
 		size_t numberOfVertexAttributes, const VertexAttribute vertexAttributes[]
@@ -67,10 +69,10 @@ public:
 			);
 	}
 
-private:
-	Mesh(IBOId iboId, VAOId vaoId, VBOId vboId, GLuint numberOfVerts, GLuint numberOfIndices, GLenum indexType);
+    Mesh(IBOId iboId, VAOId vaoId, VBOId vboId, GLuint numberOfVerts, GLuint numberOfIndices, GLenum indexType);
 
-	static Mesh* CreateMesh(
+private:
+	static std::shared_ptr<Mesh> CreateMesh(
 		size_t vertexSize, uint numberOfVerts, const void* verts,
 		size_t indexSize, GLenum indexType, uint numberOfIndices, const void* indices,
 		size_t numberOfVertexAttributes, const VertexAttribute vertexAttributes[]
