@@ -73,8 +73,6 @@ bool TestBed::DoInit()
     // Add a cube
     EmplaceGameObject<RenderableGameObject>(glm::vec3(0, 0, -5), pCubeBuffer, pMaterial);
 
-	/*
-  
 	// Add a fbx model
 	auto fbx = std::shared_ptr<FBXFile>(new FBXFile());
 	fbx->load("data/models/cube.fbx");
@@ -96,19 +94,12 @@ bool TestBed::DoInit()
 				sizeof(FBXVertexAttributes) / sizeof(VertexAttribute), FBXVertexAttributes
 				);
 
-			auto fbxModel = GetEntityManager()->Create();
-			fbxModel->EmplaceComponent<Transform>(glm::vec3(0, 0, 3));
-			fbxModel->EmplaceComponent<Mesh*>(pMeshBuffer);
-			fbxModel->EmplaceComponent<Material*>(pMaterial);
-			m_entities.emplace_back(std::move(fbxModel));
+            EmplaceGameObject<RenderableGameObject>(glm::vec3(0, 0, 3), pMeshBuffer, pMaterial);
 		}
 	}
 
 	fbx->initialiseOpenGLTextures();
 
-	AddPhysXObjects(GetEntityManager(), m_physXProcessor.get());
-	AddPhysicsObjects(GetEntityManager(), m_physicsProcessor.get());
-    */
 	return true;
 }
 
