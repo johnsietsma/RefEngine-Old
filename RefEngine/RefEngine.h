@@ -11,7 +11,6 @@ struct GLFWwindow;
 namespace reng {
 
 class AssetManager;
-class GameTime;
 class IGameObject;
 class OpenGLRenderer;
 
@@ -20,8 +19,6 @@ class RefEngine
 public:
 	RefEngine();
 	~RefEngine();
-
-	GameTime* GetTime() const { return m_pTime.get(); }
 
     bool Init();
     void Run();
@@ -50,7 +47,6 @@ private:
 	GLFWwindow* m_pWindow;
 	std::unique_ptr<AssetManager> m_pAssetManager;
 	std::shared_ptr<Camera> m_pCamera;
-	std::shared_ptr<GameTime> m_pTime;
 	std::shared_ptr<OpenGLRenderer> m_pRenderer;
     std::vector<std::unique_ptr<IGameObject>> m_gameObjects;
 };

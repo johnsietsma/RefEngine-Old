@@ -4,7 +4,7 @@
 
 #include "AssetManager.h"
 #include "GameTime.h"
-#include "IGameObject.h"
+#include "RenderableGameObject.h"
 #include "graphics\OpenGLRenderer.h"
 #include "RefEngine.h"
 #include "Transform.h"
@@ -33,38 +33,16 @@ static const VertexAttribute FBXVertexAttributes[9] = {
 	VertexAttribute::Create<glm::vec2>(2, offsetof(FBXVertex, texCoord2), GL_FLOAT)
 };
 
-
-//trans = glm::rotate<float>(trans.GetMartix(), 10 * (float)gameTime.deltaTime, glm::vec3(0, 1.f, 0));
-
-class SpinObject : public IGameObject {
+class SpinObject : public RenderableGameObject {
 public:
-    SpinObject(glm::vec3 pos, std::shared_ptr<Mesh> pMesh, std::shared_ptr<Material> pMaterial) :
-        m_transform(pos),
-        m_pMesh(pMesh),
-        m_pMaterial(pMaterial)
+    SpinObject(glm::vec3 pos, std::shared_ptr<Mesh> pMesh, std::shared_ptr<Material> pMaterial) 
+        : RenderableGameObject(pos, pMesh, pMaterial)
     {}
 
     void Update( double deltaTime ) override {
         m_transform = glm::rotate<float>(m_transform.GetMartix(), (float)(spinSpeed * deltaTime), glm::vec3(0, 1.f, 0));
     }
 
-    void Draw( OpenGLRenderer* pRenderer, Camera* pCamera ) const override
-    {
-        pRenderer->UseProgram(m_pMaterial->GetProgramId());
-
-        // TODO: Cache this
-        m_pMaterial->UpdateUniforms(pCamera->GetProjectionViewMatrix(), m_transform.GetMartix());
-
-        pRenderer->Bind(*m_pMesh);
-        pRenderer->Draw(*m_pMesh);
-
-        pRenderer->Unbind();
-        pRenderer->UnuseProgram();
-    }
-
-    Transform m_transform;
-    std::shared_ptr<Mesh> m_pMesh;
-    std::shared_ptr<Material> m_pMaterial;
     float spinSpeed = 10;
 };
 
@@ -82,38 +60,21 @@ bool TestBed::DoInit()
 	ProgramId programId = m_assetManager.LinkProgram(vertShader, fragShader);
 	if (programId == ProgramId_Invalid) return false;
 
-	GameTime* pTime = GetTime();
-
 	// Put in a couple of tris
 	std::shared_ptr<Mesh> pTriBuffer = Mesh::Create<>(Prims::Triangle_NumberOfVerts, Prims::Triangle_Vertices);
-	std::shared_ptr<Material> pMaterial = std::make_shared<Material>(programId);
+    std::shared_ptr<Mesh> pCubeBuffer = Mesh::Create(Prims::Cube_NumberOfVerts, Prims::Cube_Vertices, Prims::Cube_NumberOfIndices, Prims::Cube_Indices);
 
+    std::shared_ptr<Material> pMaterial = std::make_shared<Material>(programId);
+
+    // Add a couple of tris
     EmplaceGameObject<SpinObject>(glm::vec3(-2, 0, 0), pTriBuffer, pMaterial);
+    EmplaceGameObject<SpinObject>(glm::vec3(2, 0, 0), pTriBuffer, pMaterial);
 
+    // Add a cube
+    EmplaceGameObject<RenderableGameObject>(glm::vec3(0, 0, -5), pCubeBuffer, pMaterial);
 
-	/*auto ent1 = GetEntityManager()->Create();
-	ent1->EmplaceComponent<Transform>(glm::vec3(-2, 0, 0));
-	ent1->EmplaceComponent<SpinComponent>();
-	ent1->EmplaceComponent<Mesh*>(pTriBuffer);
-	ent1->EmplaceComponent<Material*>(pMaterial);
-	m_entities.emplace_back(std::move(ent1));
-	
-	auto ent2 = GetEntityManager()->Create();
-	ent2->EmplaceComponent<Transform>(glm::vec3(2, 0, 0));
-	ent2->EmplaceComponent<SpinComponent>();
-	ent2->EmplaceComponent<Mesh*>(pTriBuffer);
-	ent2->EmplaceComponent<Material*>(pMaterial);
-	m_entities.emplace_back(std::move(ent2));
-
-	// Add a cube
-	auto pCubeBuffer = Mesh::Create(Prims::Cube_NumberOfVerts, Prims::Cube_Vertices, Prims::Cube_NumberOfIndices, Prims::Cube_Indices);
-
-	std::shared_ptr<Entity> cube = GetEntityManager()->Create();
-	cube->EmplaceComponent<Transform>(glm::vec3(0, 0, -5));
-	cube->EmplaceComponent<Mesh*>(pCubeBuffer);
-	cube->EmplaceComponent<Material*>(pMaterial);
-	m_entities.emplace_back(std::move(cube));
-
+	/*
+  
 	// Add a fbx model
 	auto fbx = std::shared_ptr<FBXFile>(new FBXFile());
 	fbx->load("data/models/cube.fbx");

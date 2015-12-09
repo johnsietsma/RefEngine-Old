@@ -38,8 +38,7 @@ RefEngine::RefEngine() :
 	m_isValid(false),
 	m_pAssetManager(new AssetManager()),
 	m_pCamera(new Camera(glm::vec3(15, 18, -20), glm::vec3(0,5,0), 45, 16 / 9.f)),
-	m_pRenderer(new OpenGLRenderer()),
-	m_pTime(new GameTime())
+	m_pRenderer(new OpenGLRenderer())
 {
 }
 
@@ -137,9 +136,6 @@ bool RefEngine::Update(double deltaTime)
 {
 	POW2_ASSERT(m_isValid);
 	if (glfwWindowShouldClose(m_pWindow)) return false;
-
-	m_pTime->deltaTime = deltaTime;
-	m_pTime->elapsedTime += deltaTime;
 
 	glfwPollEvents();
 
