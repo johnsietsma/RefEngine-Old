@@ -9,11 +9,17 @@ namespace reng {
 
 class Transform {
 public:
-	Transform(glm::vec3 position) {
-		glm::vec4 pos = glm::vec4(position, 1);
-		glm::mat4 trans = glm::mat4(1.0f);
-		m_globalTransform[3] = pos;
-	}
+	Transform(glm::vec3 position, glm::quat rot, glm::vec3 scale)
+    {
+        m_globalTransform = glm::mat4_cast(rot);
+        m_globalTransform *= glm::translate(position);
+        m_globalTransform *= glm::scale(scale);
+    }
+
+    Transform(glm::vec3 position) 
+        : Transform(position, glm::quat(), glm::vec3(1) )
+    {
+    }
 
 	Transform( const glm::mat4x4& transform ) :
 		m_globalTransform(transform)

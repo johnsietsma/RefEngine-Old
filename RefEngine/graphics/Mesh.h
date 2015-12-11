@@ -36,12 +36,23 @@ public:
 	// Create vertex only buffers
 	template<typename VertT>
 	static std::shared_ptr<Mesh> Create(const std::vector<VertT> verts) {
+
+        // TODO: Get actual vert size from vertex attribute.
+
         return CreateMesh_Impl(
-			sizeof(VertT), verts.size(), &(verts[0]),
-			0, 0, 0, nullptr,
-			0, nullptr
+			sizeof(VertT), verts.size(), &(verts[0]), // vertex info
+			0, 0, 0, nullptr // index info
 			);
 	}
+
+    template<typename VertT>
+    static std::shared_ptr<Mesh> Create(const std::vector<VertT> verts, const std::vector<VertexAttribute>& vertexAttributes) {
+        return CreateMesh_Impl(
+            sizeof(VertT), verts.size(), verts.data(), // vertex info
+            0, 0, 0, nullptr, // index info
+            vertexAttributes.size(), vertexAttributes.data()
+            );
+    }
 
 	// Create indexed vertex buffers, each vertex has a position attribute
 	template<typename VertT, typename IndexT>
@@ -51,8 +62,7 @@ public:
 		) {
         return CreateMesh_Impl(
 			sizeof(VertT), numberOfVerts, verts,
-			sizeof(IndexT), reng::GLEnumValue<IndexT>::value, numberOfIndices, indices,
-			0, nullptr
+			sizeof(IndexT), reng::GLEnumValue<IndexT>::value, numberOfIndices, indices
 			);
 	}
 
@@ -62,9 +72,8 @@ public:
         const std::vector<IndexT>& indices )
     {
         return CreateMesh_Impl(
-            sizeof(VertT), vertices.size(), &(vertices[0]),
-            sizeof(IndexT), reng::GLEnumValue<IndexT>::value, indices.size(), &(indices[0]),
-            0, nullptr
+            sizeof(VertT), vertices.size(), vertices.data(),
+            sizeof(IndexT), reng::GLEnumValue<IndexT>::value, indices.size(), &(indices[0])
             );
     }
 
@@ -74,7 +83,7 @@ public:
         const std::vector<VertexAttribute>& vertexAttributes )
     {
         return CreateMesh_Impl(
-            sizeof(VertT), vertices.size(), &(vertices[0]),
+            sizeof(VertT), vertices.size(), vertices.data(),
             sizeof(IndexT), reng::GLEnumValue<IndexT>::value, indices.size(), &(indices[0]),
             vertexAttributes.size(), &(vertexAttributes[0])
             );
@@ -86,7 +95,7 @@ private:
 	static std::shared_ptr<Mesh> CreateMesh_Impl(
 		size_t vertexSize, uint numberOfVerts, const void* verts,
 		size_t indexSize, GLenum indexType, uint numberOfIndices, const void* indices,
-		size_t numberOfVertexAttributes, const VertexAttribute vertexAttributes[]
+		size_t numberOfVertexAttributes=0, const VertexAttribute vertexAttributes[]=nullptr
 		);
 };
 

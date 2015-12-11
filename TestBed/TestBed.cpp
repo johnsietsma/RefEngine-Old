@@ -17,10 +17,17 @@
 #include <array>
 #include <memory>
 #include <glm/gtx/transform.hpp>
+#include <glm/gtc/quaternion.hpp>
 
 
 
 using namespace reng;
+
+static const std::vector<VertexAttribute> UVVertexAttributes{
+    VertexAttribute::Create<glm::vec4>(4, 0, GL_FLOAT),
+    VertexAttribute::Create<glm::vec2>(2, sizeof(float)*4, GL_FLOAT)
+};
+
 
 static const std::vector<VertexAttribute> FBXVertexAttributes {
 	VertexAttribute::Create<glm::vec4>(4, offsetof(FBXVertex, position), GL_FLOAT),
@@ -55,24 +62,27 @@ TestBed::TestBed() :
 bool TestBed::DoInit()
 {
 	ShaderId vertShader = m_assetManager.LoadShader("data/shaders/default.vert", VertexShader);
-	ShaderId fragShader = m_assetManager.LoadShader("data/shaders/red.frag", FragmentShader);
-	if (vertShader == ShaderId_Invalid || fragShader == ShaderId_Invalid) return false;
+	ShaderId redFragShader = m_assetManager.LoadShader("data/shaders/red.frag", FragmentShader);
+	if (vertShader == ShaderId_Invalid || redFragShader == ShaderId_Invalid) return false;
 
-	ProgramId programId = m_assetManager.LinkProgram(vertShader, fragShader);
-	if (programId == ProgramId_Invalid) return false;
+	ProgramId redProgram = m_assetManager.LinkProgram(vertShader, redFragShader);
+	if (redProgram == ProgramId_Invalid) return false;
 
-	// Put in a couple of tris
-	std::shared_ptr<Mesh> pTriBuffer = Mesh::Create<>(Prims::Triangle_Vertices);
-    std::shared_ptr<Mesh> pCubeBuffer = Mesh::Create(Prims::Cube_Vertices, Prims::Cube_Indices);
+    std::shared_ptr<Material> pRedMaterial = std::make_shared<Material>(redProgram);
 
-    std::shared_ptr<Material> pMaterial = std::make_shared<Material>(programId);
+    // Add a quad
+    auto pQuadMesh = Mesh::Create(Prims::Quad_VerticesAndUVs, Prims::Quad_Indices, UVVertexAttributes);
+    Transform quadRot(glm::vec3(5,0,0), glm::quat(glm::vec3(glm::half_pi<float>(), 0, 0)), glm::vec3(3));
+    EmplaceGameObject<RenderableGameObject>(quadRot, pQuadMesh, pRedMaterial);
 
     // Add a couple of tris
-    EmplaceGameObject<SpinObject>(glm::vec3(-2, 0, 0), pTriBuffer, pMaterial);
-    EmplaceGameObject<SpinObject>(glm::vec3(2, 0, 0), pTriBuffer, pMaterial);
+    std::shared_ptr<Mesh> pTriMesh = Mesh::Create(Prims::Triangle_Vertices);
+    EmplaceGameObject<SpinObject>(glm::vec3(-2, 0, 0), pTriMesh, pRedMaterial);
+    EmplaceGameObject<SpinObject>(glm::vec3(2, 0, 0), pTriMesh, pRedMaterial);
 
     // Add a cube
-    EmplaceGameObject<RenderableGameObject>(glm::vec3(0, 0, -5), pCubeBuffer, pMaterial);
+    std::shared_ptr<Mesh> pCubeMesh = Mesh::Create(Prims::Cube_Vertices, Prims::Cube_Indices);
+    EmplaceGameObject<RenderableGameObject>(glm::vec3(0, 0, -5), pCubeMesh, pRedMaterial);
 
 	// Add a fbx model
 	auto fbx = std::shared_ptr<FBXFile>(new FBXFile());
@@ -89,8 +99,8 @@ bool TestBed::DoInit()
 			}
 
 
-            auto pMeshBuffer = Mesh::Create(pMesh->m_vertices, pMesh->m_indices, FBXVertexAttributes);
-            EmplaceGameObject<RenderableGameObject>(glm::vec3(0, 0, 3), pMeshBuffer, pMaterial);
+            auto pFbxMesh = Mesh::Create(pMesh->m_vertices, pMesh->m_indices, FBXVertexAttributes);
+            EmplaceGameObject<RenderableGameObject>(glm::vec3(0, 0, 3), pFbxMesh, pRedMaterial);
 		}
 	}
 

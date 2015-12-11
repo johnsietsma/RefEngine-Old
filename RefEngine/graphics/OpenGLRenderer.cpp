@@ -14,24 +14,11 @@ void OpenGLRenderer::UseProgram( ProgramId programId )
 
 void OpenGLRenderer::Bind( const Mesh& mesh )
 {
+    glBindVertexArray(mesh.vaoId.Value());
+
 	if (m_state.vaoId != mesh.vaoId) {
 		glBindVertexArray(mesh.vaoId.Value());
 		m_state.vaoId = mesh.vaoId;
-	}
-
-	glBindVertexArray(mesh.vaoId.Value());
-
-	if (mesh.iboId == IBOId_Invalid) {
-		if (m_state.vboId != mesh.vboId) {
-			glBindBuffer(GL_ARRAY_BUFFER, mesh.vboId.Value());
-			m_state.vboId = mesh.vboId;
-		}
-	}
-	else {
-		if (m_state.iboId != mesh.iboId) {
-			glBindBuffer(GL_ELEMENT_ARRAY_BUFFER, mesh.iboId.Value());
-			m_state.iboId = mesh.iboId;
-		}
 	}
 }
 
@@ -47,12 +34,6 @@ void OpenGLRenderer::Draw(const Mesh& mesh )
 
 void OpenGLRenderer::Unbind()
 {
-	glBindBuffer(GL_ARRAY_BUFFER, 0);
-	m_state.vboId = VBOId_Invalid;
-
-	glBindBuffer(GL_ELEMENT_ARRAY_BUFFER, 0);
-	m_state.iboId = IBOId_Invalid;
-
 	glBindVertexArray(0);
 	m_state.vaoId = VAOId_Invalid;
 }

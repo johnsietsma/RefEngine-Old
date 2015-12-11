@@ -2,6 +2,19 @@
 
 #include <vector>
 
+const std::vector<float> Prims::Quad_VerticesAndUVs {
+    // Vert, UV
+    -1.f, -1.f, 0.f,    0.f, 0.f,
+    -1.f,  1.f, 0.f,    0.f, 1.f,
+     1.f,  1.f, 0.f,    1.f, 1.f,
+     1.f, -1.f, 0.f,    1.f, 0.f,
+};
+
+const std::vector<float> Prims::Quad_Indices{
+    0, 1, 2,
+    0, 2, 3
+};
+
 const  std::vector<float> Prims::Triangle_Vertices {
 	-1.f, -1.f, 0.f,
 	1.f, -1.f, 0.f,

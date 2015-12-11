@@ -170,8 +170,8 @@ Texture GLHelpers::LoadTexture( const char* fileName )
 	unsigned char* data = stbi_load(fileName, &texture.width, &texture.height, &texture.format, STBI_default);
 	if( data==nullptr) return texture;
 
-	switch (texture.format)
-	{
+    switch (texture.format)
+    {
 	case STBI_grey: texture.format = GL_RED; break;
 	case STBI_grey_alpha: texture.format = GL_RG; break;
 	case STBI_rgb: texture.format = GL_RGB; break;

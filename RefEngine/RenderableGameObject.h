@@ -10,12 +10,13 @@ namespace reng {
 
 class Material;
 class Mesh;
+class Transform;
 
 class RenderableGameObject: public IGameObject
 {
 public:
-    RenderableGameObject(glm::vec3 pos, std::shared_ptr<Mesh> pMesh, std::shared_ptr<Material> pMaterial) :
-        m_transform(pos),
+    RenderableGameObject(const Transform& trans, std::shared_ptr<Mesh> pMesh, std::shared_ptr<Material> pMaterial) :
+        m_transform(trans),
         m_pMesh(pMesh),
         m_pMaterial(pMaterial)
     {}
