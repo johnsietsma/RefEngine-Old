@@ -3,21 +3,25 @@
 #include "OpenGlTypes.h"
 #include "types.h"
 
+#include <algorithm>
 #include <memory>
 #include <vector>
 
 namespace reng {
 
 struct VertexAttribute {
-	size_t size;
-	size_t offset;
-	GLenum type;
+    size_t numComponents;
+    size_t componentSize; // in bytes
+	size_t offset; // offset within a struct this attribute is within
+	GLenum type; 
 
-	template<typename T>
-	static VertexAttribute Create(size_t size, size_t offset, GLenum type) {
-		return VertexAttribute{ size, offset, type };
+    template<class T>
+    static VertexAttribute Create(size_t numComponents, size_t offset) {
+        return VertexAttribute{ numComponents, sizeof(T), offset, GLEnumValue<T>::value };
 	}
 };
+
+static const std::vector<uint> EmptyIndex;
 
 
 class Mesh {
@@ -26,66 +30,32 @@ public:
 	VAOId vaoId;
 	IBOId iboId;
 	GLenum indexType;
+    GLuint numberOfVerts;
+    GLuint numberOfIndices;
 
-	GLuint numberOfVerts;
-	GLuint numberOfIndices;
 
-	// Factory methods
-	// Creation must happen through the factory, keeps buffer ownership internal
-
-	// Create vertex only buffers
-	template<typename VertT>
-	static std::shared_ptr<Mesh> Create(const std::vector<VertT> verts) {
-
-        // TODO: Get actual vert size from vertex attribute.
-
-        return CreateMesh_Impl(
-			sizeof(VertT), verts.size(), &(verts[0]), // vertex info
-			0, 0, 0, nullptr // index info
-			);
-	}
-
+    /**
+     * Create a mesh from vertex data.
+     * Optionally pass in index data to create an indexed mesh.
+     * Optionall pass in vertex attributes to use more then just vertex position data.
+     */
     template<typename VertT>
-    static std::shared_ptr<Mesh> Create(const std::vector<VertT> verts, const std::vector<VertexAttribute>& vertexAttributes) {
+    static std::shared_ptr<Mesh> Create( 
+        const std::vector<VertT>& vertices,
+        const std::vector<uint>& indices = EmptyIndex, // No indices by default
+        const std::vector<VertexAttribute>& vertexAttributes = PositionVertexAttribute // Vert postions only by default
+    )
+    {
+        // Use the provided vertex attributes to calculate the number components in the vertex. 
+        // A component is a single data element such as a float.
+        uint numComponents = CalculateNumberOfComponents(vertexAttributes);
+        uint vertexSize = CalculateVertexSize(vertexAttributes);
         return CreateMesh_Impl(
-            sizeof(VertT), verts.size(), verts.data(), // vertex info
-            0, 0, 0, nullptr, // index info
+            vertexSize,                         // The size of a vertex in bytes
+            vertices.size() / numComponents,    // The number of vertices
+            vertices.data(),                    // The vertex data
+            GL_UNSIGNED_INT, indices.size(), indices.data(),
             vertexAttributes.size(), vertexAttributes.data()
-            );
-    }
-
-	// Create indexed vertex buffers, each vertex has a position attribute
-	template<typename VertT, typename IndexT>
-	static std::shared_ptr<Mesh> Create(
-		uint numberOfVerts, const VertT verts[],
-		uint numberOfIndices, const IndexT indices[]
-		) {
-        return CreateMesh_Impl(
-			sizeof(VertT), numberOfVerts, verts,
-			sizeof(IndexT), reng::GLEnumValue<IndexT>::value, numberOfIndices, indices
-			);
-	}
-
-	// Create indexed vertex buffers, each vertex has a number of attributes.
-    template<typename VertT, typename IndexT>
-    static std::shared_ptr<Mesh> Create(const std::vector<VertT>& vertices,
-        const std::vector<IndexT>& indices )
-    {
-        return CreateMesh_Impl(
-            sizeof(VertT), vertices.size(), vertices.data(),
-            sizeof(IndexT), reng::GLEnumValue<IndexT>::value, indices.size(), &(indices[0])
-            );
-    }
-
-    template<typename VertT, typename IndexT>
-    static std::shared_ptr<Mesh> Create( const std::vector<VertT>& vertices,
-        const std::vector<IndexT>& indices,
-        const std::vector<VertexAttribute>& vertexAttributes )
-    {
-        return CreateMesh_Impl(
-            sizeof(VertT), vertices.size(), vertices.data(),
-            sizeof(IndexT), reng::GLEnumValue<IndexT>::value, indices.size(), &(indices[0]),
-            vertexAttributes.size(), &(vertexAttributes[0])
             );
     }
 
@@ -94,9 +64,26 @@ public:
 private:
 	static std::shared_ptr<Mesh> CreateMesh_Impl(
 		size_t vertexSize, uint numberOfVerts, const void* verts,
-		size_t indexSize, GLenum indexType, uint numberOfIndices, const void* indices,
-		size_t numberOfVertexAttributes=0, const VertexAttribute vertexAttributes[]=nullptr
+        GLenum indexType, uint numberOfIndices, const void* indices,
+		size_t numberOfVertexAttributes, const VertexAttribute vertexAttributes[]
 		);
+
+    // Calculate the number of vertex components by adding up all components of each attribute.
+    // For example a vertex with position and UV information may have 5 components, 3 for pos and 2 for uv.
+    static int CalculateNumberOfComponents( const std::vector<VertexAttribute>& vertexAttributes ) {
+        int numComponents = 0;
+        std::for_each(vertexAttributes.begin(), vertexAttributes.end(), [&numComponents](const VertexAttribute& va) { numComponents += va.numComponents; });
+        return numComponents;
+    }
+
+    // Calculate the size of a vertex by adding up all it's components.
+    static int CalculateVertexSize(const std::vector<VertexAttribute>& vertexAttributes) {
+        int vertexSize = 0;
+        std::for_each(vertexAttributes.begin(), vertexAttributes.end(), [&vertexSize](const VertexAttribute& va) { vertexSize += va.componentSize*va.numComponents; });
+        return vertexSize;
+    }
+
+    static const std::vector<VertexAttribute> PositionVertexAttribute;
 };
 
 }

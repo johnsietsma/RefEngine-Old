@@ -10,7 +10,7 @@ const std::vector<float> Prims::Quad_VerticesAndUVs {
      1.f, -1.f, 0.f,    1.f, 0.f,
 };
 
-const std::vector<float> Prims::Quad_Indices{
+const std::vector<uint> Prims::Quad_Indices{
     0, 1, 2,
     0, 2, 3
 };

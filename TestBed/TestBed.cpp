@@ -24,21 +24,21 @@
 using namespace reng;
 
 static const std::vector<VertexAttribute> UVVertexAttributes{
-    VertexAttribute::Create<glm::vec4>(4, 0, GL_FLOAT),
-    VertexAttribute::Create<glm::vec2>(2, sizeof(float)*4, GL_FLOAT)
+    VertexAttribute::Create<float>(3, 0), // position, 3 float
+    VertexAttribute::Create<float>(2, sizeof(float)*3) // uv, 2 floats
 };
 
 
 static const std::vector<VertexAttribute> FBXVertexAttributes {
-	VertexAttribute::Create<glm::vec4>(4, offsetof(FBXVertex, position), GL_FLOAT),
-	VertexAttribute::Create<glm::vec4>(4, offsetof(FBXVertex, colour), GL_FLOAT),
-	VertexAttribute::Create<glm::vec4>(4, offsetof(FBXVertex, normal), GL_FLOAT),
-	VertexAttribute::Create<glm::vec4>(4, offsetof(FBXVertex, tangent), GL_FLOAT),
-	VertexAttribute::Create<glm::vec4>(4, offsetof(FBXVertex, binormal), GL_FLOAT),
-	VertexAttribute::Create<glm::vec4>(4, offsetof(FBXVertex, indices), GL_FLOAT),
-	VertexAttribute::Create<glm::vec4>(4, offsetof(FBXVertex, weights), GL_FLOAT),
-	VertexAttribute::Create<glm::vec2>(2, offsetof(FBXVertex, texCoord1), GL_FLOAT),
-	VertexAttribute::Create<glm::vec2>(2, offsetof(FBXVertex, texCoord2), GL_FLOAT)
+	VertexAttribute::Create<float>(4, offsetof(FBXVertex, position)),
+    VertexAttribute::Create<float>(4, offsetof(FBXVertex, colour)),
+    VertexAttribute::Create<float>(4, offsetof(FBXVertex, normal)),
+    VertexAttribute::Create<float>(4, offsetof(FBXVertex, tangent)),
+    VertexAttribute::Create<float>(4, offsetof(FBXVertex, binormal)),
+    VertexAttribute::Create<float>(4, offsetof(FBXVertex, indices)),
+    VertexAttribute::Create<float>(4, offsetof(FBXVertex, weights)),
+    VertexAttribute::Create<float>(2, offsetof(FBXVertex, texCoord1)),
+    VertexAttribute::Create<float>(2, offsetof(FBXVertex, texCoord2))
 };
 
 class SpinObject : public RenderableGameObject {
@@ -74,7 +74,8 @@ bool TestBed::DoInit()
     auto pQuadMesh = Mesh::Create(Prims::Quad_VerticesAndUVs, Prims::Quad_Indices, UVVertexAttributes);
     Transform quadRot(glm::vec3(5,0,0), glm::quat(glm::vec3(glm::half_pi<float>(), 0, 0)), glm::vec3(3));
     EmplaceGameObject<RenderableGameObject>(quadRot, pQuadMesh, pRedMaterial);
-
+    
+    
     // Add a couple of tris
     std::shared_ptr<Mesh> pTriMesh = Mesh::Create(Prims::Triangle_Vertices);
     EmplaceGameObject<SpinObject>(glm::vec3(-2, 0, 0), pTriMesh, pRedMaterial);
