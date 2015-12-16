@@ -20,6 +20,10 @@ add_executable(TestBed
     data/shaders/passthrough.vert
     data/shaders/diffuse.frag
     data/shaders/red.frag
+    data/shaders/textured.frag
+    data/shaders/textured.vert
+    data/shaders/vertexColored.frag
+    data/shaders/vertexColored.vert
     data/shaders/white.frag
 )
 
@@ -29,7 +33,7 @@ target_link_libraries(TestBed refeng)
 FILE(GLOB frag_shaders data/shaders/*.*)
 source_group(data\\shaders FILES ${frag_shaders})
 
-add_custom_command(TARGET TestBed POST_BUILD
+add_custom_command(TARGET TestBed PRE_BUILD
     COMMAND ${CMAKE_COMMAND} -E copy_directory ${CMAKE_CURRENT_SOURCE_DIR}/data $<TARGET_FILE_DIR:TestBed>/../data COMMENT "Copying data to output directory"
 )
 

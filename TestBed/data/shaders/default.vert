@@ -1,8 +1,10 @@
 #version 410
-in vec4 Position;
-uniform mat4 ProjectionView;
+
+in vec4 position;
+
+uniform mat4 projectionView;
 
 void main()
 {
-    gl_Position = ProjectionView * Position;
+    gl_Position = projectionView * position;
 }

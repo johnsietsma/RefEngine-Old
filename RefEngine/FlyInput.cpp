@@ -39,11 +39,11 @@ void FlyInput::HandleKeyboard(GLFWwindow* pWindow, double deltaTime)
 
 	if (glfwGetKey(pWindow, GLFW_KEY_LEFT_SHIFT) == GLFW_PRESS)
 	{
-		moveDir += glm::vec3(0.0f, 1.0f, 0.0f);
+		//moveDir += glm::vec3(0.0f, 1.0f, 0.0f);
 	}
 	if (glfwGetKey(pWindow, GLFW_KEY_LEFT_CONTROL) == GLFW_PRESS)
 	{
-		moveDir -= glm::vec3(0.0f, 1.0f, 0.0f);
+		//moveDir -= glm::vec3(0.0f, 1.0f, 0.0f);
 	}
 
 	float fLength = glm::length(moveDir);

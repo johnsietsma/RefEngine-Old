@@ -41,6 +41,31 @@ static const std::vector<VertexAttribute> FBXVertexAttributes {
     VertexAttribute::Create<float>(2, offsetof(FBXVertex, texCoord2))
 };
 
+
+void EmplaceFBXModel(RefEngine& eng,  const char* fbxFilename, std::shared_ptr<Material> pMaterial)
+{
+    auto fbx = std::shared_ptr<FBXFile>(new FBXFile());
+    fbx->load(fbxFilename);
+
+    for (uint i = 0; i < fbx->getMeshCount(); i++) {
+        FBXMeshNode* pMesh = fbx->getMeshByIndex(i);
+        if (pMesh->m_vertices.size() >  0) {
+            uint numIndices = 0;
+            uint* pIndices = nullptr;
+            if (pMesh->m_indices.size() > 0) {
+                numIndices = pMesh->m_indices.size();
+                pIndices = &(pMesh->m_indices[0]);
+            }
+
+
+            auto pFbxMesh = Mesh::Create(pMesh->m_vertices, pMesh->m_indices, FBXVertexAttributes);
+            eng.EmplaceGameObject<RenderableGameObject>(glm::vec3(0, 0, 3), pFbxMesh, pMaterial);
+        }
+    }
+
+    fbx->initialiseOpenGLTextures();
+}
+
 class SpinObject : public RenderableGameObject {
 public:
     SpinObject(glm::vec3 pos, std::shared_ptr<Mesh> pMesh, std::shared_ptr<Material> pMaterial) 
@@ -61,22 +86,22 @@ TestBed::TestBed() :
 
 bool TestBed::DoInit()
 {
-	ShaderId vertShader = m_assetManager.LoadShader("data/shaders/default.vert", VertexShader);
-	ShaderId redFragShader = m_assetManager.LoadShader("data/shaders/red.frag", FragmentShader);
-	if (vertShader == ShaderId_Invalid || redFragShader == ShaderId_Invalid) return false;
-
-	ProgramId redProgram = m_assetManager.LinkProgram(vertShader, redFragShader);
-	if (redProgram == ProgramId_Invalid) return false;
-
-    std::shared_ptr<Material> pRedMaterial = std::make_shared<Material>(redProgram);
 
     // Add a quad
+    auto pebbleTex = m_assetManager.LoadTexture("data/textures/Big_pebbles_pxr128.png");
+
+    ProgramId texturedProgram = m_assetManager.LoadProgram("data/shaders/textured.vert", "data/shaders/textured.frag");
+    auto texturedMat = std::make_shared<Material>(texturedProgram, pebbleTex.m_textureId);
     auto pQuadMesh = Mesh::Create(Prims::Quad_VerticesAndUVs, Prims::Quad_Indices, UVVertexAttributes);
+
     Transform quadRot(glm::vec3(5,0,0), glm::quat(glm::vec3(glm::half_pi<float>(), 0, 0)), glm::vec3(3));
-    EmplaceGameObject<RenderableGameObject>(quadRot, pQuadMesh, pRedMaterial);
-    
-    
+    EmplaceGameObject<RenderableGameObject>(quadRot, pQuadMesh, texturedMat);
+        
     // Add a couple of tris
+    ProgramId redProgram = m_assetManager.LoadProgram("data/shaders/default.vert", "data/shaders/red.frag");
+    std::shared_ptr<Material> pRedMaterial = std::make_shared<Material>(redProgram);
+
+    // TODO vert colouring
     std::shared_ptr<Mesh> pTriMesh = Mesh::Create(Prims::Triangle_Vertices);
     EmplaceGameObject<SpinObject>(glm::vec3(-2, 0, 0), pTriMesh, pRedMaterial);
     EmplaceGameObject<SpinObject>(glm::vec3(2, 0, 0), pTriMesh, pRedMaterial);
@@ -86,26 +111,7 @@ bool TestBed::DoInit()
     EmplaceGameObject<RenderableGameObject>(glm::vec3(0, 0, -5), pCubeMesh, pRedMaterial);
 
 	// Add a fbx model
-	auto fbx = std::shared_ptr<FBXFile>(new FBXFile());
-	fbx->load("data/models/cube.fbx");
-
-	for (uint i = 0; i < fbx->getMeshCount(); i++) {
-		FBXMeshNode* pMesh = fbx->getMeshByIndex(i);
-		if (pMesh->m_vertices.size() >  0) {
-			uint numIndices = 0;
-			uint* pIndices = nullptr;
-			if (pMesh->m_indices.size() > 0) {
-				numIndices = pMesh->m_indices.size();
-				pIndices = &(pMesh->m_indices[0]);
-			}
-
-
-            auto pFbxMesh = Mesh::Create(pMesh->m_vertices, pMesh->m_indices, FBXVertexAttributes);
-            EmplaceGameObject<RenderableGameObject>(glm::vec3(0, 0, 3), pFbxMesh, pRedMaterial);
-		}
-	}
-
-	fbx->initialiseOpenGLTextures();
+    EmplaceFBXModel(*this, "data/models/cube.fbx", pRedMaterial);
 
 	return true;
 }

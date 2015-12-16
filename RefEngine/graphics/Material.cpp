@@ -9,12 +9,25 @@
 
 using namespace reng;
 
-Material::Material( ProgramId programId, TextureId textureId /* = TextureId_Invalid */ ) : 
-m_programId(programId),
-m_textureId(textureId)
+Material::Material(ProgramId programId, TextureId textureId, const char* projViewUniform, const char* texUniform ) :
+    m_programId(programId),
+    m_textureId(textureId)
 {
-	m_mvpLocation = glGetUniformLocation(m_programId.Value(), "ProjectionView");
+	m_mvpLocation = glGetUniformLocation(m_programId.Value(), projViewUniform);
 	POW2_ASSERT(m_mvpLocation != UniformLocationId_Invalid);
+
+    if (texUniform != nullptr) {
+        m_texLocation = glGetUniformLocation(m_programId.Value(), texUniform);
+        POW2_ASSERT(m_texLocation != UniformLocationId_Invalid);
+
+        glProgramUniform1i(programId.Value(), m_texLocation.Value(), 0);
+    }
+}
+
+void Material::BindTexture() const
+{
+    glActiveTexture(GL_TEXTURE0);
+    glBindTexture(GL_TEXTURE_2D, m_textureId.Value());
 }
 
 void Material::UpdateUniforms(const glm::mat4x4& projectionViewMatrix, const glm::mat4x4& transform)

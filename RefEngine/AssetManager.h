@@ -1,13 +1,11 @@
 #pragma once
 
 #include "graphics/OpenGLTypes.h"
+#include "graphics/Texture.h"
 
 #include <string>
 
 namespace reng {
-
-// fwd decls
-class Texture;
 
 template<typename TMake, typename...TArgs>
 class CachingFactory;
@@ -33,8 +31,10 @@ public:
 	AssetManager();
 
 	ShaderId LoadShader(const char* shaderFileName, ShaderType shaderType);
-	ProgramId LinkProgram(ShaderId fragmentShaderId, ShaderId vertexShaderId);
 	Texture LoadTexture(const char* fileName);
+
+    ProgramId LoadProgram(const char* vertShaderFileName, const char* fragShaderFileName);
+    ProgramId LinkProgram(ShaderId fragmentShaderId, ShaderId vertexShaderId);
 
 private:
 	ShaderFactory* m_pShaderFactory;

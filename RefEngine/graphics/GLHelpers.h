@@ -1,18 +1,9 @@
 #pragma once
 
 #include "OpenGLTypes.h"
+#include "Texture.h"
 
 namespace reng {
-
-class Texture
-{
-public:
-	TextureId m_textureId;
-	int width;
-	int height;
-	int format;
-};
-
 
 class GLHelpers
 {

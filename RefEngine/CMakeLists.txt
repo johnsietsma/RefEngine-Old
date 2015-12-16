@@ -56,6 +56,8 @@ add_library(refeng
     ReadMe.txt
     RefEngine.cpp
     RefEngine.h
+    RenderableGameObject.cpp
+    RenderableGameObject.h
     StronglyTyped.h
     targetver.h
     Transform.h
@@ -76,6 +78,7 @@ add_library(refeng
     graphics/OpenGLTypes.h
     graphics/Prims.cpp
     graphics/Prims.h
+    graphics/Texture.h
 
     utils/memaligned.cpp
     utils/memaligned.h

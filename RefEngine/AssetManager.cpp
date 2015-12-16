@@ -21,6 +21,24 @@ ShaderId AssetManager::LoadShader(const char* shaderFileName, ShaderType shaderT
 	return shaderId;
 }
 
+
+Texture AssetManager::LoadTexture(const char* fileName)
+{
+    Texture texture = m_pTextureFactory->Get(fileName);
+    if (texture.m_textureId == TextureId_Invalid) throw BadAssetLoad(std::string("Failed to load texture ") + fileName);
+    return texture;
+}
+
+
+ProgramId AssetManager::LoadProgram(const char* vertShaderFileName, const char* fragShaderFileName)
+{
+    ShaderId vertShader = LoadShader(vertShaderFileName, VertexShader);
+    ShaderId redFragShader = LoadShader(fragShaderFileName, FragmentShader);
+
+    return LinkProgram(vertShader, redFragShader);
+}
+
+
 ProgramId AssetManager::LinkProgram(ShaderId fragmentShaderId, ShaderId vertexShaderId)
 {
 	ProgramId programId = m_pProgramFactory->Get(fragmentShaderId, vertexShaderId);
@@ -28,9 +46,3 @@ ProgramId AssetManager::LinkProgram(ShaderId fragmentShaderId, ShaderId vertexSh
 	return programId;
 }
 
-Texture AssetManager::LoadTexture(const char* fileName)
-{
-	Texture texture = m_pTextureFactory->Get(fileName);
-	if (texture.m_textureId == TextureId_Invalid) throw BadAssetLoad(std::string("Failed to load texture ") + fileName);
-	return texture;
-}
