@@ -24,10 +24,20 @@ template<typename TMake, typename...TArgs>
 class CachingFactory
 {
 public:
-	CachingFactory(std::function<TMake(TArgs...)> factoryFunction)
-		: m_factoryFunction(factoryFunction)
+    CachingFactory(std::function<TMake(TArgs...)> factoryFunction) : CachingFactory(factoryFunction, nullptr)
+    {
+    }
+
+    CachingFactory(std::function<TMake(TArgs...)> factoryFunction, std::function<void(TMake)> destroyFunction) :
+        m_factoryFunction(factoryFunction),
+        m_destroyFunction(destroyFunction)
 	{
 	}
+
+    ~CachingFactory()
+    {
+        ClearCache();
+    }
 
 	TMake Get(TArgs... args) 
 	{
@@ -38,13 +48,27 @@ public:
 		if (m_cacheMap.find(hashKey) != m_cacheMap.end()) { return m_cacheMap[hashKey]; }
 
 		// Create and return
-		m_cacheMap[hashKey] = m_factoryFunction(args...);
+        m_cacheMap[hashKey] = m_factoryFunction(args...);
+
 		return m_cacheMap[hashKey];
 	}
 
+    void ClearCache()
+    {
+        if (m_factoryFunction != nullptr) {
+            for (auto& cachePair : m_cacheMap) {
+                m_destroyFunction(cachePair.second);
+            }
+        }
+        m_cacheMap.clear();
+    }
+
 private:
+    std::function<void(TMake)> m_destroyFunction;
 	std::map<int, TMake> m_cacheMap; // A map of parameter hashes to created objects.
 	std::function<TMake(TArgs...)> m_factoryFunction; // The function that will create the object.
+
+
 };
 
 }

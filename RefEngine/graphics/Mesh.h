@@ -33,6 +33,7 @@ public:
     GLuint numberOfVerts;
     GLuint numberOfIndices;
 
+    Mesh(IBOId iboId, VAOId vaoId, VBOId vboId, GLuint numberOfVerts, GLuint numberOfIndices, GLenum indexType);
 
     /**
      * Create a mesh from vertex data.
@@ -59,8 +60,6 @@ public:
             );
     }
 
-    Mesh(IBOId iboId, VAOId vaoId, VBOId vboId, GLuint numberOfVerts, GLuint numberOfIndices, GLenum indexType);
-
 private:
 	static std::shared_ptr<Mesh> CreateMesh_Impl(
 		size_t vertexSize, uint numberOfVerts, const void* verts,
@@ -70,19 +69,12 @@ private:
 
     // Calculate the number of vertex components by adding up all components of each attribute.
     // For example a vertex with position and UV information may have 5 components, 3 for pos and 2 for uv.
-    static int CalculateNumberOfComponents( const std::vector<VertexAttribute>& vertexAttributes ) {
-        int numComponents = 0;
-        std::for_each(vertexAttributes.begin(), vertexAttributes.end(), [&numComponents](const VertexAttribute& va) { numComponents += va.numComponents; });
-        return numComponents;
-    }
+    static int CalculateNumberOfComponents(const std::vector<VertexAttribute>& vertexAttributes);
 
     // Calculate the size of a vertex by adding up all it's components.
-    static int CalculateVertexSize(const std::vector<VertexAttribute>& vertexAttributes) {
-        int vertexSize = 0;
-        std::for_each(vertexAttributes.begin(), vertexAttributes.end(), [&vertexSize](const VertexAttribute& va) { vertexSize += va.componentSize*va.numComponents; });
-        return vertexSize;
-    }
+    static int CalculateVertexSize(const std::vector<VertexAttribute>& vertexAttributes);
 
+    // The default vertex attribute for vertex data that simply contains vec3 position data.
     static const std::vector<VertexAttribute> PositionVertexAttribute;
 };
 

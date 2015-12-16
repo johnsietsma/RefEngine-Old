@@ -21,6 +21,8 @@ public:
         m_pMaterial(pMaterial)
     {}
 
+    ~RenderableGameObject() override {} // Make sure the shared_ptrs get cleaned up.
+
     void Update(double deltaTime) override {} //no-op
 
     void Draw(OpenGLRenderer* pRenderer, Camera* pCamera) const override;

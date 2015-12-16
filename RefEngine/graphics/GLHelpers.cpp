@@ -119,7 +119,7 @@ bool GLHelpers::CheckLinkStatus(ProgramId programId)
 	return true;
 }
 
-ShaderId GLHelpers::LoadShader(const char* shaderFileName, ShaderType shaderType)
+ShaderId GLHelpers::CreateShader(const char* shaderFileName, ShaderType shaderType)
 {
 	POW2_ASSERT_MSG(glCreateShader, "Has OpenGL been initialized?");
 	GLuint shaderId = glCreateShader(shaderType.Value());
@@ -138,6 +138,7 @@ ShaderId GLHelpers::LoadShader(const char* shaderFileName, ShaderType shaderType
 	glCompileShader(shaderId);
 
 	if (!CheckCompileStatus(shaderId)) {
+        glDeleteShader(shaderId);
 		return ShaderId_Invalid;
 	}
 
@@ -145,9 +146,14 @@ ShaderId GLHelpers::LoadShader(const char* shaderFileName, ShaderType shaderType
 
 }
 
-ProgramId GLHelpers::LinkProgram(ShaderId fragmentShaderId, ShaderId vertexShaderId)
+void GLHelpers::DestroyShader(ShaderId shaderId)
 {
+    POW2_ASSERT(shaderId != ShaderId_Invalid);
+    glDeleteShader(shaderId.Value());
+}
 
+ProgramId GLHelpers::CreateProgram(ShaderId fragmentShaderId, ShaderId vertexShaderId)
+{
 	if (vertexShaderId == ShaderId_Invalid || fragmentShaderId == ShaderId_Invalid) { return ProgramId_Invalid; }
 
 	// Create the program
@@ -157,11 +163,22 @@ ProgramId GLHelpers::LinkProgram(ShaderId fragmentShaderId, ShaderId vertexShade
 	glLinkProgram(programId.Value());
 
 	if (!GLHelpers::CheckLinkStatus(programId)) {
-		programId = ProgramId_Invalid;
+        glDeleteProgram(programId.Value());
+		return ProgramId_Invalid;
 	}
+
+    glDetachShader(programId.Value(), vertexShaderId.Value());
+    glDetachShader(programId.Value(), fragmentShaderId.Value());
 
 	return programId;
 }
+
+void GLHelpers::DestroyProgram(ProgramId programId)
+{
+    POW2_ASSERT(programId != ProgramId_Invalid);
+    glDeleteProgram(programId.Value());
+}
+
 
 Texture GLHelpers::LoadTexture( const char* fileName )
 {
@@ -188,6 +205,10 @@ Texture GLHelpers::LoadTexture( const char* fileName )
 	glBindTexture(GL_TEXTURE_2D, 0);
 
 	return texture;
+}
+
+void GLHelpers::DeleteTexture(Texture texture)
+{
 }
 
 void GLHelpers::TurnOnDebugLogging()

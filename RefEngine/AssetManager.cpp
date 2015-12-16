@@ -9,12 +9,12 @@
 using namespace reng;
 
 AssetManager::AssetManager() :
-m_pShaderFactory(new ShaderFactory(GLHelpers::LoadShader)),
-m_pProgramFactory(new ProgramFactory(GLHelpers::LinkProgram)),
-m_pTextureFactory(new TextureFactory(GLHelpers::LoadTexture))
+m_pShaderFactory(new ShaderFactory(GLHelpers::CreateShader, GLHelpers::DestroyShader)),
+m_pProgramFactory(new ProgramFactory(GLHelpers::CreateProgram, GLHelpers::DestroyProgram)),
+m_pTextureFactory(new TextureFactory(GLHelpers::LoadTexture, GLHelpers::DeleteTexture))
 {}
 
-ShaderId AssetManager::LoadShader(const char* shaderFileName, ShaderType shaderType)
+ShaderId AssetManager::CreateShader(const char* shaderFileName, ShaderType shaderType)
 {
 	ShaderId shaderId = m_pShaderFactory->Get(shaderFileName, shaderType);
 	if (shaderId == ShaderId_Invalid) throw BadAssetLoad(std::string("Failed to load shader ") + shaderFileName);
@@ -32,8 +32,8 @@ Texture AssetManager::LoadTexture(const char* fileName)
 
 ProgramId AssetManager::LoadProgram(const char* vertShaderFileName, const char* fragShaderFileName)
 {
-    ShaderId vertShader = LoadShader(vertShaderFileName, VertexShader);
-    ShaderId redFragShader = LoadShader(fragShaderFileName, FragmentShader);
+    ShaderId vertShader = CreateShader(vertShaderFileName, VertexShader);
+    ShaderId redFragShader = CreateShader(fragShaderFileName, FragmentShader);
 
     return LinkProgram(vertShader, redFragShader);
 }

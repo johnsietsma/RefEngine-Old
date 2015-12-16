@@ -14,8 +14,6 @@ void OpenGLRenderer::UseProgram( ProgramId programId )
 
 void OpenGLRenderer::Bind( const Mesh& mesh )
 {
-    glBindVertexArray(mesh.vaoId.Value());
-
 	if (m_state.vaoId != mesh.vaoId) {
 		glBindVertexArray(mesh.vaoId.Value());
 		m_state.vaoId = mesh.vaoId;

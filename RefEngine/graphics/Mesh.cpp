@@ -67,3 +67,15 @@ std::shared_ptr<Mesh> Mesh::CreateMesh_Impl(
 
 	return std::make_shared<Mesh>(indexBufferObjectId, vertexArrayObjectId, vertexBufferId, numberOfVerts, numberOfIndices, indexType);
 }
+
+int Mesh::CalculateNumberOfComponents(const std::vector<VertexAttribute>& vertexAttributes) {
+    int numComponents = 0;
+    std::for_each(vertexAttributes.begin(), vertexAttributes.end(), [&numComponents](const VertexAttribute& va) { numComponents += va.numComponents; });
+    return numComponents;
+}
+
+int Mesh::CalculateVertexSize(const std::vector<VertexAttribute>& vertexAttributes) {
+    int vertexSize = 0;
+    std::for_each(vertexAttributes.begin(), vertexAttributes.end(), [&vertexSize](const VertexAttribute& va) { vertexSize += va.componentSize*va.numComponents; });
+    return vertexSize;
+}

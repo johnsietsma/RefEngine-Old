@@ -26,18 +26,24 @@ public:
 	 * Load a shader from the given file name, compile it and check for compile errors.
 	 * Returns the shader id.
 	 */
-	static ShaderId LoadShader(const char* shaderFileName, ShaderType shaderType);
+	static ShaderId CreateShader(const char* shaderFileName, ShaderType shaderType);
+
+    static void DestroyShader(ShaderId shaderId);
 
 	/**
 	 * Link a program with the given shaders and check for link errors.
 	 */
-	static ProgramId LinkProgram(ShaderId fragmentShaderId, ShaderId vertexShaderId);
+	static ProgramId CreateProgram(ShaderId fragmentShaderId, ShaderId vertexShaderId);
+
+    static void DestroyProgram(ProgramId programId);
 
 	/**
 	 *  Load a texture from disk and create a new OpenGl texture id.
 	 * Returns a Texture structure with image information.
 	 */
 	static Texture LoadTexture(const char* fileName);
+
+    static void DeleteTexture(Texture texture);
 
 
 	static void TurnOnDebugLogging();

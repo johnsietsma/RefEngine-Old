@@ -1,3 +1,7 @@
+#if defined DEBUG
+#include <vld.h>
+#endif
+
 #include "TestBed.h"
 #include <iostream>
 
