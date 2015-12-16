@@ -44,6 +44,8 @@ add_library(refeng
     ../Readme.md
     AssetManager.cpp
     AssetManager.h
+    Buffer.h
+    Buffer.cpp
     CachingFactory.h
     Camera.cpp
     Camera.h
