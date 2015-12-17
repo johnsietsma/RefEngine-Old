@@ -8,7 +8,7 @@ ELSE(APPLE)
 ENDIF()
 
 IF(APPLE)
-  SET(FBX_LIB_DIR ${FBX_SDK_DIR}/clang/)
+  SET(FBX_LIB_DIR ${FBX_SDK_DIR}/lib/clang/)
 ELSE(APPLE)
   SET(FBX_LIB_DIR ${FBX_SDK_DIR}/lib/vs2013/x86/)
   SET(PHYSX_LIB_DIR ${PHYSX_SDK_DIR}/Lib/vc12win32/)
@@ -18,7 +18,7 @@ ENDIF()
 
 include_directories(../dep/aieutilities)
 include_directories(../dep/glm)
-include_directories(../dep/glfw/include)
+include_directories(../dep/GLFW/include)
 include_directories(${FBX_SDK_DIR}/include)
 include_directories(${PHYSX_INCLUDE_DIR})
 include_directories(../dep/FBXLoader)
@@ -44,8 +44,6 @@ add_library(refeng
     ../Readme.md
     AssetManager.cpp
     AssetManager.h
-    Buffer.h
-    Buffer.cpp
     CachingFactory.h
     Camera.cpp
     Camera.h
@@ -62,11 +60,14 @@ add_library(refeng
     RenderableGameObject.h
     StronglyTyped.h
     targetver.h
+    Transform.cpp
     Transform.h
     types.h
     VariadicHash.cpp
     VariadicHash.h
 
+    graphics/Buffer.h
+    graphics/Buffer.cpp
     graphics/gl_core_4_4.c
     graphics/gl_core_4_4.h
     graphics/GLHelpers.cpp
@@ -108,7 +109,8 @@ IF(APPLE)
    MARK_AS_ADVANCED (CARBON_LIBRARY CORE_VIDEO_LIBRARY COCOA_LIBRARY OpenGL_LIBRARY IOKIT_LIBRARY)
    SET(EXTRA_LIBS ${CARBON_LIBRARY} ${CORE_VIDEO_LIBRARY} ${COCOA_LIBRARY} ${OpenGL_LIBRARY} ${IOKIT_LIBRARY})
 
-   target_link_libraries(refeng ${FBX_LIB_DIR}libfbxsdk.a)
+   target_link_libraries(refeng optimized ${FBX_LIB_DIR}release/libfbxsdk.a)
+   target_link_libraries(refeng debug ${FBX_LIB_DIR}debug/libfbxsdk.a)
 ELSE(APPLE)
    target_link_libraries(refeng opengl32.lib)
 

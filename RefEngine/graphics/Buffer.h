@@ -63,7 +63,7 @@ struct Buffer
         return Buffer{
             VBOId_Invalid,
             vertexSize,
-            vertices.size() / numComponents,
+            (uint)(vertices.size() / numComponents),
             vertices.data(),
             isStatic,
             vertexAttributes,

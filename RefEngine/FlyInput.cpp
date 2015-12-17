@@ -1,7 +1,10 @@
 #include "FlyInput.h"
 
-#include "GLFW\glfw3.h"
-#include "glm\mat4x4.hpp"
+#include "GLFW/glfw3.h"
+
+#include "glm/gtx/transform.hpp"
+#include "glm/mat4x4.hpp"
+
 
 using namespace reng;
 
@@ -97,13 +100,13 @@ void FlyInput::CalculateRotation(double deltaTime, double xOffset, double yOffse
 
 	if (xOffset != 0.0)
 	{
-		glm::mat4 rot = glm::rotate((float)(m_rotationSpeed * deltaTime * -xOffset), glm::vec3(0, 1, 0));
+		glm::mat4x4 rot = glm::rotate((float)(m_rotationSpeed * deltaTime * -xOffset), glm::vec3(0, 1, 0));
 		transformMatrix *= rot;
 	}
 
 	if (yOffset != 0.0)
 	{
-		glm::mat4 rot = glm::rotate((float)(m_rotationSpeed * deltaTime * -yOffset), glm::vec3(1, 0, 0));
+		glm::mat4x4 rot = glm::rotate((float)(m_rotationSpeed * deltaTime * -yOffset), glm::vec3(1, 0, 0));
 		transformMatrix *= rot;
 	}
 

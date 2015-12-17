@@ -213,6 +213,7 @@ void GLHelpers::DeleteTexture(Texture texture)
 
 void GLHelpers::TurnOnDebugLogging()
 {
+    if( glDebugMessageCallback==nullptr ) return;
     glEnable(GL_DEBUG_OUTPUT_SYNCHRONOUS);
 	glDebugMessageCallback(openglCallbackFunction, nullptr);
 	GLuint unusedIds = 0;

@@ -1,8 +1,8 @@
 #include "RenderableGameObject.h"
 
 #include "Camera.h"
-#include "graphics\OpenGLRenderer.h"
-#include "graphics\Material.h"
+#include "graphics/OpenGLRenderer.h"
+#include "graphics/Material.h"
 
 using namespace reng;
 

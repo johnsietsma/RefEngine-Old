@@ -3,23 +3,15 @@
 #include "utils/memaligned.h"
 
 #include <glm/glm.hpp>
-#include <glm/ext.hpp>
+
 
 namespace reng {
 
 class Transform {
 public:
-	Transform(glm::vec3 position, glm::quat rot, glm::vec3 scale)
-    {
-        m_globalTransform = glm::mat4_cast(rot);
-        m_globalTransform *= glm::translate(position);
-        m_globalTransform *= glm::scale(scale);
-    }
+    Transform(const glm::vec3& position, const glm::quat& rot, const glm::vec3& scale);
 
-    Transform(glm::vec3 position) 
-        : Transform(position, glm::quat(), glm::vec3(1) )
-    {
-    }
+    Transform(glm::vec3 position);
 
 	Transform( const glm::mat4x4& transform ) :
 		m_globalTransform(transform)

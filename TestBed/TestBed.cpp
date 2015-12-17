@@ -5,7 +5,7 @@
 #include "AssetManager.h"
 #include "GameTime.h"
 #include "RenderableGameObject.h"
-#include "graphics\OpenGLRenderer.h"
+#include "graphics/OpenGLRenderer.h"
 #include "RefEngine.h"
 #include "Transform.h"
 
