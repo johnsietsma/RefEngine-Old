@@ -97,7 +97,7 @@ void FlyInput::CalculateRotation(double deltaTime, double xOffset, double yOffse
 
 	if (xOffset != 0.0)
 	{
-		glm::mat4 rot = glm::rotate((float)(m_rotationSpeed * deltaTime * -xOffset), glm::vec3(0, 1, 0));
+		glm::mat4x4 rot = glm::rotate((float)(m_rotationSpeed * deltaTime * -xOffset), glm::vec3(0, 1, 0));
 		transformMatrix *= rot;
 	}
 

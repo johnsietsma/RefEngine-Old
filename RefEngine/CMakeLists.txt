@@ -44,8 +44,6 @@ add_library(refeng
     ../Readme.md
     AssetManager.cpp
     AssetManager.h
-    Buffer.h
-    Buffer.cpp
     CachingFactory.h
     Camera.cpp
     Camera.h
@@ -67,6 +65,8 @@ add_library(refeng
     VariadicHash.cpp
     VariadicHash.h
 
+    graphics/Buffer.h
+    graphics/Buffer.cpp
     graphics/gl_core_4_4.c
     graphics/gl_core_4_4.h
     graphics/GLHelpers.cpp
