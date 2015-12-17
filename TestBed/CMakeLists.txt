@@ -22,8 +22,8 @@ add_executable(TestBed
     data/shaders/red.frag
     data/shaders/textured.frag
     data/shaders/textured.vert
-    data/shaders/vertexColored.frag
-    data/shaders/vertexColored.vert
+    data/shaders/vertexColor.frag
+    data/shaders/vertexColor.vert
     data/shaders/white.frag
 )
 

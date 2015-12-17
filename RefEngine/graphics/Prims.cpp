@@ -57,13 +57,13 @@ const std::vector<uint> Prims::Cube_Indices {
 
 const std::vector<float> Prims::Cube_Colors {
 	// front colors
-	1.0f, 0.0f, 0.0f,
-	0.0f, 1.0f, 0.0f,
-	0.0f, 0.0f, 1.0f,
-	1.0f, 1.0f, 1.0f,
+	1.0f, 0.0f, 0.0f, 1.0f,
+    0.0f, 1.0f, 0.0f, 1.0f,
+    0.0f, 0.0f, 1.0f, 1.0f,
+    1.0f, 1.0f, 1.0f, 1.0f,
 	// back colors
-	1.0f, 0.0f, 0.0f,
-	0.0f, 1.0f, 0.0f,
-	0.0f, 0.0f, 1.0f,
-	1.0f, 1.0f, 1.0f,
+    1.0f, 0.0f, 0.0f, 1.0f,
+    0.0f, 1.0f, 0.0f, 1.0f,
+    0.0f, 0.0f, 1.0f, 1.0f,
+    1.0f, 1.0f, 1.0f, 1.0f,
 };

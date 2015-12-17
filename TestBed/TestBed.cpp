@@ -58,7 +58,7 @@ void EmplaceFBXModel(RefEngine& eng,  const char* fbxFilename, std::shared_ptr<M
             }
 
 
-            auto pFbxMesh = Mesh::Create(pMesh->m_vertices, pMesh->m_indices, FBXVertexAttributes);
+            auto pFbxMesh = Mesh::Create(pMesh->m_vertices, FBXVertexAttributes, pMesh->m_indices);
             eng.EmplaceGameObject<RenderableGameObject>(glm::vec3(0, 0, 3), pFbxMesh, pMaterial);
         }
     }
@@ -86,28 +86,35 @@ TestBed::TestBed() :
 
 bool TestBed::DoInit()
 {
-
-    // Add a quad
+    // Add a textured quad
     auto pebbleTex = m_assetManager.LoadTexture("data/textures/Big_pebbles_pxr128.png");
 
     ProgramId texturedProgram = m_assetManager.LoadProgram("data/shaders/textured.vert", "data/shaders/textured.frag");
     auto texturedMat = std::make_shared<Material>(texturedProgram, pebbleTex.m_textureId);
-    auto pQuadMesh = Mesh::Create(Prims::Quad_VerticesAndUVs, Prims::Quad_Indices, UVVertexAttributes);
+    auto pQuadMesh = Mesh::Create(Prims::Quad_VerticesAndUVs, UVVertexAttributes, Prims::Quad_Indices);
 
     Transform quadRot(glm::vec3(5,0,0), glm::quat(glm::vec3(glm::half_pi<float>(), 0, 0)), glm::vec3(3));
     EmplaceGameObject<RenderableGameObject>(quadRot, pQuadMesh, texturedMat);
         
-    // Add a couple of tris
+    // Add a couple of non-indexed tris
     ProgramId redProgram = m_assetManager.LoadProgram("data/shaders/default.vert", "data/shaders/red.frag");
-    std::shared_ptr<Material> pRedMaterial = std::make_shared<Material>(redProgram);
+    const auto& pRedMaterial = m_assetManager.CreateMaterial(redProgram);
 
-    // TODO vert colouring
     std::shared_ptr<Mesh> pTriMesh = Mesh::Create(Prims::Triangle_Vertices);
     EmplaceGameObject<SpinObject>(glm::vec3(-2, 0, 0), pTriMesh, pRedMaterial);
     EmplaceGameObject<SpinObject>(glm::vec3(2, 0, 0), pTriMesh, pRedMaterial);
+    
+    // Add a colored cube
+    std::vector<Buffer> cubeBuffers;
+    cubeBuffers.emplace_back(Buffer::Create(Prims::Cube_Vertices));
+    cubeBuffers.emplace_back(Buffer::Create(Prims::Cube_Colors, Buffer::Vec4VertexAttribute));
+    std::shared_ptr<Mesh> pColoredCubeMesh = Mesh::Create(cubeBuffers, Prims::Cube_Indices);
+    ProgramId vertexColorProgram = m_assetManager.LoadProgram("data/shaders/vertexColor.vert", "data/shaders/vertexColor.frag");
+    const auto& pVertexColorMaterial = std::make_shared<Material>(vertexColorProgram);
+    EmplaceGameObject<RenderableGameObject>(glm::vec3(3, 2, 3), pColoredCubeMesh, pVertexColorMaterial);
 
-    // Add a cube
-    std::shared_ptr<Mesh> pCubeMesh = Mesh::Create(Prims::Cube_Vertices, Prims::Cube_Indices);
+    // Add an indexed cube
+    std::shared_ptr<Mesh> pCubeMesh = Mesh::Create(Prims::Cube_Vertices, Buffer::Vec3VertexAttribute, Prims::Cube_Indices);
     EmplaceGameObject<RenderableGameObject>(glm::vec3(0, 0, -5), pCubeMesh, pRedMaterial);
 
 	// Add a fbx model

@@ -4,9 +4,14 @@
 
 using namespace reng;
 
-const std::vector<VertexAttribute> Buffer::PositionVertexAttribute {
+const std::vector<VertexAttribute> Buffer::Vec3VertexAttribute {
     VertexAttribute{ 3, sizeof(float), 0, GL_FLOAT }
 };
+
+const std::vector<VertexAttribute> Buffer::Vec4VertexAttribute{
+    VertexAttribute{ 4, sizeof(float), 0, GL_FLOAT }
+};
+
 
 const std::vector<uint> Buffer::EmptyIndex;
 

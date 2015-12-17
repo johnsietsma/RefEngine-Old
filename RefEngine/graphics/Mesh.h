@@ -4,6 +4,7 @@
 #include "OpenGlTypes.h"
 #include "types.h"
 
+#include <algorithm>
 #include <memory>
 #include <vector>
 
@@ -12,14 +13,19 @@ namespace reng {
 
 class Mesh {
 public:
-	VBOId vboId;
-	VAOId vaoId;
-	IBOId iboId;
-	GLenum indexType;
-    GLuint numberOfVerts;
-    GLuint numberOfIndices;
+    // Vertex array object id
+	const VAOId vaoId;
 
-    Mesh(IBOId iboId, VAOId vaoId, VBOId vboId, GLuint numberOfVerts, GLuint numberOfIndices, GLenum indexType);
+    // Vertex buffer information
+    const std::vector<VBOId> vboIds;
+    const uint numberOfVerts;
+
+    // Index buffer information
+    const IBOId iboId;
+    const GLenum indexType;
+    const uint numberOfIndices;
+        
+    Mesh(VAOId a_vaoId, IBOId a_iboId, std::vector<VBOId> a_vboIds, GLenum a_indexType, GLuint a_numberOfIndices, GLuint a_numberOfVerts);
 
     /**
      * Create a mesh from vertex data.
@@ -29,16 +35,15 @@ public:
     template<typename VertT>
     static std::shared_ptr<Mesh> Create( 
         const std::vector<VertT>& vertices,
-        const std::vector<uint>& indices = Buffer::EmptyIndex, // No indices by default
-        const std::vector<VertexAttribute>& vertexAttributes = Buffer::PositionVertexAttribute // Vert postions only by default
+        const std::vector<VertexAttribute>& vertexAttributes = Buffer::Vec3VertexAttribute, // Vert postions only by default
+        const std::vector<uint>& indices = Buffer::EmptyIndex // No indices by default
     )
     {
-        const Buffer& buffer = Buffer::Create(vertices, indices, vertexAttributes);
-        return CreateMesh_Impl( std::vector<Buffer>(1, buffer) );
+        const Buffer& buffer = Buffer::Create(vertices, vertexAttributes);
+        return Create( std::vector<Buffer>(1, buffer), indices );
     }
 
-private:
-	static std::shared_ptr<Mesh> CreateMesh_Impl( const std::vector<Buffer>& buffer );
+    static std::shared_ptr<Mesh> Create(const std::vector<Buffer>& buffers, const std::vector<uint>& indices);
 
 
 };

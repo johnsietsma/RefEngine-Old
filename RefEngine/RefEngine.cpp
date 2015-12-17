@@ -77,13 +77,15 @@ bool RefEngine::Init()
 	float clear = 192 / 255.f;
 	glClearColor(clear, clear, clear, 1);
 
+    glEnable(GL_DEPTH_TEST);
+    
 	printf("Supported GLSL version is %s.\n", (char *)glGetString(GL_SHADING_LANGUAGE_VERSION));
 
-#ifdef DEBUG
+#ifndef NDEBUG
 	GLHelpers::TurnOnDebugLogging();
 #endif
 
-	Gizmos::create();
+	//Gizmos::create();
 
 	if (!DoInit()) return false;
 
@@ -102,7 +104,7 @@ void RefEngine::Destroy()
     }
     if (m_isValid) { glfwTerminate(); }
 
-    Gizmos::destroy();
+    //Gizmos::destroy();
 
     m_isValid = false;
 }
@@ -156,8 +158,8 @@ void RefEngine::Draw()
 
 	glClear(GL_COLOR_BUFFER_BIT | GL_DEPTH_BUFFER_BIT);
 
-	Gizmos::addTransform(glm::mat4(1));
-	DrawWorldGrid();
+	//Gizmos::addTransform(glm::mat4(1));
+	//DrawWorldGrid();
 
 	Gizmos::draw(m_pCamera->GetProjectionViewMatrix());
 

@@ -26,8 +26,10 @@ Material::Material(ProgramId programId, TextureId textureId, const char* projVie
 
 void Material::BindTexture() const
 {
-    glActiveTexture(GL_TEXTURE0);
-    glBindTexture(GL_TEXTURE_2D, m_textureId.Value());
+    if (m_textureId != TextureId_Invalid) {
+        glActiveTexture(GL_TEXTURE0);
+        glBindTexture(GL_TEXTURE_2D, m_textureId.Value());
+    }
 }
 
 void Material::UpdateUniforms(const glm::mat4x4& projectionViewMatrix, const glm::mat4x4& transform)

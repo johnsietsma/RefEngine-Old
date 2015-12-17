@@ -46,3 +46,7 @@ ProgramId AssetManager::LinkProgram(ShaderId fragmentShaderId, ShaderId vertexSh
 	return programId;
 }
 
+std::shared_ptr<Material> AssetManager::CreateMaterial(ProgramId programId)
+{
+    return std::make_shared<Material>(programId);
+}

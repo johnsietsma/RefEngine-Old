@@ -55,7 +55,7 @@ public:
 
     void ClearCache()
     {
-        if (m_factoryFunction != nullptr) {
+        if (m_destroyFunction != nullptr) {
             for (auto& cachePair : m_cacheMap) {
                 m_destroyFunction(cachePair.second);
             }

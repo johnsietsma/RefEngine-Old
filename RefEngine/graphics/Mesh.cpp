@@ -2,62 +2,75 @@
 
 #include "utils/pow2assert.h"
 
+#include <algorithm>
+
 using namespace reng;
 
-
-Mesh::Mesh(IBOId iboId, VAOId vaoId, VBOId vboId, GLuint numberOfVerts, GLuint numberOfIndices, GLenum indexType) :
-vboId(vboId),
-vaoId(vaoId),
-iboId(iboId),
-indexType(indexType),
-numberOfVerts(numberOfVerts),
-numberOfIndices(numberOfIndices)
+Mesh::Mesh(VAOId a_vaoId, IBOId a_iboId, std::vector<VBOId> a_vboIds, GLenum a_indexType, GLuint a_numberOfIndices, GLuint a_numberOfVerts) :
+    vaoId(a_vaoId),
+    iboId(a_iboId),
+    vboIds(a_vboIds),
+    indexType(a_indexType),
+    numberOfIndices(a_numberOfIndices),
+    numberOfVerts(a_numberOfVerts)
 {
+
 }
 
-
-std::shared_ptr<Mesh> Mesh::CreateMesh_Impl( const std::vector<Buffer>& buffers )
+std::shared_ptr<Mesh> Mesh::Create(const std::vector<Buffer>& buffers, const std::vector<uint>& indices)
 {
-    auto buffer = buffers[0];
+    VAOId vertexArrayObjectId = VAOId_Invalid;
 
-    // Check preconditions
-	POW2_ASSERT(buffer.vertexSize > 0);
-    POW2_ASSERT(buffer.numberOfVerts != 0 || buffer.numberOfVerts != (GLuint)-1);
-    POW2_ASSERT(buffer.verts != nullptr);
+    std::vector<VBOId> vboIds(buffers.size());
+    IBOId iboId = IBOId_Invalid;
 
-    POW2_ASSERT(buffer.indexType != (GLenum)-1);
-    POW2_ASSERT((((int)buffer.numberOfIndices) == -1 || buffer.numberOfIndices == 0) || buffer.indices != nullptr);
-    POW2_ASSERT(buffer.indexType >= 0);
-
-	VAOId vertexArrayObjectId = VAOId_Invalid;
-	VBOId vertexBufferId = VBOId_Invalid;
-	IBOId indexBufferObjectId = IBOId_Invalid;
+    uint numVerts = -1;
+    uint numIndices = -1;
 
     // Make the VAO
     glGenVertexArrays(1, &vertexArrayObjectId.Get());
 	glBindVertexArray(vertexArrayObjectId.Value());
 
-    // Make the VBO and upload data
-    glGenBuffers(1, &vertexBufferId.Get());
-    glBindBuffer(GL_ARRAY_BUFFER, vertexBufferId.Value());
-    glBufferData(GL_ARRAY_BUFFER, buffer.numberOfVerts*buffer.vertexSize, buffer.verts, GL_STATIC_DRAW);
+    uint numberOfIndices = indices.size();
+    uint numberOfVerts = -1;
+    uint attribLocation = 0;
 
     // Optionally make the IBO
-    if (buffer.numberOfIndices > 0) {
-		glGenBuffers(1, &indexBufferObjectId.Get());
-		glBindBuffer(GL_ELEMENT_ARRAY_BUFFER, indexBufferObjectId.Value());
-        glBufferData(GL_ELEMENT_ARRAY_BUFFER, buffer.numberOfIndices*sizeof(uint), buffer.indices, GL_STATIC_DRAW);
-	}
+    if (numberOfIndices > 0) {
+        glGenBuffers(1, &iboId.Get());
+        glBindBuffer(GL_ELEMENT_ARRAY_BUFFER, iboId.Value());
+        glBufferData(GL_ELEMENT_ARRAY_BUFFER, numberOfIndices*sizeof(uint), indices.data(), GL_STATIC_DRAW);
+    }
 
-    // Set up our vertex attributes
-    for (uint i = 0; i < buffer.numberOfVertexAttributes; i++) {
-        glEnableVertexAttribArray(i);
-        glVertexAttribPointer(i, buffer.vertexAttributes[i].numComponents, buffer.vertexAttributes[i].type, GL_FALSE, buffer.vertexSize, ((char*)0) + buffer.vertexAttributes[i].offset);
+    // Run through each buffer, create and upload it.
+    for (int i = 0; i < buffers.size(); i++)
+    {
+        const auto& buffer = buffers[i];
+
+        // Check preconditions
+        POW2_ASSERT(buffer.vertexSize > 0);
+        POW2_ASSERT(buffer.numberOfVerts != 0 || buffer.numberOfVerts != (GLuint)-1);
+        POW2_ASSERT(buffer.verts != nullptr);
+
+        POW2_ASSERT(numberOfVerts == -1 || numberOfVerts == buffer.numberOfVerts);
+        numberOfVerts = buffer.numberOfVerts;
+
+        // Make the VBO and upload data
+        glGenBuffers(1, &vboIds[i].Get());
+        glBindBuffer(GL_ARRAY_BUFFER, vboIds[i].Value());
+        glBufferData(GL_ARRAY_BUFFER, buffer.numberOfVerts*buffer.vertexSize, buffer.verts, GL_STATIC_DRAW);
+
+        // Set up our vertex attributes
+        for (uint i = 0; i < buffer.numberOfVertexAttributes; i++) {
+            glEnableVertexAttribArray(attribLocation);
+            glVertexAttribPointer(attribLocation, buffer.vertexAttributes[i].numComponents, buffer.vertexAttributes[i].type, GL_FALSE, buffer.vertexSize, ((char*)0) + buffer.vertexAttributes[i].offset);
+            attribLocation++;
+        }
     }
 
     // Clear the VAO binding
     glBindVertexArray(0);
 
-    return std::make_shared<Mesh>(indexBufferObjectId, vertexArrayObjectId, vertexBufferId, buffer.numberOfVerts, buffer.numberOfIndices, buffer.indexType);
+    return std::make_shared<Mesh>( vertexArrayObjectId, iboId, vboIds, GL_UNSIGNED_INT, numberOfIndices, numberOfVerts );
 }
 
