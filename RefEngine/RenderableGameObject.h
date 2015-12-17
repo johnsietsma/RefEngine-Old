@@ -3,7 +3,7 @@
 #include "IGameObject.h"
 #include "Transform.h"
 
-#include <glm\glm.hpp>
+#include <glm/glm.hpp>
 #include <memory>
 
 namespace reng {

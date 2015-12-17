@@ -61,7 +61,7 @@ struct Buffer
 
         return Buffer{
             vertexSize,
-            vertices.size() / numComponents,
+            (uint)(vertices.size() / numComponents),
             vertices.data(),
             vertexAttributes.size(), vertexAttributes.data()
         };
