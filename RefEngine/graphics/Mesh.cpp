@@ -17,7 +17,7 @@ Mesh::Mesh(VAOId a_vaoId, IBOId a_iboId, std::vector<VBOId> a_vboIds, GLenum a_i
 
 }
 
-std::shared_ptr<Mesh> Mesh::Create(std::vector<Buffer>& buffers, const std::vector<uint>& indices)
+std::shared_ptr<Mesh> Mesh::Create(std::vector<VertexBufferInfo>& buffers, const std::vector<uint>& indices)
 {
     VAOId vertexArrayObjectId = VAOId_Invalid;
 
@@ -77,7 +77,7 @@ std::shared_ptr<Mesh> Mesh::Create(std::vector<Buffer>& buffers, const std::vect
     return std::make_shared<Mesh>( vertexArrayObjectId, iboId, vboIds, GL_UNSIGNED_INT, numberOfIndices, numberOfVerts );
 }
 
-void Mesh::UpdateBuffer(const Buffer& buffer)
+void Mesh::UpdateBuffer(const VertexBufferInfo& buffer)
 {
     GLenum usage = buffer.isStatic ? GL_STATIC_DRAW : GL_DYNAMIC_DRAW;
 

@@ -23,11 +23,11 @@ struct VertexAttribute {
 
 
 /**
- * A buffer is a data blob that contains vertex data and a collection of vertex attributes that 
+ * VertexBufferInfo holds information about the vertex buffer, a pointer to the vertex data and a collection of vertex attributes that 
  *   define how the vertex dataa is layed out.
  * This class does not own any data, make sure the data passed in has approariate lifetime.
  */
-struct Buffer
+struct VertexBufferInfo
 {
     // The default vertex attribute for vertex data that simply contains vec3 float data.
     static const std::vector<VertexAttribute> Vec3VertexAttribute;
@@ -39,9 +39,9 @@ struct Buffer
 
     // Create a buffer
     template<typename VertT>
-    static Buffer Create(
+    static VertexBufferInfo Create(
         const std::vector<VertT>& vertices,
-        const std::vector<VertexAttribute>& vertexAttributes = Buffer::Vec3VertexAttribute, // Vert postions only by default
+        const std::vector<VertexAttribute>& vertexAttributes = VertexBufferInfo::Vec3VertexAttribute, // Vert postions only by default
         bool isStatic = true
         )
     {
@@ -60,7 +60,7 @@ struct Buffer
             numComponents = CalculateNumberOfComponents(vertexAttributes);
         }
 
-        return Buffer{
+        return VertexBufferInfo {
             VBOId_Invalid,
             vertexSize,
             (uint)(vertices.size() / numComponents),

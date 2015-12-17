@@ -66,8 +66,8 @@ add_library(refeng
     VariadicHash.cpp
     VariadicHash.h
 
-    graphics/Buffer.h
-    graphics/Buffer.cpp
+    graphics/VertexBufferInfo.h
+    graphics/VertexBufferInfo.cpp
     graphics/gl_core_4_4.c
     graphics/gl_core_4_4.h
     graphics/GLHelpers.cpp

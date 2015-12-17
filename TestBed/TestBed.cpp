@@ -83,7 +83,7 @@ public:
 class VertexColorAnimator : public RenderableGameObject {
 public:
     VertexColorAnimator(glm::vec3 pos, std::shared_ptr<Mesh> pMesh, std::shared_ptr<Material> pMaterial, 
-        const Buffer& a_colorBuffer, const std::vector<float>& a_colors) :
+        const VertexBufferInfo& a_colorBuffer, const std::vector<float>& a_colors) :
         RenderableGameObject(pos, pMesh, pMaterial),
         colorBuffer(a_colorBuffer),
         colors(a_colors.begin(), a_colors.end())
@@ -100,7 +100,7 @@ public:
         m_pMesh->UpdateBuffer(colorBuffer);
     }
 
-    Buffer colorBuffer;
+    VertexBufferInfo colorBuffer;
     std::vector<float> colors;
 };
 
@@ -130,16 +130,16 @@ bool TestBed::DoInit()
     EmplaceGameObject<SpinObject>(glm::vec3(2, 0, 0), pTriMesh, pRedMaterial);
     
     // Add a colored cube
-    std::vector<Buffer> cubeBuffers;
-    cubeBuffers.emplace_back(Buffer::Create(Prims::Cube_Vertices));
-    cubeBuffers.emplace_back(Buffer::Create(Prims::Cube_Colors, Buffer::Vec4VertexAttribute, false));
+    std::vector<VertexBufferInfo> cubeBuffers;
+    cubeBuffers.emplace_back(VertexBufferInfo::Create(Prims::Cube_Vertices));
+    cubeBuffers.emplace_back(VertexBufferInfo::Create(Prims::Cube_Colors, VertexBufferInfo::Vec4VertexAttribute, false));
     std::shared_ptr<Mesh> pColoredCubeMesh = Mesh::Create(cubeBuffers, Prims::Cube_Indices);
     ProgramId vertexColorProgram = m_assetManager.LoadProgram("data/shaders/vertexColor.vert", "data/shaders/vertexColor.frag");
     const auto& pVertexColorMaterial = std::make_shared<Material>(vertexColorProgram);
     EmplaceGameObject<VertexColorAnimator>(glm::vec3(3, 2, 3), pColoredCubeMesh, pVertexColorMaterial, cubeBuffers[1], Prims::Cube_Colors);
 
     // Add an indexed cube
-    std::shared_ptr<Mesh> pCubeMesh = Mesh::Create(Prims::Cube_Vertices, Buffer::Vec3VertexAttribute, Prims::Cube_Indices);
+    std::shared_ptr<Mesh> pCubeMesh = Mesh::Create(Prims::Cube_Vertices, VertexBufferInfo::Vec3VertexAttribute, Prims::Cube_Indices);
     EmplaceGameObject<RenderableGameObject>(glm::vec3(0, 0, -5), pCubeMesh, pRedMaterial);
 
 	// Add a fbx model

@@ -1,6 +1,6 @@
 #pragma once
 
-#include "Buffer.h"
+#include "graphics/VertexBufferInfo.h"
 #include "OpenGlTypes.h"
 #include "types.h"
 
@@ -35,17 +35,17 @@ public:
     template<typename VertT>
     static std::shared_ptr<Mesh> Create( 
         const std::vector<VertT>& vertices,
-        const std::vector<VertexAttribute>& vertexAttributes = Buffer::Vec3VertexAttribute, // Vert postions only by default
-        const std::vector<uint>& indices = Buffer::EmptyIndex // No indices by default
+        const std::vector<VertexAttribute>& vertexAttributes = VertexBufferInfo::Vec3VertexAttribute, // Vert postions only by default
+        const std::vector<uint>& indices = VertexBufferInfo::EmptyIndex // No indices by default
     )
     {
-        const Buffer& buffer = Buffer::Create(vertices, vertexAttributes, true);
-        return Create( std::vector<Buffer>(1, buffer), indices );
+        const VertexBufferInfo& buffer = VertexBufferInfo::Create(vertices, vertexAttributes, true);
+        return Create(std::vector<VertexBufferInfo>(1, buffer), indices);
     }
 
-    void UpdateBuffer(const Buffer& buffer);
+    void UpdateBuffer(const VertexBufferInfo& buffer);
 
-    static std::shared_ptr<Mesh> Create(std::vector<Buffer>& buffers, const std::vector<uint>& indices);
+    static std::shared_ptr<Mesh> Create(std::vector<VertexBufferInfo>& buffers, const std::vector<uint>& indices);
 
 
 };
