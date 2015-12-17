@@ -14,7 +14,7 @@
 #include "graphics/Prims.h"
 
 #include <FBXFile.h>
-#include <array>
+#include <vector>
 #include <memory>
 #include <glm/gtx/transform.hpp>
 #include <glm/gtc/quaternion.hpp>
@@ -72,11 +72,36 @@ public:
         : RenderableGameObject(pos, pMesh, pMaterial)
     {}
 
-    void Update( double deltaTime ) override {
+    void Update( double deltaTime ) override 
+    {
         m_transform = glm::rotate<float>(m_transform.GetMartix(), (float)(spinSpeed * deltaTime), glm::vec3(0, 1.f, 0));
     }
 
     float spinSpeed = 10;
+};
+
+class VertexColorAnimator : public RenderableGameObject {
+public:
+    VertexColorAnimator(glm::vec3 pos, std::shared_ptr<Mesh> pMesh, std::shared_ptr<Material> pMaterial, 
+        const Buffer& a_colorBuffer, const std::vector<float>& a_colors) :
+        RenderableGameObject(pos, pMesh, pMaterial),
+        colorBuffer(a_colorBuffer),
+        colors(a_colors.begin(), a_colors.end())
+    {
+        colorBuffer.verts = colors.data();
+    }
+
+    void Update(double deltaTime) override 
+    {
+        for (int i = 0; i < colors.size(); i++)
+        {
+            colors[i] = 1.f;
+        }
+        m_pMesh->UpdateBuffer(colorBuffer);
+    }
+
+    Buffer colorBuffer;
+    std::vector<float> colors;
 };
 
 
@@ -107,11 +132,11 @@ bool TestBed::DoInit()
     // Add a colored cube
     std::vector<Buffer> cubeBuffers;
     cubeBuffers.emplace_back(Buffer::Create(Prims::Cube_Vertices));
-    cubeBuffers.emplace_back(Buffer::Create(Prims::Cube_Colors, Buffer::Vec4VertexAttribute));
+    cubeBuffers.emplace_back(Buffer::Create(Prims::Cube_Colors, Buffer::Vec4VertexAttribute, false));
     std::shared_ptr<Mesh> pColoredCubeMesh = Mesh::Create(cubeBuffers, Prims::Cube_Indices);
     ProgramId vertexColorProgram = m_assetManager.LoadProgram("data/shaders/vertexColor.vert", "data/shaders/vertexColor.frag");
     const auto& pVertexColorMaterial = std::make_shared<Material>(vertexColorProgram);
-    EmplaceGameObject<RenderableGameObject>(glm::vec3(3, 2, 3), pColoredCubeMesh, pVertexColorMaterial);
+    EmplaceGameObject<VertexColorAnimator>(glm::vec3(3, 2, 3), pColoredCubeMesh, pVertexColorMaterial, cubeBuffers[1], Prims::Cube_Colors);
 
     // Add an indexed cube
     std::shared_ptr<Mesh> pCubeMesh = Mesh::Create(Prims::Cube_Vertices, Buffer::Vec3VertexAttribute, Prims::Cube_Indices);

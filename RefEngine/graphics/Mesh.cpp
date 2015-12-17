@@ -17,7 +17,7 @@ Mesh::Mesh(VAOId a_vaoId, IBOId a_iboId, std::vector<VBOId> a_vboIds, GLenum a_i
 
 }
 
-std::shared_ptr<Mesh> Mesh::Create(const std::vector<Buffer>& buffers, const std::vector<uint>& indices)
+std::shared_ptr<Mesh> Mesh::Create(std::vector<Buffer>& buffers, const std::vector<uint>& indices)
 {
     VAOId vertexArrayObjectId = VAOId_Invalid;
 
@@ -43,9 +43,9 @@ std::shared_ptr<Mesh> Mesh::Create(const std::vector<Buffer>& buffers, const std
     }
 
     // Run through each buffer, create and upload it.
-    for (int i = 0; i < buffers.size(); i++)
+    for (uint i = 0; i < buffers.size(); i++)
     {
-        const auto& buffer = buffers[i];
+        auto& buffer = buffers[i];
 
         // Check preconditions
         POW2_ASSERT(buffer.vertexSize > 0);
@@ -55,13 +55,16 @@ std::shared_ptr<Mesh> Mesh::Create(const std::vector<Buffer>& buffers, const std
         POW2_ASSERT(numberOfVerts == -1 || numberOfVerts == buffer.numberOfVerts);
         numberOfVerts = buffer.numberOfVerts;
 
+        GLenum usage = buffer.isStatic ? GL_STATIC_DRAW : GL_DYNAMIC_DRAW;
+
         // Make the VBO and upload data
         glGenBuffers(1, &vboIds[i].Get());
+        buffer.vboId = vboIds[i];
         glBindBuffer(GL_ARRAY_BUFFER, vboIds[i].Value());
-        glBufferData(GL_ARRAY_BUFFER, buffer.numberOfVerts*buffer.vertexSize, buffer.verts, GL_STATIC_DRAW);
+        glBufferData(GL_ARRAY_BUFFER, buffer.numberOfVerts*buffer.vertexSize, buffer.verts, usage);
 
         // Set up our vertex attributes
-        for (uint i = 0; i < buffer.numberOfVertexAttributes; i++) {
+        for (uint i = 0; i < buffer.vertexAttributes.size(); i++) {
             glEnableVertexAttribArray(attribLocation);
             glVertexAttribPointer(attribLocation, buffer.vertexAttributes[i].numComponents, buffer.vertexAttributes[i].type, GL_FALSE, buffer.vertexSize, ((char*)0) + buffer.vertexAttributes[i].offset);
             attribLocation++;
@@ -74,3 +77,10 @@ std::shared_ptr<Mesh> Mesh::Create(const std::vector<Buffer>& buffers, const std
     return std::make_shared<Mesh>( vertexArrayObjectId, iboId, vboIds, GL_UNSIGNED_INT, numberOfIndices, numberOfVerts );
 }
 
+void Mesh::UpdateBuffer(const Buffer& buffer)
+{
+    GLenum usage = buffer.isStatic ? GL_STATIC_DRAW : GL_DYNAMIC_DRAW;
+
+    glBindBuffer(GL_ARRAY_BUFFER, buffer.vboId.Value());
+    glBufferData(GL_ARRAY_BUFFER, buffer.numberOfVerts*buffer.vertexSize, buffer.verts, usage);
+}

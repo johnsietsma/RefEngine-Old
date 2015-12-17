@@ -39,11 +39,13 @@ public:
         const std::vector<uint>& indices = Buffer::EmptyIndex // No indices by default
     )
     {
-        const Buffer& buffer = Buffer::Create(vertices, vertexAttributes);
+        const Buffer& buffer = Buffer::Create(vertices, vertexAttributes, true);
         return Create( std::vector<Buffer>(1, buffer), indices );
     }
 
-    static std::shared_ptr<Mesh> Create(const std::vector<Buffer>& buffers, const std::vector<uint>& indices);
+    void UpdateBuffer(const Buffer& buffer);
+
+    static std::shared_ptr<Mesh> Create(std::vector<Buffer>& buffers, const std::vector<uint>& indices);
 
 
 };

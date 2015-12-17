@@ -41,7 +41,8 @@ struct Buffer
     template<typename VertT>
     static Buffer Create(
         const std::vector<VertT>& vertices,
-        const std::vector<VertexAttribute>& vertexAttributes = Buffer::Vec3VertexAttribute // Vert postions only by default
+        const std::vector<VertexAttribute>& vertexAttributes = Buffer::Vec3VertexAttribute, // Vert postions only by default
+        bool isStatic = true
         )
     {
         // Assume each vert is stored on a single structure.
@@ -60,19 +61,23 @@ struct Buffer
         }
 
         return Buffer{
+            VBOId_Invalid,
             vertexSize,
             vertices.size() / numComponents,
             vertices.data(),
-            vertexAttributes.size(), vertexAttributes.data()
+            isStatic,
+            vertexAttributes,
         };
     }
+
+    VBOId vboId;
 
     const size_t vertexSize;  // The size of a vertex in bytes
     const uint numberOfVerts; // The number of verts in the buffer
     const void* verts;        // The vertex data
+    const bool isStatic;
 
-    const size_t numberOfVertexAttributes;
-    const VertexAttribute* vertexAttributes;
+    const std::vector<VertexAttribute> vertexAttributes;
 
     // Calculate the number of vertex components by adding up all components of each attribute.
     // For example a vertex with position and UV information may have 5 components, 3 for pos and 2 for uv.
