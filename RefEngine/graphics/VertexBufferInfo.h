@@ -23,11 +23,11 @@ struct VertexAttribute {
 
 
 /**
- * A buffer is a data blob that contains vertex data and a collection of vertex attributes that 
+ * VertexBufferInfo holds information about the vertex buffer, a pointer to the vertex data and a collection of vertex attributes that 
  *   define how the vertex dataa is layed out.
  * This class does not own any data, make sure the data passed in has approariate lifetime.
  */
-struct Buffer
+struct VertexBufferInfo
 {
     // The default vertex attribute for vertex data that simply contains vec3 float data.
     static const std::vector<VertexAttribute> Vec3VertexAttribute;
@@ -39,9 +39,10 @@ struct Buffer
 
     // Create a buffer
     template<typename VertT>
-    static Buffer Create(
+    static VertexBufferInfo Create(
         const std::vector<VertT>& vertices,
-        const std::vector<VertexAttribute>& vertexAttributes = Buffer::Vec3VertexAttribute // Vert postions only by default
+        const std::vector<VertexAttribute>& vertexAttributes = VertexBufferInfo::Vec3VertexAttribute, // Vert postions only by default
+        bool isStatic = true
         )
     {
         // Assume each vert is stored on a single structure.
@@ -59,20 +60,24 @@ struct Buffer
             numComponents = CalculateNumberOfComponents(vertexAttributes);
         }
 
-        return Buffer{
+        return VertexBufferInfo {
+            VBOId_Invalid,
             vertexSize,
             (uint)(vertices.size() / numComponents),
             vertices.data(),
-            vertexAttributes.size(), vertexAttributes.data()
+            isStatic,
+            vertexAttributes,
         };
     }
+
+    VBOId vboId;
 
     const size_t vertexSize;  // The size of a vertex in bytes
     const uint numberOfVerts; // The number of verts in the buffer
     const void* verts;        // The vertex data
+    const bool isStatic;
 
-    const size_t numberOfVertexAttributes;
-    const VertexAttribute* vertexAttributes;
+    const std::vector<VertexAttribute> vertexAttributes;
 
     // Calculate the number of vertex components by adding up all components of each attribute.
     // For example a vertex with position and UV information may have 5 components, 3 for pos and 2 for uv.
