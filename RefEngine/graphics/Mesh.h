@@ -40,12 +40,13 @@ public:
     )
     {
         const VertexBufferInfo& buffer = VertexBufferInfo::Create(vertices, vertexAttributes, true);
-        return Create(std::vector<VertexBufferInfo>(1, buffer), indices);
+        auto buffers = std::vector<VertexBufferInfo>(1, buffer);
+        return Create(buffers, indices);
     }
 
     void UpdateBuffer(const VertexBufferInfo& buffer);
 
-    static std::shared_ptr<Mesh> Create(std::vector<VertexBufferInfo>& buffers, const std::vector<uint>& indices);
+    static std::shared_ptr<Mesh> Create(std::vector<VertexBufferInfo> & buffers, const std::vector<uint>& indices);
 
 
 };

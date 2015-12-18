@@ -8,24 +8,21 @@ using namespace reng;
 
 Mesh::Mesh(VAOId a_vaoId, IBOId a_iboId, std::vector<VBOId> a_vboIds, GLenum a_indexType, GLuint a_numberOfIndices, GLuint a_numberOfVerts) :
     vaoId(a_vaoId),
-    iboId(a_iboId),
     vboIds(a_vboIds),
+    numberOfVerts(a_numberOfVerts),
+    iboId(a_iboId),
     indexType(a_indexType),
-    numberOfIndices(a_numberOfIndices),
-    numberOfVerts(a_numberOfVerts)
+    numberOfIndices(a_numberOfIndices)
 {
 
 }
 
-std::shared_ptr<Mesh> Mesh::Create(std::vector<VertexBufferInfo>& buffers, const std::vector<uint>& indices)
+std::shared_ptr<Mesh> Mesh::Create(std::vector<VertexBufferInfo> & buffers, const std::vector<uint>& indices)
 {
     VAOId vertexArrayObjectId = VAOId_Invalid;
 
     std::vector<VBOId> vboIds(buffers.size());
     IBOId iboId = IBOId_Invalid;
-
-    uint numVerts = -1;
-    uint numIndices = -1;
 
     // Make the VAO
     glGenVertexArrays(1, &vertexArrayObjectId.Get());
