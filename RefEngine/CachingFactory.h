@@ -64,11 +64,9 @@ public:
     }
 
 private:
+  	std::function<TMake(TArgs...)> m_factoryFunction; // The function that will create the object.
     std::function<void(TMake)> m_destroyFunction;
 	std::map<int, TMake> m_cacheMap; // A map of parameter hashes to created objects.
-	std::function<TMake(TArgs...)> m_factoryFunction; // The function that will create the object.
-
-
 };
 
 }
