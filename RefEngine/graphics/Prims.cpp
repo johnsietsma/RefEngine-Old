@@ -1,8 +1,6 @@
 #include "Prims.h"
 
-#include <vector>
-
-const std::vector<float> Prims::Quad_VerticesAndUVs {
+const std::array<float,20> Prims::Quad_VerticesAndUVs {
     // Vert, UV
     -1.f, -1.f, 0.f,    0.f, 0.f,
     -1.f,  1.f, 0.f,    0.f, 1.f,
@@ -10,18 +8,18 @@ const std::vector<float> Prims::Quad_VerticesAndUVs {
      1.f, -1.f, 0.f,    1.f, 0.f,
 };
 
-const std::vector<uint> Prims::Quad_Indices{
+const std::array<uint,6> Prims::Quad_Indices{
     0, 1, 2,
     0, 2, 3
 };
 
-const  std::vector<float> Prims::Triangle_Vertices {
+const  std::array<float,9> Prims::Triangle_Vertices {
 	-1.f, -1.f, 0.f,
 	1.f, -1.f, 0.f,
 	0.f, 1.f, 0.f
 };
 
-const std::vector<float> Prims::Cube_Vertices {
+const std::array<float,24> Prims::Cube_Vertices {
 	// front
 	-1.0f, -1.0f, 1.0f,
 	1.0f, -1.0f, 1.0f,
@@ -34,7 +32,7 @@ const std::vector<float> Prims::Cube_Vertices {
 	-1.0f, 1.0f, -1.0f,
 };
 
-const std::vector<uint> Prims::Cube_Indices {
+const std::array<uint,36> Prims::Cube_Indices {
 	// front
 	0, 1, 2,
 	2, 3, 0,
@@ -55,7 +53,7 @@ const std::vector<uint> Prims::Cube_Indices {
 	6, 2, 1,
 };
 
-const std::vector<float> Prims::Cube_Colors {
+const std::array<float,32> Prims::Cube_Colors {
 	// front colors
 	1.0f, 0.0f, 0.0f, 1.0f,
     0.0f, 1.0f, 0.0f, 1.0f,

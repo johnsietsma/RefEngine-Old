@@ -23,7 +23,7 @@ void OpenGLRenderer::Bind( const Mesh& mesh )
 void OpenGLRenderer::Draw(const Mesh& mesh )
 {
 	if (mesh.iboId == IBOId_Invalid) {
-		glDrawArrays(GL_TRIANGLES, 0, 3 * mesh.numberOfVerts);
+		glDrawArrays(GL_TRIANGLES, 0, mesh.numberOfVerts);
 	}
 	else {
 		glDrawElements(GL_TRIANGLES, mesh.numberOfIndices, mesh.indexType, 0);

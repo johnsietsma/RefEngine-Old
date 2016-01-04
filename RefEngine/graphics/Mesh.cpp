@@ -14,59 +14,61 @@ Mesh::Mesh(VAOId a_vaoId, IBOId a_iboId, std::vector<VBOId> a_vboIds, GLenum a_i
     numberOfIndices(a_numberOfIndices),
     numberOfVerts(a_numberOfVerts)
 {
+    POW2_ASSERT(numberOfVerts > 0);
 
 }
 
-std::shared_ptr<Mesh> Mesh::Create(std::vector<VertexBufferInfo>& buffers, const std::vector<uint>& indices)
+std::shared_ptr<Mesh> Mesh::Create(std::vector<Primitive>& primitives,  const BufferAccessor& indices)
 {
     VAOId vertexArrayObjectId = VAOId_Invalid;
 
-    std::vector<VBOId> vboIds(buffers.size());
+    std::vector<VBOId> vboIds(primitives.size());
     IBOId iboId = IBOId_Invalid;
 
     uint numVerts = -1;
-    uint numIndices = -1;
+    uint numIndices = indices.count;
 
     // Make the VAO
     glGenVertexArrays(1, &vertexArrayObjectId.Get());
 	glBindVertexArray(vertexArrayObjectId.Value());
 
-    uint numberOfIndices = indices.size();
-    uint numberOfVerts = -1;
     uint attribLocation = 0;
 
     // Optionally make the IBO
-    if (numberOfIndices > 0) {
+    if (numIndices > 0) {
+        POW2_ASSERT(indices.buffer.data);
         glGenBuffers(1, &iboId.Get());
         glBindBuffer(GL_ELEMENT_ARRAY_BUFFER, iboId.Value());
-        glBufferData(GL_ELEMENT_ARRAY_BUFFER, numberOfIndices*sizeof(uint), indices.data(), GL_STATIC_DRAW);
+        glBufferData(GL_ELEMENT_ARRAY_BUFFER, indices.buffer.size, indices.buffer.data, GL_STATIC_DRAW);
     }
 
     // Run through each buffer, create and upload it.
-    for (uint i = 0; i < buffers.size(); i++)
+    for (uint i = 0; i < primitives.size(); i++)
     {
-        auto& buffer = buffers[i];
+        auto& prim = primitives[i];
+
+        auto& buffer = prim.accessor.buffer;
 
         // Check preconditions
-        POW2_ASSERT(buffer.vertexSize > 0);
-        POW2_ASSERT(buffer.numberOfVerts != 0 || buffer.numberOfVerts != (GLuint)-1);
-        POW2_ASSERT(buffer.verts != nullptr);
+        POW2_ASSERT(buffer.size > 0);
+        POW2_ASSERT(buffer.data != nullptr);
 
-        POW2_ASSERT(numberOfVerts == -1 || numberOfVerts == buffer.numberOfVerts);
-        numberOfVerts = buffer.numberOfVerts;
+        numVerts = prim.accessor.count;
 
-        GLenum usage = buffer.isStatic ? GL_STATIC_DRAW : GL_DYNAMIC_DRAW;
+        GLenum usage = prim.isStatic ? GL_STATIC_DRAW : GL_DYNAMIC_DRAW;
 
         // Make the VBO and upload data
         glGenBuffers(1, &vboIds[i].Get());
-        buffer.vboId = vboIds[i];
+        prim.vboId = vboIds[i];
         glBindBuffer(GL_ARRAY_BUFFER, vboIds[i].Value());
-        glBufferData(GL_ARRAY_BUFFER, buffer.numberOfVerts*buffer.vertexSize, buffer.verts, usage);
+        glBufferData(GL_ARRAY_BUFFER, buffer.size, buffer.data, usage);
 
         // Set up our vertex attributes
-        for (uint i = 0; i < buffer.vertexAttributes.size(); i++) {
+        for (uint i = 0; i < prim.vertexAttributes.size(); i++) {
+            auto attrib = prim.vertexAttributes[i].accessor;
             glEnableVertexAttribArray(attribLocation);
-            glVertexAttribPointer(attribLocation, buffer.vertexAttributes[i].numComponents, buffer.vertexAttributes[i].type, GL_FALSE, buffer.vertexSize, ((char*)0) + buffer.vertexAttributes[i].offset);
+            // We get the stride from the Primitiv, no the attribute.
+            glVertexAttribPointer(attribLocation, attrib.count, attrib.type, GL_FALSE, prim.accessor.byteStride, ((char*)0) + attrib.byteOffset);
             attribLocation++;
         }
     }
@@ -74,13 +76,5 @@ std::shared_ptr<Mesh> Mesh::Create(std::vector<VertexBufferInfo>& buffers, const
     // Clear the VAO binding
     glBindVertexArray(0);
 
-    return std::make_shared<Mesh>( vertexArrayObjectId, iboId, vboIds, GL_UNSIGNED_INT, numberOfIndices, numberOfVerts );
-}
-
-void Mesh::UpdateBuffer(const VertexBufferInfo& buffer)
-{
-    GLenum usage = buffer.isStatic ? GL_STATIC_DRAW : GL_DYNAMIC_DRAW;
-
-    glBindBuffer(GL_ARRAY_BUFFER, buffer.vboId.Value());
-    glBufferData(GL_ARRAY_BUFFER, buffer.numberOfVerts*buffer.vertexSize, buffer.verts, usage);
+    return std::make_shared<Mesh>(vertexArrayObjectId, iboId, vboIds, GL_UNSIGNED_INT, numIndices, numVerts);
 }

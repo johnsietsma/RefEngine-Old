@@ -1,6 +1,6 @@
 #pragma once
 
-#include "graphics/VertexBufferInfo.h"
+#include "graphics/Primitive.h"
 #include "OpenGlTypes.h"
 #include "types.h"
 
@@ -9,7 +9,6 @@
 #include <vector>
 
 namespace reng {
-
 
 class Mesh {
 public:
@@ -34,18 +33,17 @@ public:
      */
     template<typename VertT>
     static std::shared_ptr<Mesh> Create( 
-        const std::vector<VertT>& vertices,
-        const std::vector<VertexAttribute>& vertexAttributes = VertexBufferInfo::Vec3VertexAttribute, // Vert postions only by default
-        const std::vector<uint>& indices = VertexBufferInfo::EmptyIndex // No indices by default
+        const BufferAccessor& accessor,
+        const std::vector<VertexAttribute>& vertexAttributes = Primitive::Vec3VertexAttribute, // Vert postions only by default
+        const BufferAccessor& indices = Primitive::EmptyIndex // No indices by default
     )
     {
-        const VertexBufferInfo& buffer = VertexBufferInfo::Create(vertices, vertexAttributes, true);
-        return Create(std::vector<VertexBufferInfo>(1, buffer), indices);
+        const Primitive& prim = Primitive(accessor, vertexAttributes);
+        auto prims = std::vector<Primitive>(1, prim);
+        return Create(prims, indices);
     }
 
-    void UpdateBuffer(const VertexBufferInfo& buffer);
-
-    static std::shared_ptr<Mesh> Create(std::vector<VertexBufferInfo>& buffers, const std::vector<uint>& indices);
+    static std::shared_ptr<Mesh> Create(std::vector<Primitive>& prims, const BufferAccessor& indices);
 
 
 };
