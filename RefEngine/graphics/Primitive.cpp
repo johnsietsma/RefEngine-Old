@@ -15,9 +15,10 @@ const std::vector<VertexAttribute> Primitive::Vec4VertexAttribute{
 
 const std::vector<uint> Primitive::EmptyIndex;
 
-void Primitive::UpdateBuffer(const Buffer& buffer)
+void Primitive::UpdateBuffer()
 {
     GLenum usage = isStatic ? GL_STATIC_DRAW : GL_DYNAMIC_DRAW;
+    auto& buffer = accessor.buffer;
     glBindBuffer(GL_ARRAY_BUFFER, vboId.Value());
     glBufferData(GL_ARRAY_BUFFER, buffer.size, buffer.data, usage);
 }

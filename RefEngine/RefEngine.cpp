@@ -4,7 +4,8 @@
 #include "Camera.h"
 #include "Color.h"
 #include "GameTime.h"
-#include "IGameObject.h"
+
+#include "entity/RenderableComponent.h"
 
 #include "graphics/GLHelpers.h"
 #include "graphics/OpenGLRenderer.h"
@@ -36,9 +37,11 @@ void keyCallback(GLFWwindow* m_pWindow, int key, int /*scanCode*/, int action, i
 
 RefEngine::RefEngine() :
 	m_isValid(false),
-	m_pAssetManager(new AssetManager()),
+	m_pAssetManager(std::make_unique<AssetManager>()),
 	m_pCamera(new Camera(glm::vec3(15, 18, -20), glm::vec3(0,5,0), 45, 16 / 9.f)),
-	m_pRenderer(new OpenGLRenderer())
+    m_pComponentDatabase(std::make_unique<ComponentDatabase>()),
+    m_pComponentProcessor(std::make_unique<ComponentProcessorManager>()),
+    m_pRenderer(new OpenGLRenderer())
 {
 }
 
@@ -143,10 +146,7 @@ bool RefEngine::Update(double deltaTime)
 
 	DoUpdate(deltaTime);
 
-    for (auto& gameObject : m_gameObjects) 
-    {
-        gameObject->Update(deltaTime);
-    }
+    m_pComponentProcessor->Process( deltaTime, *m_pComponentDatabase.get() );
 
 	return true;
 }
@@ -163,18 +163,13 @@ void RefEngine::Draw()
 
 	Gizmos::draw(m_pCamera->GetProjectionViewMatrix());
 
-    for (const auto& gameObject : m_gameObjects)
-    {
-        gameObject->Draw(m_pRenderer.get(), m_pCamera.get());
+    auto& renderablesContainer = m_pComponentDatabase->GetComponentContainer<RenderableComponent>();
+    for (const auto& component : renderablesContainer) {
+        component.Draw(m_pRenderer.get(), m_pCamera.get());
     }
 
 	glfwSwapBuffers(m_pWindow);
 }
-
-void RefEngine::AddGameObject(IGameObject* pGameObject) {
-    m_gameObjects.emplace_back(pGameObject);
-}
-
 
 void RefEngine::DrawWorldGrid() const
 {

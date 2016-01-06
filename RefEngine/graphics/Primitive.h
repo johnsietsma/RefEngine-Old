@@ -120,11 +120,11 @@ struct Primitive
         isStatic(a_isStatic)
     {}
 
-    // Reupload VBO data, doesn't update the buffer accessor within the class.
-    void UpdateBuffer(const Buffer& buffer);
+    // Reupload VBO data.
+    void UpdateBuffer();
 
     VBOId vboId;
-    const BufferAccessor accessor;
+    BufferAccessor accessor;
     const bool isStatic;
     const std::vector<VertexAttribute> vertexAttributes;
 };

@@ -9,6 +9,11 @@ namespace reng {
 
 class Transform {
 public:
+    Transform() :
+        m_localTransform(1),
+        m_globalTransform(1)
+    {}
+
     Transform(const glm::vec3& position, const glm::quat& rot, const glm::vec3& scale);
 
     Transform(glm::vec3 position);

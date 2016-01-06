@@ -5,6 +5,9 @@
 
 #include "Camera.h"
 
+#include "entity/ComponentDatabase.h"
+#include "entity/Entity.h"
+
 class FBXFile;
 struct GLFWwindow;
 
@@ -22,9 +25,7 @@ auto make_unique(Args&&... args) -> std::unique_ptr<T>
 namespace reng {
 
 class AssetManager;
-class IGameObject;
 class OpenGLRenderer;
-    
 
 class RefEngine
 {
@@ -35,12 +36,18 @@ public:
     bool Init();
     void Run();
 
-    void AddGameObject(IGameObject* pGameObject);
-    
-    template<class T,class ...TArgs>
-    void EmplaceGameObject(TArgs... args) {
-        m_gameObjects.emplace_back( std::make_unique<T>(args...) );
+    template<typename T>
+    void RegisterUpdateComponent()
+    {
+        m_pComponentProcessor->RegisterUpdateProcessor<T>( UpdateComponent::UpdateProcessor<T> );
     }
+
+    Entity& RefEngine::EmplaceEntity()
+    {
+        m_pEntities.emplace_back( std::make_unique<Entity>(m_pComponentDatabase.get()) );
+        return *m_pEntities.back().get();
+    }
+
 
 protected:
 	GLFWwindow* GetWindow() { return m_pWindow;  }
@@ -58,9 +65,11 @@ private:
 
 	GLFWwindow* m_pWindow;
 	std::unique_ptr<AssetManager> m_pAssetManager;
-	std::shared_ptr<Camera> m_pCamera;
-	std::shared_ptr<OpenGLRenderer> m_pRenderer;
-    std::vector<std::unique_ptr<IGameObject>> m_gameObjects;
+	std::unique_ptr<Camera> m_pCamera;
+    std::unique_ptr<ComponentDatabase> m_pComponentDatabase;
+    std::unique_ptr<ComponentProcessorManager> m_pComponentProcessor;
+    std::unique_ptr<OpenGLRenderer> m_pRenderer;
+    std::vector<std::unique_ptr<Entity>> m_pEntities;
 };
 
 }

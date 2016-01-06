@@ -51,13 +51,10 @@ add_library(refeng
     Color.h
     FlyInput.cpp
     FlyInput.h
-    IGameObject.h
     GameTime.h
     ReadMe.txt
     RefEngine.cpp
     RefEngine.h
-    RenderableGameObject.cpp
-    RenderableGameObject.h
     StronglyTyped.h
     targetver.h
     Transform.cpp
@@ -65,6 +62,17 @@ add_library(refeng
     types.h
     VariadicHash.cpp
     VariadicHash.h
+
+    entity/Component.h
+    entity/ComponentContainer.h
+    entity/ComponentDatabase.h
+    entity/ComponentHandle.h
+    entity/ComponentProcessor.h
+    entity/Entity.h
+    entity/RenderableComponent.h
+    entity/RenderableComponent.cpp
+    entity/TransformComponent.h
+    entity/UpdateComponent.h
 
     graphics/Primitive.h
     graphics/Primitive.cpp
@@ -93,6 +101,7 @@ add_library(refeng
 )
 
 source_group( Components components/ )
+source_group( Entity entity/ )
 source_group( Graphics graphics/ )
 source_group( Utils utils/ )
 

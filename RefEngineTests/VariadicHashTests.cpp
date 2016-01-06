@@ -45,6 +45,24 @@ TEST(vhash_test, test_two)
 	EXPECT_NE(hash1, hash3);
 }
 
+template<typename...TArgs>
+size_t test_pack(TArgs... args)
+{
+    return vhash(args...);
+}
+
+TEST(vhash_test, test_two_charp)
+{
+    size_t h1 = std::hash<const char*>()("data/shaders/vertexColor.frag");
+    size_t h2 = std::hash<const char*>()("data/shaders/red.frag");
+    EXPECT_NE(h1, h2);
+
+    size_t hash1 = test_pack("data/shaders/vertexColor.frag",1);
+    size_t hash2 = test_pack("data/shaders/red.frag",1);
+    EXPECT_NE(hash1, hash2);
+}
+
+
 
 TEST(vhash_test, test_two_object)
 {

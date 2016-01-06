@@ -4,18 +4,19 @@
 
 #include "AssetManager.h"
 #include "GameTime.h"
-#include "RenderableGameObject.h"
-#include "graphics/OpenGLRenderer.h"
 #include "RefEngine.h"
-#include "Transform.h"
+
+#include "entity/RenderableComponent.h"
+#include "entity/TransformComponent.h"
 
 #include "graphics/Material.h"
 #include "graphics/Mesh.h"
 #include "graphics/Prims.h"
 
+#include <cmath>
 #include <FBXFile.h>
-#include <vector>
 #include <memory>
+#include <vector>
 #include <glm/gtx/transform.hpp>
 #include <glm/gtc/quaternion.hpp>
 
@@ -43,6 +44,9 @@ static const std::vector<VertexAttribute> FBXVertexAttributes {
 
 void EmplaceFBXModel(RefEngine& eng,  const char* fbxFilename, std::shared_ptr<Material> pMaterial)
 {
+    Entity& fbxEnt = eng.EmplaceEntity();
+    auto& transformComponentHandle = fbxEnt.EmplaceComponent<TransformComponent>( Transform(glm::vec3(0, 0, 3)) );
+
     auto fbx = std::shared_ptr<FBXFile>(new FBXFile());
     fbx->load(fbxFilename);
 
@@ -58,48 +62,64 @@ void EmplaceFBXModel(RefEngine& eng,  const char* fbxFilename, std::shared_ptr<M
 
             const BufferAccessor accessor(pMesh->m_vertices, 1);
             auto pFbxMesh = Mesh::Create<FBXVertex>(accessor, FBXVertexAttributes, pMesh->m_indices);
-            eng.EmplaceGameObject<RenderableGameObject>(glm::vec3(0, 0, 3), pFbxMesh, pMaterial);
+            fbxEnt.EmplaceComponent<RenderableComponent>(transformComponentHandle, pFbxMesh, pMaterial);
         }
     }
 
     fbx->initialiseOpenGLTextures();
 }
 
-class SpinObject : public RenderableGameObject {
+
+class SpinComponent : public UpdateComponent {
 public:
-    SpinObject(glm::vec3 pos, std::shared_ptr<Mesh> pMesh, std::shared_ptr<Material> pMaterial) 
-        : RenderableGameObject(pos, pMesh, pMaterial)
+    SpinComponent(ComponentHandle<TransformComponent>& transComp) :
+        m_transformComponentHandle(transComp)
     {}
 
-    void Update( double deltaTime ) override 
+    void Update(double deltaTime) override
     {
-        m_transform = glm::rotate<float>(m_transform.GetMartix(), (float)(spinSpeed * deltaTime), glm::vec3(0, 1.f, 0));
+        auto& transComponent = m_transformComponentHandle.GetComponent();
+        auto trans = transComponent.GetTransform();
+        trans = glm::rotate<float>(trans.GetMartix(), (float)(spinSpeed * deltaTime), glm::vec3(0, 1.f, 0));
+        transComponent.SetTransform(trans);
     }
 
+private:
+    ComponentHandle<TransformComponent> m_transformComponentHandle;
     float spinSpeed = 10;
 };
 
-class VertexColorAnimator : public RenderableGameObject {
+
+class VertexColorComponent : public UpdateComponent {
 public:
-    VertexColorAnimator(glm::vec3 pos, std::shared_ptr<Mesh> pMesh, std::shared_ptr<Material> pMaterial, const Primitive& a_colorPrim) :
-        RenderableGameObject(pos, pMesh, pMaterial),
-        colorPrim(a_colorPrim)
+    VertexColorComponent(const Primitive& a_colorPrim) :
+        colorPrim(a_colorPrim),
+        colors(a_colorPrim.accessor.count),
+        accumTime(0)
     {
-        colorBuffer.data = colors.data();
+        colorPrim.accessor = BufferAccessor(colors, 1);
     }
 
     void Update(double deltaTime) override 
     {
-        for (uint i = 0; i < colors.size(); i++)
+        accumTime += deltaTime;
+        size_t colorsSize = colorPrim.accessor.count;
+        float* colorBuffer = (float*)colorPrim.accessor.buffer.data;
+        for (uint i = 0; i < colorsSize; i++)
         {
-            colors[i] = 1.f;
+            float mult = 1 + (i / 3.0f); // 1, 2 or 3
+            mult /= 3.0f;
+            float time = (float)accumTime + mult;
+            float normTime = (time - (int)time); // fractional part
+            colorBuffer[i] = sin( normTime );
         }
-        colorPrim.UpdateBuffer(colorBuffer);
+        colorPrim.UpdateBuffer();
     }
 
+private:
     Primitive colorPrim;
-    Buffer colorBuffer;
     std::vector<float> colors;
+    double accumTime;
 };
 
 
@@ -109,6 +129,9 @@ TestBed::TestBed() :
 
 bool TestBed::DoInit()
 {
+    RegisterUpdateComponent<SpinComponent>();
+    RegisterUpdateComponent<VertexColorComponent>();
+
     // Add a textured quad
     auto pebbleTex = m_assetManager.LoadTexture("data/textures/Big_pebbles_pxr128.png");
     
@@ -117,31 +140,44 @@ bool TestBed::DoInit()
     auto accessor = BufferAccessor(Prims::Quad_VerticesAndUVs, 5);
     auto pQuadMesh = Mesh::Create<float>( accessor, UVVertexAttributes, Prims::Quad_Indices);
 
-    Transform quadRot(glm::vec3(5,0,0), glm::quat(glm::vec3(glm::half_pi<float>(), 0, 0)), glm::vec3(3));
-    EmplaceGameObject<RenderableGameObject>(quadRot, pQuadMesh, texturedMat);
-    
+    Entity& entTexQuad = EmplaceEntity();
+    auto& texQuadTrans = entTexQuad.EmplaceComponent<TransformComponent>(Transform(glm::vec3(5, 0, 0), glm::quat(glm::vec3(glm::half_pi<float>(), 0, 0)), glm::vec3(3)));
+    entTexQuad.EmplaceComponent<RenderableComponent>(texQuadTrans, pQuadMesh, texturedMat);
+
     // Add a couple of non-indexed tris
     ProgramId redProgram = m_assetManager.LoadProgram("data/shaders/default.vert", "data/shaders/red.frag");
     const auto& pRedMaterial = m_assetManager.CreateMaterial(redProgram);
-    
+
     std::shared_ptr<Mesh> pTriMesh = Mesh::Create<float>( BufferAccessor(Prims::Triangle_Vertices, 3) );
-    EmplaceGameObject<SpinObject>(glm::vec3(-2, 1, 0), pTriMesh, pRedMaterial);
-    EmplaceGameObject<SpinObject>(glm::vec3(2, 1, 0), pTriMesh, pRedMaterial);
+    Entity& entSpin1 = EmplaceEntity();
+    auto& spinTrans1 = entSpin1.EmplaceComponent<TransformComponent>(glm::vec3(-2, 1, 0));
+    entSpin1.EmplaceComponent<RenderableComponent>(spinTrans1, pTriMesh, pRedMaterial);
+    entSpin1.EmplaceComponent<SpinComponent>(spinTrans1);
+
+    Entity& entSpin2 = EmplaceEntity();
+    auto& spinTrans2 = entSpin1.EmplaceComponent<TransformComponent>(glm::vec3(2, 1, 0));
+    entSpin2.EmplaceComponent<RenderableComponent>(spinTrans2, pTriMesh, pRedMaterial);
+    entSpin2.EmplaceComponent<SpinComponent>(spinTrans2);
 
     // Add a colored cube
     std::vector<Primitive> cubeBuffers;
     cubeBuffers.emplace_back( Primitive(BufferAccessor(Prims::Cube_Vertices,3)) );
-    cubeBuffers.emplace_back(Prims::Cube_Colors, Primitive::Vec4VertexAttribute, false);
+    cubeBuffers.emplace_back( Prims::Cube_Colors, Primitive::Vec4VertexAttribute, false );
     std::shared_ptr<Mesh> pColoredCubeMesh = Mesh::Create(cubeBuffers, Prims::Cube_Indices);
     ProgramId vertexColorProgram = m_assetManager.LoadProgram("data/shaders/vertexColor.vert", "data/shaders/vertexColor.frag");
     const auto& pVertexColorMaterial = std::make_shared<Material>(vertexColorProgram);
-    VertexColorAnimator(glm::vec3(3, 2, 3), pColoredCubeMesh, pVertexColorMaterial, cubeBuffers[1]);
-    EmplaceGameObject<VertexColorAnimator>(glm::vec3(3, 2, 3), pColoredCubeMesh, pVertexColorMaterial, cubeBuffers[1]);
+
+    Entity& colorCubeEnt = EmplaceEntity();
+    auto& colorCubeTrans = colorCubeEnt.EmplaceComponent<TransformComponent>(glm::vec3(3, 2, 3));
+    colorCubeEnt.EmplaceComponent<RenderableComponent>(colorCubeTrans, pColoredCubeMesh, pVertexColorMaterial);
+    colorCubeEnt.EmplaceComponent<VertexColorComponent>(cubeBuffers[1]);
 
     // Add an indexed cube
-    std::shared_ptr<Mesh> pCubeMesh = Mesh::Create<float>(Prims::Cube_Vertices, Primitive::Vec3VertexAttribute, Prims::Cube_Indices);
-    EmplaceGameObject<RenderableGameObject>(glm::vec3(0, 0, -5), pCubeMesh, pRedMaterial);
-
+    std::shared_ptr<Mesh> pCubeMesh = Mesh::Create<float>(BufferAccessor(Prims::Cube_Vertices,3), Primitive::Vec3VertexAttribute, Prims::Cube_Indices);
+    Entity& indexedCubeEnt = EmplaceEntity();
+    auto& indexedCubeTrans = indexedCubeEnt.EmplaceComponent<TransformComponent>(glm::vec3(0, 0, -5));
+    indexedCubeEnt.EmplaceComponent<RenderableComponent>(indexedCubeTrans, pCubeMesh, pRedMaterial);
+   
 	// Add a fbx model
     EmplaceFBXModel(*this, "data/models/cube.fbx", pRedMaterial);
 

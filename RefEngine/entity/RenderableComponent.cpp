@@ -1,17 +1,23 @@
-#include "RenderableGameObject.h"
+#include "RenderableComponent.h"
+
+#include "Entity.h"
 
 #include "Camera.h"
+#include "Transform.h"
+
 #include "graphics/OpenGLRenderer.h"
 #include "graphics/Material.h"
 
 using namespace reng;
 
-void RenderableGameObject::Draw(OpenGLRenderer* pRenderer, Camera* pCamera) const
+void RenderableComponent::Draw(OpenGLRenderer* pRenderer, Camera* pCamera) const
 {
     pRenderer->UseProgram(m_pMaterial->GetProgramId());
 
+    auto& transform = m_transformComponentHandle.GetComponent().GetTransform();
+
     // TODO: Cache this
-    m_pMaterial->UpdateUniforms(pCamera->GetProjectionViewMatrix(), m_transform.GetMartix());
+    m_pMaterial->UpdateUniforms(pCamera->GetProjectionViewMatrix(), transform.GetMartix());
     m_pMaterial->BindTexture();
 
     pRenderer->Bind(*m_pMesh);

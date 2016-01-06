@@ -23,6 +23,11 @@ void APIENTRY openglCallbackFunction(GLenum source,
 		const GLchar* message,
 		const void* userParam)
 {
+    if (severity == GL_DEBUG_SEVERITY_NOTIFICATION)
+    {
+        // Ignore unknow severity messages to avoid the worst of the spam.
+        return;
+    }
 
 	cout << "---------------------opengl-callback-start------------" << endl;
 	cout << "message: " << message << endl;
@@ -217,9 +222,10 @@ void GLHelpers::TurnOnDebugLogging()
     glEnable(GL_DEBUG_OUTPUT_SYNCHRONOUS);
 	glDebugMessageCallback(openglCallbackFunction, nullptr);
 	GLuint unusedIds = 0;
-	glDebugMessageControl(GL_DONT_CARE,
-		GL_DONT_CARE,
-		GL_DONT_CARE,
+	glDebugMessageControl(
+        GL_DONT_CARE, // source
+		GL_DONT_CARE, // type
+        GL_DONT_CARE, // severity
 		0,
 		&unusedIds,
 		true);

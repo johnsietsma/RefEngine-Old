@@ -8,6 +8,26 @@ namespace reng {
  * A variadic template implmentation of std::hash<T> that allows hashing of any number of arguments.
  */
 
+
+namespace internal {
+    /*
+    * Robert Jenkins' reversible 32 bit mix hash function
+    */
+
+    inline size_t jenkins_rev_mix32(size_t key) {
+        key += (key << 12);  // key *= (1 + (1 << 12))
+        key ^= (key >> 22);
+        key += (key << 4);   // key *= (1 + (1 << 4))
+        key ^= (key >> 9);
+        key += (key << 10);  // key *= (1 + (1 << 10))
+        key ^= (key >> 2);
+        // key *= (1 + (1 << 7)) * (1 + (1 << 12))
+        key += (key << 7);
+        key += (key << 12);
+        return key;
+    }
+}
+
 // Provide a no argument version to handle a parameter pack expansion with no arguments. Returns 0.
 size_t vhash();
 
@@ -23,8 +43,8 @@ size_t vhash(const T& t)
 template<typename T, typename... Ts>
 size_t vhash(const T& t, const Ts&... ts)
 {
-	int hash = std::hash<T>()(t);
-	return (1<<hash) ^ vhash(ts...);
+    int hash = std::hash<T>()(t);
+    return internal::jenkins_rev_mix32(hash) ^ vhash(ts...);
 }
 
 }
