@@ -65,7 +65,7 @@ struct BufferAccessor
             Buffer(arrayBuffer.data(), arrayBuffer.size() * sizeof(T)), 
             0, // Assume no offset
             sizeof(T) * elementsPerComponent, // The stride is the number of elements * the size of each element
-            GLEnumValue<T>::value, // Lookup the GLenum equiv of the type held in the std::array
+            GLEnum<T>::value, // Lookup the GLenum equiv of the type held in the std::array
             arrayBuffer.size()/elementsPerComponent // Calc the number of components
             )
         {}
@@ -77,7 +77,7 @@ struct BufferAccessor
             Buffer(vectorBuffer.data(), vectorBuffer.size() * sizeof(T)),
             0,
             sizeof(T) * elementsPerComponent,
-            GLEnumValue<T>::value,
+            GLEnum<T>::value,
             vectorBuffer.size() / elementsPerComponent
         )
     {}
@@ -97,7 +97,7 @@ struct VertexAttribute
     template<class T>
     static VertexAttribute Create(size_t offset, size_t numComponents)
     {
-        return VertexAttribute(offset, sizeof(T), GLEnumValue<T>::value, numComponents);
+        return VertexAttribute(offset, sizeof(T), GLEnum<T>::value, numComponents);
     }
 
     VertexAttribute(size_t offset, size_t stride, GLenum type, size_t numComponents) :
