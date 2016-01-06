@@ -33,7 +33,8 @@ endif()
 IF(APPLE)
     SET(GCC_CHAR_IS_UNSIGNED_CHAR "-funsigned-char")
     SET(STD_C11 "-std=c++11 -stdlib=libc++")
-    set(CMAKE_EXE_LINKER_FLAGS "${CMAKE_EXE_LINKER_FLAGS} -stdlib=libc++")
+    SET(CMAKE_XCODE_ATTRIBUTE_CLANG_CXX_LIBRARY "libc++")
+    set(CMAKE_XCODE_ATTRIBUTE_CLANG_CXX_LANGUAGE_STANDARD "c++11")
 ENDIF (APPLE)
 
 set(CMAKE_CXX_FLAGS "${CMAKE_CXX_FLAGS} ${GCC_CHAR_IS_UNSIGNED_CHAR} ${STD_C11}")
@@ -52,6 +53,7 @@ add_library(refeng
     FlyInput.cpp
     FlyInput.h
     GameTime.h
+    make_unique.h
     ReadMe.txt
     RefEngine.cpp
     RefEngine.h
@@ -68,6 +70,7 @@ add_library(refeng
     entity/ComponentDatabase.h
     entity/ComponentHandle.h
     entity/ComponentProcessor.h
+    entity/ComponentProcessor.cpp
     entity/Entity.h
     entity/RenderableComponent.h
     entity/RenderableComponent.cpp

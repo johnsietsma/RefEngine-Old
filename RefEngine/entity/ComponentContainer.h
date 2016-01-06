@@ -18,7 +18,6 @@ template<typename T>
 class ComponentContainer : public IComponentContainer
 {
 public:
-    template<class T>
     ComponentId EmplaceComponent() {
         m_components.emplace_back();
         return m_components.size() - 1;

@@ -5,6 +5,7 @@
 #include "Color.h"
 #include "GameTime.h"
 
+#include "entity/Entity.h"
 #include "entity/RenderableComponent.h"
 
 #include "graphics/GLHelpers.h"
@@ -169,6 +170,12 @@ void RefEngine::Draw()
     }
 
 	glfwSwapBuffers(m_pWindow);
+}
+
+Entity& RefEngine::EmplaceEntity()
+{
+    m_pEntities.emplace_back( std::make_unique<Entity>(m_pComponentDatabase.get()) );
+    return *m_pEntities.back().get();
 }
 
 void RefEngine::DrawWorldGrid() const

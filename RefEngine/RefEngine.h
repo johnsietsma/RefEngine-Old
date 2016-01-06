@@ -6,25 +6,16 @@
 #include "Camera.h"
 
 #include "entity/ComponentDatabase.h"
-#include "entity/Entity.h"
+#include "entity/ComponentProcessor.h"
+#include "entity/UpdateComponent.h"
 
 class FBXFile;
 struct GLFWwindow;
 
-#if defined __APPLE__
-namespace std {
-template <typename T, typename... Args>
-auto make_unique(Args&&... args) -> std::unique_ptr<T>
-{
-    return std::unique_ptr<T>(new T(std::forward<Args>(args)...));
-}
-}
-#endif
-
-
 namespace reng {
 
 class AssetManager;
+class Entity;
 class OpenGLRenderer;
 
 class RefEngine
@@ -42,11 +33,7 @@ public:
         m_pComponentProcessor->RegisterUpdateProcessor<T>( UpdateComponent::UpdateProcessor<T> );
     }
 
-    Entity& RefEngine::EmplaceEntity()
-    {
-        m_pEntities.emplace_back( std::make_unique<Entity>(m_pComponentDatabase.get()) );
-        return *m_pEntities.back().get();
-    }
+    Entity& EmplaceEntity();
 
 
 protected:

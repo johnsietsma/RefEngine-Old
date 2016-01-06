@@ -6,6 +6,7 @@
 #include "GameTime.h"
 #include "RefEngine.h"
 
+#include "entity/Entity.h"
 #include "entity/RenderableComponent.h"
 #include "entity/TransformComponent.h"
 
@@ -45,7 +46,7 @@ static const std::vector<VertexAttribute> FBXVertexAttributes {
 void EmplaceFBXModel(RefEngine& eng,  const char* fbxFilename, std::shared_ptr<Material> pMaterial)
 {
     Entity& fbxEnt = eng.EmplaceEntity();
-    auto& transformComponentHandle = fbxEnt.EmplaceComponent<TransformComponent>( Transform(glm::vec3(0, 0, 3)) );
+    auto transformComponentHandle = fbxEnt.EmplaceComponent<TransformComponent>( Transform(glm::vec3(0, 0, 3)) );
 
     auto fbx = std::shared_ptr<FBXFile>(new FBXFile());
     fbx->load(fbxFilename);
@@ -141,7 +142,7 @@ bool TestBed::DoInit()
     auto pQuadMesh = Mesh::Create<float>( accessor, UVVertexAttributes, BufferAccessor(Prims::Quad_Indices,1) );
 
     Entity& entTexQuad = EmplaceEntity();
-    auto& texQuadTrans = entTexQuad.EmplaceComponent<TransformComponent>(Transform(glm::vec3(5, 0, 0), glm::quat(glm::vec3(glm::half_pi<float>(), 0, 0)), glm::vec3(3)));
+    auto texQuadTrans = entTexQuad.EmplaceComponent<TransformComponent>(Transform(glm::vec3(5, 0, 0), glm::quat(glm::vec3(glm::half_pi<float>(), 0, 0)), glm::vec3(3)));
     entTexQuad.EmplaceComponent<RenderableComponent>(texQuadTrans, pQuadMesh, texturedMat);
 
 
@@ -151,12 +152,12 @@ bool TestBed::DoInit()
 
     std::shared_ptr<Mesh> pTriMesh = Mesh::Create<float>( BufferAccessor(Prims::Triangle_Vertices, 3) );
     Entity& entSpin1 = EmplaceEntity();
-    auto& spinTrans1 = entSpin1.EmplaceComponent<TransformComponent>(glm::vec3(-2, 1, 0));
+    auto spinTrans1 = entSpin1.EmplaceComponent<TransformComponent>(glm::vec3(-2, 1, 0));
     entSpin1.EmplaceComponent<RenderableComponent>(spinTrans1, pTriMesh, pRedMaterial);
     entSpin1.EmplaceComponent<SpinComponent>(spinTrans1);
 
     Entity& entSpin2 = EmplaceEntity();
-    auto& spinTrans2 = entSpin1.EmplaceComponent<TransformComponent>(glm::vec3(2, 1, 0));
+    auto spinTrans2 = entSpin1.EmplaceComponent<TransformComponent>(glm::vec3(2, 1, 0));
     entSpin2.EmplaceComponent<RenderableComponent>(spinTrans2, pTriMesh, pRedMaterial);
     entSpin2.EmplaceComponent<SpinComponent>(spinTrans2);
 
@@ -169,7 +170,7 @@ bool TestBed::DoInit()
     const auto& pVertexColorMaterial = std::make_shared<Material>(vertexColorProgram);
 
     Entity& colorCubeEnt = EmplaceEntity();
-    auto& colorCubeTrans = colorCubeEnt.EmplaceComponent<TransformComponent>(glm::vec3(3, 2, 3));
+    auto colorCubeTrans = colorCubeEnt.EmplaceComponent<TransformComponent>(glm::vec3(3, 2, 3));
     colorCubeEnt.EmplaceComponent<RenderableComponent>(colorCubeTrans, pColoredCubeMesh, pVertexColorMaterial);
     colorCubeEnt.EmplaceComponent<VertexColorComponent>(cubeBuffers[1]);
 
@@ -177,7 +178,7 @@ bool TestBed::DoInit()
     const auto& litMaterial = m_assetManager.CreateMaterial("data/shaders/lit.vert", "data/shaders/lit.frag");
     std::shared_ptr<Mesh> pCubeMesh = Mesh::Create<float>(BufferAccessor(Prims::Cube_VerticesAndNormals, 6), Primitive::VertexPositionAndNormalsAttribute, BufferAccessor(Prims::Cube_Indices,1));
     Entity& indexedCubeEnt = EmplaceEntity();
-    auto& indexedCubeTrans = indexedCubeEnt.EmplaceComponent<TransformComponent>(glm::vec3(0, 0, -5));
+    auto indexedCubeTrans = indexedCubeEnt.EmplaceComponent<TransformComponent>(glm::vec3(0, 0, -5));
     indexedCubeEnt.EmplaceComponent<RenderableComponent>(indexedCubeTrans, pCubeMesh, litMaterial);
 
 	// Add a fbx model

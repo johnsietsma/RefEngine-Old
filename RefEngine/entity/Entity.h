@@ -19,7 +19,7 @@ public:
     template<typename T>
     ComponentHandle<T> EmplaceComponent() 
     {
-        return EmplaceComponent<T, >();
+        return EmplaceComponent<T,void>();
     }
 
     template<typename T, class ...TArgs>
@@ -28,7 +28,6 @@ public:
         if (!m_pDatabase->HasComponentContainer<T>()) m_pDatabase->AddComponentContainer<T>();
         auto& compContainer = m_pDatabase->GetComponentContainer<T>();
         ComponentId id = compContainer.EmplaceComponent(args...);
-        auto& component = compContainer.GetComponent(id);
         return ComponentHandle<T>( compContainer, id );
     }
 

@@ -1,10 +1,13 @@
 #pragma once
 
+#include "entity/ComponentContainer.h"
 #include "entity/UpdateComponent.h"
 
+#include "make_unique.h"
 
 #include <functional>
 #include <memory>
+#include <unordered_map>
 
 namespace reng
 {
@@ -50,24 +53,12 @@ public:
     void RegisterUpdateProcessor(ComponentUpdateFunction<T> processorFunction)
     {
         const auto& typeId = Component::GetTypeId<T>();
-        m_processors.emplace(typeId, std::make_unique<UpdateProcessor<T>>(processorFunction));
+        m_processors.emplace(typeId, std::make_unique< UpdateProcessor<T> >(processorFunction));
     }
 
-    void Process(double deltaTime, ComponentDatabase& database)
-    {
-        for (auto& processorPair : m_processors)
-        {
-            auto compTypeId = std::get<0>(processorPair);
-            auto& processor = std::get<1>(processorPair);
-            if (!database.HasComponentContainer(compTypeId)) continue;
-
-            auto& componentContainer = database.GetComponentContainer(compTypeId);
-            processor->Process(deltaTime, componentContainer);
-        }
-    }
-
+    void Process(double deltaTime, ComponentDatabase& database);
+    
 private:
-    ComponentDatabase* m_database;
     std::unordered_map<ComponentTypeId, std::unique_ptr<IComponentProcessor>> m_processors;
 
 };

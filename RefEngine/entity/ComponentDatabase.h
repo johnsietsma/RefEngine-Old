@@ -3,6 +3,8 @@
 #include "entity/Component.h"
 #include "entity/ComponentContainer.h"
 #include "utils/pow2assert.h"
+#include "make_unique.h"
+#include "RefEngine.h"
 
 #include <unordered_map>
 

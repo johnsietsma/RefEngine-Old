@@ -57,6 +57,7 @@ namespace pow2 { namespace Assert
 #elif defined _MACH_
 #define POW2_HALT() Debugger()
 #else
+#include <stdlib.h>
 #define POW2_HALT() abort()
 #endif
 
