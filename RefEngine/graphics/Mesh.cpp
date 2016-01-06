@@ -63,13 +63,21 @@ std::shared_ptr<Mesh> Mesh::Create(std::vector<Primitive>& primitives,  const Bu
         glBindBuffer(GL_ARRAY_BUFFER, vboIds[i].Value());
         glBufferData(GL_ARRAY_BUFFER, buffer.size, buffer.data, usage);
 
+        size_t totalOffset = 0;
+
         // Set up our vertex attributes
         for (uint i = 0; i < prim.vertexAttributes.size(); i++) {
             auto attrib = prim.vertexAttributes[i].accessor;
+
+            int offset = attrib.byteOffset == 0 ? totalOffset : attrib.byteOffset;
+
             glEnableVertexAttribArray(attribLocation);
             // We get the stride from the Primitiv, no the attribute.
-            glVertexAttribPointer(attribLocation, attrib.count, attrib.type, GL_FALSE, prim.accessor.byteStride, ((char*)0) + attrib.byteOffset);
+            glVertexAttribPointer(attribLocation, attrib.count, attrib.type, GL_FALSE, prim.accessor.byteStride, ((char*)0) + totalOffset);
             attribLocation++;
+
+            // If not offset is given, calculate it
+            totalOffset += attrib.byteOffset == 0 ? attrib.count*attrib.byteStride : attrib.byteOffset;
         }
     }
 

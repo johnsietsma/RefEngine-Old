@@ -21,16 +21,32 @@ const  std::array<float,9> Prims::Triangle_Vertices {{
 
 const std::array<float,24> Prims::Cube_Vertices {{
 	// front
-	-1.0f, -1.0f, 1.0f,
-	1.0f, -1.0f, 1.0f,
-	1.0f, 1.0f, 1.0f,
-	-1.0f, 1.0f, 1.0f,
+	-1.0f, -1.0f,  1.0f,
+	 1.0f, -1.0f,  1.0f,
+	 1.0f,  1.0f,  1.0f,
+	-1.0f,  1.0f,  1.0f,
 	// back
 	-1.0f, -1.0f, -1.0f,
-	1.0f, -1.0f, -1.0f,
-	1.0f, 1.0f, -1.0f,
-	-1.0f, 1.0f, -1.0f,
+	 1.0f, -1.0f, -1.0f,
+	 1.0f,  1.0f, -1.0f,
+	-1.0f,  1.0f, -1.0f,
 }};
+
+static const float AxisLen = 0.57735027f;
+
+const std::array<float, 48> Prims::Cube_VerticesAndNormals {{
+    // front  (v1,v2,v3, n1,n2,n3)
+    -1.0f, -1.0f,  1.0f,   -AxisLen, -AxisLen, -AxisLen, // left, down
+     1.0f, -1.0f,  1.0f,    AxisLen, -AxisLen, -AxisLen, // right, down
+     1.0f,  1.0f,  1.0f,    AxisLen,  AxisLen, -AxisLen, // right, up
+    -1.0f,  1.0f,  1.0f,   -AxisLen,  AxisLen, -AxisLen, // left, up
+    // back
+    -1.0f, -1.0f, -1.0f,   -AxisLen, -AxisLen,  AxisLen, // left, down
+     1.0f, -1.0f, -1.0f,    AxisLen, -AxisLen,  AxisLen, // right, down
+     1.0f,  1.0f, -1.0f,    AxisLen,  AxisLen,  AxisLen, // right, up
+    -1.0f,  1.0f, -1.0f,   -AxisLen,  AxisLen,  AxisLen, // left, up
+}};
+
 
 const std::array<uint,36> Prims::Cube_Indices {{
 	// front

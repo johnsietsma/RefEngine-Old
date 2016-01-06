@@ -35,7 +35,7 @@ public:
     static std::shared_ptr<Mesh> Create( 
         const BufferAccessor& accessor,
         const std::vector<VertexAttribute>& vertexAttributes = Primitive::Vec3VertexAttribute, // Vert postions only by default
-        const BufferAccessor& indices = Primitive::EmptyIndex // No indices by default
+        const BufferAccessor& indices = BufferAccessor::Empty // No indices by default
     )
     {
         const Primitive& prim = Primitive(accessor, vertexAttributes);

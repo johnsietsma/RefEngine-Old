@@ -41,6 +41,8 @@ public:
 
     std::shared_ptr<Material> CreateMaterial(ProgramId program);
 
+    std::shared_ptr<Material> CreateMaterial(const char* vertShaderFileName, const char* fragShaderFileName);
+
 private:
 	std::unique_ptr<ShaderFactory> m_pShaderFactory;
 	std::unique_ptr<ProgramFactory> m_pProgramFactory;

@@ -33,6 +33,15 @@ struct Buffer
 // An accessor is used to access typed data in a buffer.
 struct BufferAccessor
 {
+    static const BufferAccessor Empty;
+
+    BufferAccessor() :
+        byteOffset(0),
+        byteStride(0),
+        type(0),
+        count(0)
+    {}
+
     // Create a new BufferAccessor without a Buffer bound to it. Useful to describe data before it's available.
     BufferAccessor(size_t a_byteOffset, size_t a_byteStride, GLenum a_type, int a_count) :
         byteOffset(a_byteOffset),
@@ -51,7 +60,7 @@ struct BufferAccessor
 
     // A helpful constructor that make a BufferAccessor from an std::array.
     template<typename T, size_t N>
-    BufferAccessor(const std::array<T, N>& arrayBuffer, int elementsPerComponent=1) :
+    BufferAccessor(const std::array<T, N>& arrayBuffer, int elementsPerComponent) :
         BufferAccessor(
             Buffer(arrayBuffer.data(), arrayBuffer.size() * sizeof(T)), 
             0, // Assume no offset
@@ -63,7 +72,7 @@ struct BufferAccessor
 
     // A helpful constructor that make a BufferAccessor from an std::vector.
     template<typename T>
-    BufferAccessor(const std::vector<T>& vectorBuffer, int elementsPerComponent=1) :
+    BufferAccessor(const std::vector<T>& vectorBuffer, int elementsPerComponent) :
         BufferAccessor(
             Buffer(vectorBuffer.data(), vectorBuffer.size() * sizeof(T)),
             0,
@@ -85,11 +94,10 @@ struct VertexAttribute
 {
     BufferAccessor accessor;
 
-    // Create an attribute with 
-    template<class T, size_t N>
+    template<class T>
     static VertexAttribute Create(size_t offset, size_t numComponents)
     {
-        return VertexAttribute(offset, sizeof(T)*N, GLEnumValue<T>::value, numComponents);
+        return VertexAttribute(offset, sizeof(T), GLEnumValue<T>::value, numComponents);
     }
 
     VertexAttribute(size_t offset, size_t stride, GLenum type, size_t numComponents) :
@@ -101,18 +109,16 @@ struct VertexAttribute
 // A Primitive wraps a VBO, its associated buffer and vertex attributes.
 struct Primitive
 {
-    // The default vertex attribute for vertex data that simply contains vec3 float data.
     static const std::vector<VertexAttribute> Vec3VertexAttribute;
-
-    // The default vertex attribute for vertex data that simply contains vec4 float data.
     static const std::vector<VertexAttribute> Vec4VertexAttribute;
+    static const std::vector<VertexAttribute> VertexPositionAndNormalsAttribute;
 
     // The default, empty index buffer
     static const std::vector<uint> EmptyIndex;
 
     Primitive(
         const BufferAccessor& a_accessor,
-        const std::vector<VertexAttribute>& a_vertexAttributes = Primitive::Vec3VertexAttribute, // Vert postions only by default
+        const std::vector<VertexAttribute>& a_vertexAttributes,
         bool a_isStatic = true
         ) :
         vboId(VBOId_Invalid),

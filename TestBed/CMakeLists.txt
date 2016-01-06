@@ -17,8 +17,10 @@ add_executable(TestBed
 	TestBed.cpp
 	TestBed.h
     data/shaders/default.vert
+    data/shaders/lit.vert
     data/shaders/passthrough.vert
     data/shaders/diffuse.frag
+    data/shaders/lit.frag
     data/shaders/red.frag
     data/shaders/textured.frag
     data/shaders/textured.vert
