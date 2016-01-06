@@ -50,7 +50,7 @@ struct BufferAccessor
     {}
 
     // A helpful constructor that make a BufferAccessor from an std::array.
-    template<typename T, int N>
+    template<typename T, size_t N>
     BufferAccessor(const std::array<T, N>& arrayBuffer, int elementsPerComponent=1) :
         BufferAccessor(
             Buffer(arrayBuffer.data(), arrayBuffer.size() * sizeof(T)), 
@@ -115,6 +115,7 @@ struct Primitive
         const std::vector<VertexAttribute>& a_vertexAttributes = Primitive::Vec3VertexAttribute, // Vert postions only by default
         bool a_isStatic = true
         ) :
+        vboId(VBOId_Invalid),
         accessor(a_accessor),
         vertexAttributes(a_vertexAttributes),
         isStatic(a_isStatic)
@@ -125,8 +126,8 @@ struct Primitive
 
     VBOId vboId;
     BufferAccessor accessor;
-    const bool isStatic;
     const std::vector<VertexAttribute> vertexAttributes;
+    const bool isStatic;
 };
 
 }

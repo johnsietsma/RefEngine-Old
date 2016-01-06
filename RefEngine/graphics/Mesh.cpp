@@ -8,11 +8,11 @@ using namespace reng;
 
 Mesh::Mesh(VAOId a_vaoId, IBOId a_iboId, std::vector<VBOId> a_vboIds, GLenum a_indexType, GLuint a_numberOfIndices, GLuint a_numberOfVerts) :
     vaoId(a_vaoId),
-    iboId(a_iboId),
     vboIds(a_vboIds),
+    numberOfVerts(a_numberOfVerts),
+    iboId(a_iboId),
     indexType(a_indexType),
-    numberOfIndices(a_numberOfIndices),
-    numberOfVerts(a_numberOfVerts)
+    numberOfIndices(a_numberOfIndices)
 {
     POW2_ASSERT(numberOfVerts > 0);
 
