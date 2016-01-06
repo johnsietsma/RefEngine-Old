@@ -1,6 +1,6 @@
 #pragma once
 
-#include "graphics/OpenGLTypes.h"
+#include "graphics/GLTypes.h"
 #include "graphics/Texture.h"
 #include "graphics/Material.h"
 #include "CachingFactory.h"

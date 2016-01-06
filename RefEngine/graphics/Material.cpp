@@ -9,6 +9,18 @@
 
 using namespace reng;
 
+const char* WellKnownLocation::ProjectionView = "projectionView";
+const char* WellKnownLocation::Sampler = "tex";
+const char* WellKnownLocation::LightDirection = "lightDirection";
+const char* WellKnownLocation::LightColor = "lightColor";
+
+Material::Material(ProgramId programId) :
+    m_programId(programId),
+    m_textureId(TextureId_Invalid)
+{
+}
+
+
 Material::Material(ProgramId programId, TextureId textureId, const char* projViewUniform, const char* texUniform ) :
     m_programId(programId),
     m_textureId(textureId)
@@ -17,10 +29,7 @@ Material::Material(ProgramId programId, TextureId textureId, const char* projVie
 	POW2_ASSERT(m_mvpLocation != UniformLocationId_Invalid);
 
     if (texUniform != nullptr) {
-        m_texLocation = glGetUniformLocation(m_programId.Value(), texUniform);
-        POW2_ASSERT(m_texLocation != UniformLocationId_Invalid);
-
-        glProgramUniform1i(programId.Value(), m_texLocation.Value(), 0);
+        SetTexture(textureId, 0);
     }
 }
 
@@ -34,12 +43,7 @@ void Material::BindTexture() const
 
 void Material::UpdateUniforms(const glm::mat4x4& projectionViewMatrix, const glm::mat4x4& transform)
 {
-	glm::mat4 MVP = projectionViewMatrix * transform;
-	UpdateProjectionView(MVP);
+    glm::mat4 MVP = projectionViewMatrix * transform;
+    SetProjectionView(MVP);
 }
 
-
-void Material::UpdateProjectionView(const glm::mat4x4& projectionView) 
-{
-	glUniformMatrix4fv(m_mvpLocation.Value(), 1, GL_FALSE, glm::value_ptr(projectionView));
-}

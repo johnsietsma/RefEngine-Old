@@ -5,6 +5,7 @@
 #include "AssetManager.h"
 #include "GameTime.h"
 #include "RefEngine.h"
+#include "MaterialManager.h"
 
 #include "entity/Entity.h"
 #include "entity/RenderableComponent.h"
@@ -41,34 +42,6 @@ static const std::vector<VertexAttribute> FBXVertexAttributes {
     VertexAttribute::Create<float>(offsetof(FBXVertex, texCoord1), 2),
     VertexAttribute::Create<float>(offsetof(FBXVertex, texCoord2), 2)
 };
-
-
-void EmplaceFBXModel(RefEngine& eng,  const char* fbxFilename, std::shared_ptr<Material> pMaterial)
-{
-    Entity& fbxEnt = eng.EmplaceEntity();
-    auto transformComponentHandle = fbxEnt.EmplaceComponent<TransformComponent>( Transform(glm::vec3(0, 0, 3)) );
-
-    auto fbx = std::shared_ptr<FBXFile>(new FBXFile());
-    fbx->load(fbxFilename);
-
-    for (uint i = 0; i < fbx->getMeshCount(); i++) {
-        FBXMeshNode* pMesh = fbx->getMeshByIndex(i);
-        if (pMesh->m_vertices.size() >  0) {
-            uint numIndices = 0;
-            uint* pIndices = nullptr;
-            if (pMesh->m_indices.size() > 0) {
-                numIndices = pMesh->m_indices.size();
-                pIndices = &(pMesh->m_indices[0]);
-            }
-
-            const BufferAccessor accessor(pMesh->m_vertices, 1);
-            auto pFbxMesh = Mesh::Create<FBXVertex>(accessor, FBXVertexAttributes, BufferAccessor(pMesh->m_indices,1));
-            fbxEnt.EmplaceComponent<RenderableComponent>(transformComponentHandle, pFbxMesh, pMaterial);
-        }
-    }
-
-    fbx->initialiseOpenGLTextures();
-}
 
 
 class SpinComponent : public UpdateComponent {
@@ -133,56 +106,16 @@ bool TestBed::DoInit()
     RegisterUpdateComponent<SpinComponent>();
     RegisterUpdateComponent<VertexColorComponent>();
 
-    // Add a textured quad
-    auto pebbleTex = m_assetManager.LoadTexture("data/textures/Big_pebbles_pxr128.png");
-    
-    ProgramId texturedProgram = m_assetManager.LoadProgram("data/shaders/textured.vert", "data/shaders/textured.frag");
-    auto texturedMat = std::make_shared<Material>(texturedProgram, pebbleTex.m_textureId);
-    auto accessor = BufferAccessor(Prims::Quad_VerticesAndUVs, 5);
-    auto pQuadMesh = Mesh::Create<float>( accessor, UVVertexAttributes, BufferAccessor(Prims::Quad_Indices,1) );
+    AddTexturedQuad(glm::vec3(5, 0, 0));
 
-    Entity& entTexQuad = EmplaceEntity();
-    auto texQuadTrans = entTexQuad.EmplaceComponent<TransformComponent>(Transform(glm::vec3(5, 0, 0), glm::quat(glm::vec3(glm::half_pi<float>(), 0, 0)), glm::vec3(3)));
-    entTexQuad.EmplaceComponent<RenderableComponent>(texQuadTrans, pQuadMesh, texturedMat);
+    AddSpinningTri(glm::vec3(-2, 1, 0));
+    AddSpinningTri(glm::vec3(2, 1, 0));
 
+    AddVertexColoredCube(glm::vec3(3, 2, 3));
 
-    // Add a couple of non-indexed tris
-    ProgramId redProgram = m_assetManager.LoadProgram("data/shaders/default.vert", "data/shaders/red.frag");
-    const auto& pRedMaterial = m_assetManager.CreateMaterial(redProgram);
+    AddLitCube(glm::vec3(0, 0, -5));
 
-    std::shared_ptr<Mesh> pTriMesh = Mesh::Create<float>( BufferAccessor(Prims::Triangle_Vertices, 3) );
-    Entity& entSpin1 = EmplaceEntity();
-    auto spinTrans1 = entSpin1.EmplaceComponent<TransformComponent>(glm::vec3(-2, 1, 0));
-    entSpin1.EmplaceComponent<RenderableComponent>(spinTrans1, pTriMesh, pRedMaterial);
-    entSpin1.EmplaceComponent<SpinComponent>(spinTrans1);
-
-    Entity& entSpin2 = EmplaceEntity();
-    auto spinTrans2 = entSpin1.EmplaceComponent<TransformComponent>(glm::vec3(2, 1, 0));
-    entSpin2.EmplaceComponent<RenderableComponent>(spinTrans2, pTriMesh, pRedMaterial);
-    entSpin2.EmplaceComponent<SpinComponent>(spinTrans2);
-
-    // Add a colored cube
-    std::vector<Primitive> cubeBuffers;
-    cubeBuffers.emplace_back( BufferAccessor(Prims::Cube_Vertices,3), Primitive::Vec3VertexAttribute );
-    cubeBuffers.emplace_back( BufferAccessor(Prims::Cube_Colors,4), Primitive::Vec4VertexAttribute, false );
-    std::shared_ptr<Mesh> pColoredCubeMesh = Mesh::Create(cubeBuffers, BufferAccessor(Prims::Cube_Indices,1));
-    ProgramId vertexColorProgram = m_assetManager.LoadProgram("data/shaders/vertexColor.vert", "data/shaders/vertexColor.frag");
-    const auto& pVertexColorMaterial = std::make_shared<Material>(vertexColorProgram);
-
-    Entity& colorCubeEnt = EmplaceEntity();
-    auto colorCubeTrans = colorCubeEnt.EmplaceComponent<TransformComponent>(glm::vec3(3, 2, 3));
-    colorCubeEnt.EmplaceComponent<RenderableComponent>(colorCubeTrans, pColoredCubeMesh, pVertexColorMaterial);
-    colorCubeEnt.EmplaceComponent<VertexColorComponent>(cubeBuffers[1]);
-
-    // Add an indexed cube
-    const auto& litMaterial = m_assetManager.CreateMaterial("data/shaders/lit.vert", "data/shaders/lit.frag");
-    std::shared_ptr<Mesh> pCubeMesh = Mesh::Create<float>(BufferAccessor(Prims::Cube_VerticesAndNormals, 6), Primitive::VertexPositionAndNormalsAttribute, BufferAccessor(Prims::Cube_Indices,1));
-    Entity& indexedCubeEnt = EmplaceEntity();
-    auto indexedCubeTrans = indexedCubeEnt.EmplaceComponent<TransformComponent>(glm::vec3(0, 0, -5));
-    indexedCubeEnt.EmplaceComponent<RenderableComponent>(indexedCubeTrans, pCubeMesh, litMaterial);
-
-	// Add a fbx model
-    EmplaceFBXModel(*this, "data/models/cube.fbx", litMaterial);
+    AddFbxModel(glm::vec3(0, 0, 3), "data/models/cube.fbx");
 
     return true;
 }
@@ -190,4 +123,108 @@ bool TestBed::DoInit()
 void TestBed::DoUpdate(double deltaTime)
 {
 	m_flyInput.Update(GetWindow(), deltaTime);
+}
+
+
+void TestBed::AddTexturedQuad(glm::vec3 pos)
+{
+    MaterialDefinition texturedMatDef(
+        "data/shaders/textured.vert",
+        "data/shaders/textured.frag",
+        "data/textures/Big_pebbles_pxr128.png"
+        );
+
+    auto texturedMat = MaterialManager::LoadMaterial(m_assetManager, texturedMatDef);
+    auto accessor = BufferAccessor(Prims::Quad_VerticesAndUVs, 5);
+    auto pQuadMesh = Mesh::Create<float>(accessor, UVVertexAttributes, BufferAccessor(Prims::Quad_Indices, 1));
+
+    Entity& entTexQuad = EmplaceEntity();
+    auto texQuadTrans = entTexQuad.EmplaceComponent<TransformComponent>(Transform(pos, glm::quat(glm::vec3(glm::half_pi<float>(), 0, 0)), glm::vec3(3)));
+    entTexQuad.EmplaceComponent<RenderableComponent>(texQuadTrans, pQuadMesh, texturedMat);
+}
+
+void TestBed::AddSpinningTri(glm::vec3 pos)
+{
+    MaterialDefinition redMatDef(
+        "data/shaders/default.vert",
+        "data/shaders/red.frag"
+        );
+    const auto& pRedMaterial = MaterialManager::LoadMaterial(m_assetManager, redMatDef);
+
+    // Non-indexed tri
+    // TODO: Meshes in AssetManager so they're cached.
+    std::shared_ptr<Mesh> pTriMesh = Mesh::Create<float>(BufferAccessor(Prims::Triangle_Vertices, 3));
+    Entity& entSpin1 = EmplaceEntity();
+    auto spinTrans1 = entSpin1.EmplaceComponent<TransformComponent>(pos);
+    entSpin1.EmplaceComponent<RenderableComponent>(spinTrans1, pTriMesh, pRedMaterial);
+    entSpin1.EmplaceComponent<SpinComponent>(spinTrans1);
+}
+
+void TestBed::AddVertexColoredCube(glm::vec3 pos)
+{
+    std::vector<Primitive> cubeBuffers;
+    cubeBuffers.emplace_back(BufferAccessor(Prims::Cube_Vertices, 3), Primitive::Vec3VertexAttribute);
+    cubeBuffers.emplace_back(BufferAccessor(Prims::Cube_Colors, 4), Primitive::Vec4VertexAttribute, false);
+    std::shared_ptr<Mesh> pColoredCubeMesh = Mesh::Create(cubeBuffers, BufferAccessor(Prims::Cube_Indices, 1));
+
+    MaterialDefinition vertColoredMatDef(
+        "data/shaders/vertexColor.vert",
+        "data/shaders/vertexColor.frag"
+        );
+    const auto& pVertexColorMaterial = MaterialManager::LoadMaterial(m_assetManager, vertColoredMatDef);
+
+    Entity& colorCubeEnt = EmplaceEntity();
+    auto colorCubeTrans = colorCubeEnt.EmplaceComponent<TransformComponent>(pos);
+    colorCubeEnt.EmplaceComponent<RenderableComponent>(colorCubeTrans, pColoredCubeMesh, pVertexColorMaterial);
+    colorCubeEnt.EmplaceComponent<VertexColorComponent>(cubeBuffers[1]);
+}
+
+void TestBed::AddLitCube(glm::vec3 pos)
+{
+    MaterialDefinition litMatDef(
+        "data/shaders/lit.vert",
+        "data/shaders/lit.frag"
+        );
+    const auto& litMaterial = MaterialManager::LoadMaterial(m_assetManager, litMatDef);
+
+    litMaterial->SetLightDirection(glm::vec3(0, 1, 0));
+    litMaterial->SetLightColor(glm::vec3(1, 1, 1));
+
+    std::shared_ptr<Mesh> pCubeMesh = Mesh::Create<float>(BufferAccessor(Prims::Cube_VerticesAndNormals, 6), Primitive::VertexPositionAndNormalsAttribute, BufferAccessor(Prims::Cube_Indices, 1));
+    Entity& indexedCubeEnt = EmplaceEntity();
+    auto indexedCubeTrans = indexedCubeEnt.EmplaceComponent<TransformComponent>(pos);
+    indexedCubeEnt.EmplaceComponent<RenderableComponent>(indexedCubeTrans, pCubeMesh, litMaterial);
+}
+
+void TestBed::AddFbxModel(glm::vec3 pos, const char* fbxFilename)
+{
+    MaterialDefinition litMatDef(
+        "data/shaders/lit.vert",
+        "data/shaders/lit.frag"
+        );
+    const auto& litMaterial = MaterialManager::LoadMaterial(m_assetManager, litMatDef);
+
+    Entity& fbxEnt = EmplaceEntity();
+    auto transformComponentHandle = fbxEnt.EmplaceComponent<TransformComponent>(Transform(pos));
+
+    auto fbx = std::shared_ptr<FBXFile>(new FBXFile());
+    fbx->load(fbxFilename);
+
+    for (uint i = 0; i < fbx->getMeshCount(); i++) {
+        FBXMeshNode* pMesh = fbx->getMeshByIndex(i);
+        if (pMesh->m_vertices.size() >  0) {
+            uint numIndices = 0;
+            uint* pIndices = nullptr;
+            if (pMesh->m_indices.size() > 0) {
+                numIndices = pMesh->m_indices.size();
+                pIndices = &(pMesh->m_indices[0]);
+            }
+
+            const BufferAccessor accessor(pMesh->m_vertices, 1);
+            auto pFbxMesh = Mesh::Create<FBXVertex>(accessor, FBXVertexAttributes, BufferAccessor(pMesh->m_indices, 1));
+            fbxEnt.EmplaceComponent<RenderableComponent>(transformComponentHandle, pFbxMesh, litMaterial);
+        }
+    }
+
+    fbx->initialiseOpenGLTextures();
 }

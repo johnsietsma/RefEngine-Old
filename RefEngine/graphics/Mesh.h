@@ -1,7 +1,7 @@
 #pragma once
 
 #include "graphics/Primitive.h"
-#include "OpenGlTypes.h"
+#include "graphics/GlTypes.h"
 #include "types.h"
 
 #include <algorithm>
@@ -34,7 +34,7 @@ public:
     template<typename VertT>
     static std::shared_ptr<Mesh> Create( 
         const BufferAccessor& accessor,
-        const std::vector<VertexAttribute>& vertexAttributes = Primitive::Vec3VertexAttribute, // Vert postions only by default
+        const std::vector<VertexAttribute>& vertexAttributes = Primitive::Vec3VertexAttribute, // Vert positions only by default
         const BufferAccessor& indices = BufferAccessor::Empty // No indices by default
     )
     {

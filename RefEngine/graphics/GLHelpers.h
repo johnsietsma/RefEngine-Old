@@ -1,7 +1,7 @@
 #pragma once
 
-#include "OpenGLTypes.h"
-#include "Texture.h"
+#include "graphics/GLTypes.h"
+#include "graphics/Texture.h"
 
 namespace reng {
 

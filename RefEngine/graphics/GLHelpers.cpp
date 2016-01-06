@@ -188,7 +188,7 @@ void GLHelpers::DestroyProgram(ProgramId programId)
 Texture GLHelpers::LoadTexture( const char* fileName )
 {
 	Texture texture;
-	texture.m_textureId = TextureId_Invalid;
+	texture.textureId = TextureId_Invalid;
 	unsigned char* data = stbi_load(fileName, &texture.width, &texture.height, &texture.format, STBI_default);
 	if( data==nullptr) return texture;
 
@@ -201,8 +201,8 @@ Texture GLHelpers::LoadTexture( const char* fileName )
 	default: POW2_ASSERT_FAIL("Unknown texture format: %d", texture.format); return texture;
 	};
 
-	glGenTextures(1, &texture.m_textureId.Get());
-	glBindTexture(GL_TEXTURE_2D, texture.m_textureId.Value());
+	glGenTextures(1, &texture.textureId.Get());
+	glBindTexture(GL_TEXTURE_2D, texture.textureId.Value());
 	glTexImage2D(GL_TEXTURE_2D, 0, texture.format, texture.width, texture.height, 0, texture.format, GL_UNSIGNED_BYTE, data);
 	//  glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_MAG_FILTER, GL_LINEAR);
 	//  glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_MIN_FILTER, GL_LINEAR);

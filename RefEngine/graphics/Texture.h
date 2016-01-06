@@ -1,6 +1,6 @@
 #pragma once
 
-#include "OpenGLTypes.h"
+#include "graphics/GLTypes.h"
 
 
 namespace reng {
@@ -9,7 +9,7 @@ namespace reng {
 class Texture
 {
 public:
-    TextureId m_textureId;
+    TextureId textureId;
     int width;
     int height;
     int format;

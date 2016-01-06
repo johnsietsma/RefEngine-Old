@@ -5,8 +5,11 @@ in vec4 vNormal;
 
 out vec4 outputColor;
 
+uniform vec3 lightDirection;
+uniform vec3 lightColor;
+
 void main()
 {
-   float d = max(0, dot( normalize(vNormal.xyz), vec3(0,1,0) ) );
-   outputColor = vec4(d,d,d,1);
+   float d = max(0, dot( normalize(vNormal.xyz), lightDirection ) );
+   outputColor = vec4(lightColor*d, 1);
 }

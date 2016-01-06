@@ -1,6 +1,6 @@
 #pragma once
 
-#include "OpenGLTypes.h"
+#include "graphics/GLTypes.h"
 
 namespace reng {
 

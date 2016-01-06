@@ -54,6 +54,8 @@ add_library(refeng
     FlyInput.h
     GameTime.h
     make_unique.h
+    MaterialManager.h
+    MaterialManager.cpp
     ReadMe.txt
     RefEngine.cpp
     RefEngine.h
@@ -81,15 +83,17 @@ add_library(refeng
     graphics/Primitive.cpp
     graphics/gl_core_4_4.c
     graphics/gl_core_4_4.h
+    graphics/GLEnum.h
     graphics/GLHelpers.cpp
     graphics/GLHelpers.h
+    graphics/GLProgram.h
+    graphics/GLTypes.h
     graphics/Material.cpp
     graphics/Material.h
     graphics/Mesh.cpp
     graphics/Mesh.h
     graphics/OpenGLRenderer.cpp
     graphics/OpenGLRenderer.h
-    graphics/OpenGLTypes.h
     graphics/Prims.cpp
     graphics/Prims.h
     graphics/Texture.h

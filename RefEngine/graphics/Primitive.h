@@ -1,6 +1,7 @@
 #pragma once
 
-#include "OpenGLTypes.h"
+#include "graphics/GLTypes.h"
+#include "graphics/GLEnum.h"
 #include "types.h"
 
 #include <array>
