@@ -11,6 +11,7 @@
 #include "component/FlyInputComponent.h"
 #include "component/LightComponent.h"
 #include "component/RenderableComponent.h"
+#include "component/SpinComponent.h"
 #include "component/TransformComponent.h"
 
 #include "entity/Entity.h"
@@ -45,26 +46,6 @@ static const std::vector<VertexAttribute> FBXVertexAttributes {
     VertexAttribute::Create<float>(offsetof(FBXVertex, weights), 4),
     VertexAttribute::Create<float>(offsetof(FBXVertex, texCoord1), 2),
     VertexAttribute::Create<float>(offsetof(FBXVertex, texCoord2), 2)
-};
-
-
-class SpinComponent : public UpdateComponent {
-public:
-    SpinComponent(ComponentHandle<TransformComponent>& transComp) :
-        m_transformComponentHandle(transComp)
-    {}
-
-    void Update(double deltaTime) override
-    {
-        auto& transComponent = m_transformComponentHandle.GetComponent();
-        auto trans = transComponent.GetTransform();
-        trans = glm::rotate<float>(trans.GetMartix(), (float)(spinSpeed * deltaTime), glm::vec3(0, 1.f, 0));
-        transComponent.SetTransform(trans);
-    }
-
-private:
-    ComponentHandle<TransformComponent> m_transformComponentHandle;
-    float spinSpeed = 10;
 };
 
 
@@ -171,7 +152,7 @@ void TestBed::AddSpinningTri(glm::vec3 pos)
     Entity& entSpin1 = m_engine.EmplaceEntity();
     auto spinTrans1 = entSpin1.EmplaceComponent<TransformComponent>(pos);
     entSpin1.EmplaceComponent<RenderableComponent>(spinTrans1, pTriMesh, pRedMaterial);
-    entSpin1.EmplaceComponent<SpinComponent>(spinTrans1);
+    entSpin1.EmplaceComponent<SpinComponent>(spinTrans1, 10.0f);
 }
 
 void TestBed::AddVertexColoredCube(glm::vec3 pos)

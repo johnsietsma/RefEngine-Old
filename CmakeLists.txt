@@ -4,6 +4,7 @@ set(PROJECT_NAME RefEngine)
 project(${PROJECT_NAME})
 
 add_subdirectory(dep/glfw)
+add_subdirectory(dep/AntTweakBar)
 
 add_subdirectory(RefEngine)
 add_subdirectory(TestBed)

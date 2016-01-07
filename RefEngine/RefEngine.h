@@ -7,6 +7,8 @@
 
 #include "component/UpdateComponent.h"
 
+#include "debug/DebugGUI.h"
+
 #include "entity/ComponentDatabase.h"
 #include "entity/ComponentProcessor.h"
 
@@ -56,6 +58,8 @@ private:
     std::unique_ptr<ComponentProcessorManager> m_pComponentProcessor;
     std::unique_ptr<OpenGLRenderer> m_pRenderer;
     std::vector<std::unique_ptr<Entity>> m_pEntities;
+
+    DebugGUI m_debugGUI;
 };
 
 }

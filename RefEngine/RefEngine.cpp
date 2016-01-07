@@ -8,6 +8,8 @@
 #include "component/RenderableComponent.h"
 #include "component/LightComponent.h"
 
+#include "debug/DebugGUI.h"
+
 #include "entity/Entity.h"
 
 #include "graphics/GLHelpers.h"
@@ -92,6 +94,8 @@ bool RefEngine::Init()
 #endif
 
 	//Gizmos::create();
+
+    m_debugGUI.Init(m_pWindow);
 
 	m_isValid = true;
 
@@ -195,6 +199,8 @@ void RefEngine::Draw()
     for (const auto& renderable : renderablesContainer) {
         renderable.Draw(m_pRenderer.get(), m_pCamera.get());
     }
+
+    m_debugGUI.Draw();
 
 	glfwSwapBuffers(m_pWindow);
 }

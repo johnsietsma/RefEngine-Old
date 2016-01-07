@@ -18,6 +18,7 @@ ENDIF()
 
 include_directories(../dep/aieutilities)
 include_directories(../dep/glm)
+include_directories(../dep/AntTweakBar/include)
 include_directories(../dep/GLFW/include)
 include_directories(${FBX_SDK_DIR}/include)
 include_directories(${PHYSX_INCLUDE_DIR})
@@ -40,6 +41,7 @@ ENDIF (APPLE)
 set(CMAKE_CXX_FLAGS "${CMAKE_CXX_FLAGS} ${GCC_CHAR_IS_UNSIGNED_CHAR} ${STD_C11}")
 
 add_definitions(-DGLM_SWIZZLE)
+add_definitions(-DTW_STATIC)
 
 add_library(refeng
     ../Readme.md
@@ -72,9 +74,12 @@ add_library(refeng
     component/LightComponent.h
     component/RenderableComponent.h
     component/RenderableComponent.cpp
+    component/SpinComponent.h
     component/TransformComponent.h
     component/UpdateComponent.h
 
+    debug/DebugGUI.h
+    debug/DebugGUI.cpp
 
     entity/Component.h
     entity/ComponentContainer.h
@@ -113,12 +118,14 @@ add_library(refeng
 )
 
 source_group( Components components/ )
+source_group( Debug debug/ )
 source_group( Entity entity/ )
 source_group( Graphics graphics/ )
 source_group( Utils utils/ )
 
 target_include_directories (refeng PUBLIC ${CMAKE_CURRENT_SOURCE_DIR}\\)
 target_link_libraries(refeng glfw ${GLFW_LIBRARIES})
+target_link_libraries(refeng AntTweakBarStatic)
 
 IF(APPLE)
    INCLUDE_DIRECTORIES ( /System/Library/Frameworks )
@@ -139,7 +146,7 @@ ELSE(APPLE)
      target_link_libraries(refeng optimized ${FBX_LIB_DIR}release/libfbxsdk-md.lib)
      target_link_libraries(refeng debug ${FBX_LIB_DIR}debug/libfbxsdk-md.lib)
    else (USE_MSVC_RUNTIME_LIBRARY_DLL)
-       target_link_libraries(refeng optimized ${FBX_LIB_DIR}release/libfbxsdk-mt.lib)
+     target_link_libraries(refeng optimized ${FBX_LIB_DIR}release/libfbxsdk-mt.lib)
      target_link_libraries(refeng debug ${FBX_LIB_DIR}debug/libfbxsdk-mt.lib)
    endif()
 ENDIF (APPLE)
