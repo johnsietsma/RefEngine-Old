@@ -14,6 +14,7 @@ public:
         m_globalTransform(1)
     {}
 
+    Transform(const glm::vec3& position, const glm::quat& rot);
     Transform(const glm::vec3& position, const glm::quat& rot, const glm::vec3& scale);
 
     Transform(glm::vec3 position);

@@ -9,6 +9,7 @@
 
 #include "component/CameraComponent.h"
 #include "component/FlyInputComponent.h"
+#include "component/LightComponent.h"
 #include "component/RenderableComponent.h"
 #include "component/TransformComponent.h"
 
@@ -114,6 +115,12 @@ bool TestBed::Init()
     Entity& flyEntity = m_engine.EmplaceEntity();
     flyEntity.EmplaceComponent<FlyInputComponent>(m_engine.GetCamera(), m_engine.GetWindow());
 
+    Entity& lightEntity = m_engine.EmplaceEntity();
+    float rot = glm::half_pi<float>();
+    Transform lightTransform(glm::vec3(0), glm::quat(glm::vec3(rot)));
+    auto lightTransformHandle = lightEntity.EmplaceComponent<TransformComponent>(lightTransform);
+    lightEntity.EmplaceComponent<LightComponent>(lightTransformHandle);
+
     AddTexturedQuad(glm::vec3(5, 0, 0));
 
     AddSpinningTri(glm::vec3(-2, 1, 0));
@@ -193,10 +200,6 @@ void TestBed::AddLitCube(glm::vec3 pos)
         "data/shaders/lit.frag"
         );
     const auto& litMaterial = MaterialManager::LoadMaterial(m_assetManager, litMatDef);
-
-    litMaterial->SetLightDirection(glm::vec3(0, 1, 0));
-    litMaterial->SetLightColor(glm::vec3(1, 1, 1));
-    litMaterial->SetCameraPosition(m_engine.GetCamera()->GetTransform().GetPosition());
     litMaterial->SetSpecularPower(2.0f);
 
     std::shared_ptr<Mesh> pCubeMesh = Mesh::Create<float>(BufferAccessor(Prims::Cube_VerticesAndNormals, 6), Primitive::VertexPositionAndNormalsAttribute, BufferAccessor(Prims::Cube_Indices, 1));

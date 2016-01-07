@@ -6,6 +6,11 @@
 
 using namespace reng;
 
+Transform::Transform(const glm::vec3& position, const glm::quat& rot) :
+Transform(position, rot, glm::vec3(1))
+{
+}
+
 Transform::Transform(const glm::vec3& position, const glm::quat& rot, const glm::vec3& scale)
 {
     m_globalTransform = glm::mat4_cast(rot);

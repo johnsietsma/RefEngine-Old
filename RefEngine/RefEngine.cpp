@@ -6,6 +6,7 @@
 #include "GameTime.h"
 
 #include "component/RenderableComponent.h"
+#include "component/LightComponent.h"
 
 #include "entity/Entity.h"
 
@@ -161,9 +162,23 @@ void RefEngine::Draw()
 
 	Gizmos::draw(m_pCamera->GetProjectionViewMatrix());
 
+    glm::vec3 lightDirection;
+    glm::vec3 lightColor;
+
+    if (m_pComponentDatabase->HasComponentContainer<LightComponent>()) {
+        auto& lightContainer = m_pComponentDatabase->GetComponentContainer<LightComponent>();
+        for (auto& light : lightContainer)
+        {
+            lightDirection = light.GetDirection();
+            lightColor = light.GetColor();
+            break; // Just one light for now;
+        }
+    }
+
     auto& renderablesContainer = m_pComponentDatabase->GetComponentContainer<RenderableComponent>();
 
     // Update lighting values
+    // TODO: Update light directions
     // TODO: Check to see if cam has moved before updating values.
     // TODO: Collate lit materials.
     glm::vec3 camPos = GetCamera()->GetTransform().GetPosition();
@@ -171,6 +186,8 @@ void RefEngine::Draw()
         Material* pMaterial = renderable.GetMaterial();
         if (pMaterial->IsLit()) {
             pMaterial->SetCameraPosition(camPos);
+            pMaterial->SetLightDirection(lightDirection);
+            pMaterial->SetLightColor(lightColor);
         }
     }
 
