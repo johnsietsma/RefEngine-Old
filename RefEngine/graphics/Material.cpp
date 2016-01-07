@@ -20,19 +20,7 @@ Material::Material(ProgramId programId) :
     m_programId(programId),
     m_textureId(TextureId_Invalid)
 {
-}
-
-
-Material::Material(ProgramId programId, TextureId textureId, const char* projViewUniform, const char* texUniform ) :
-    m_programId(programId),
-    m_textureId(textureId)
-{
-	m_mvpLocation = glGetUniformLocation(m_programId.Value(), projViewUniform);
-	POW2_ASSERT(m_mvpLocation != UniformLocationId_Invalid);
-
-    if (texUniform != nullptr) {
-        SetTexture(textureId, 0);
-    }
+    m_isLit = GetUniformLocation(WellKnownLocation::LightDirection) != UniformLocationId_Invalid;
 }
 
 

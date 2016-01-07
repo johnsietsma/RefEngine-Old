@@ -27,22 +27,20 @@ public:
     bool Init();
     void Run();
 
+    GLFWwindow* GetWindow() { return m_pWindow; }
+    Camera* GetCamera() { return m_pCamera.get(); }
+
     template<typename T>
     void RegisterUpdateComponent()
     {
-        m_pComponentProcessor->RegisterUpdateProcessor<T>( UpdateComponent::UpdateProcessor<T> );
+        // Add this component to be updated during the component processing stage.
+        m_pComponentProcessor->RegisterComponentProcessor<T>( UpdateComponent::UpdateProcessor<T> );
     }
 
     Entity& EmplaceEntity();
 
-
-protected:
-	GLFWwindow* GetWindow() { return m_pWindow;  }
-	Camera* GetCamera() { return m_pCamera.get(); }
-
-	virtual bool DoInit() = 0;
-	virtual void DoUpdate(double deltaTime) = 0;
 private:
+
     bool Update(double deltaTime);
     void Draw();
 	void DrawWorldGrid() const;

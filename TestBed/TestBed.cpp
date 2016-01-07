@@ -44,6 +44,22 @@ static const std::vector<VertexAttribute> FBXVertexAttributes {
 };
 
 
+class FlyInputComponent : public UpdateComponent
+{
+public:
+    FlyInputComponent(Camera* pCamera,  GLFWwindow* pWindow) :
+        m_flyInput(pCamera, pWindow)
+    {}
+
+    void Update(double deltaTime)
+    {
+        m_flyInput.Update(deltaTime);
+    }
+
+private:
+    FlyInput m_flyInput;
+};
+
 class SpinComponent : public UpdateComponent {
 public:
     SpinComponent(ComponentHandle<TransformComponent>& transComp) :
@@ -97,14 +113,19 @@ private:
 };
 
 
-TestBed::TestBed() :
-	m_flyInput(GetCamera())
+TestBed::TestBed()
 {}
 
-bool TestBed::DoInit()
+bool TestBed::Init()
 {
-    RegisterUpdateComponent<SpinComponent>();
-    RegisterUpdateComponent<VertexColorComponent>();
+    m_engine.Init();
+
+    m_engine.RegisterUpdateComponent<FlyInputComponent>();
+    m_engine.RegisterUpdateComponent<SpinComponent>();
+    m_engine.RegisterUpdateComponent<VertexColorComponent>();
+
+    Entity& flyEntity = m_engine.EmplaceEntity();
+    flyEntity.EmplaceComponent<FlyInputComponent>(m_engine.GetCamera(), m_engine.GetWindow());
 
     AddTexturedQuad(glm::vec3(5, 0, 0));
 
@@ -120,11 +141,10 @@ bool TestBed::DoInit()
     return true;
 }
 
-void TestBed::DoUpdate(double deltaTime)
+void TestBed::Run()
 {
-	m_flyInput.Update(GetWindow(), deltaTime);
+    m_engine.Run();
 }
-
 
 void TestBed::AddTexturedQuad(glm::vec3 pos)
 {
@@ -138,7 +158,7 @@ void TestBed::AddTexturedQuad(glm::vec3 pos)
     auto accessor = BufferAccessor(Prims::Quad_VerticesAndUVs, 5);
     auto pQuadMesh = Mesh::Create<float>(accessor, UVVertexAttributes, BufferAccessor(Prims::Quad_Indices, 1));
 
-    Entity& entTexQuad = EmplaceEntity();
+    Entity& entTexQuad = m_engine.EmplaceEntity();
     auto texQuadTrans = entTexQuad.EmplaceComponent<TransformComponent>(Transform(pos, glm::quat(glm::vec3(glm::half_pi<float>(), 0, 0)), glm::vec3(3)));
     entTexQuad.EmplaceComponent<RenderableComponent>(texQuadTrans, pQuadMesh, texturedMat);
 }
@@ -154,7 +174,7 @@ void TestBed::AddSpinningTri(glm::vec3 pos)
     // Non-indexed tri
     // TODO: Meshes in AssetManager so they're cached.
     std::shared_ptr<Mesh> pTriMesh = Mesh::Create<float>(BufferAccessor(Prims::Triangle_Vertices, 3));
-    Entity& entSpin1 = EmplaceEntity();
+    Entity& entSpin1 = m_engine.EmplaceEntity();
     auto spinTrans1 = entSpin1.EmplaceComponent<TransformComponent>(pos);
     entSpin1.EmplaceComponent<RenderableComponent>(spinTrans1, pTriMesh, pRedMaterial);
     entSpin1.EmplaceComponent<SpinComponent>(spinTrans1);
@@ -173,7 +193,7 @@ void TestBed::AddVertexColoredCube(glm::vec3 pos)
         );
     const auto& pVertexColorMaterial = MaterialManager::LoadMaterial(m_assetManager, vertColoredMatDef);
 
-    Entity& colorCubeEnt = EmplaceEntity();
+    Entity& colorCubeEnt = m_engine.EmplaceEntity();
     auto colorCubeTrans = colorCubeEnt.EmplaceComponent<TransformComponent>(pos);
     colorCubeEnt.EmplaceComponent<RenderableComponent>(colorCubeTrans, pColoredCubeMesh, pVertexColorMaterial);
     colorCubeEnt.EmplaceComponent<VertexColorComponent>(cubeBuffers[1]);
@@ -189,11 +209,11 @@ void TestBed::AddLitCube(glm::vec3 pos)
 
     litMaterial->SetLightDirection(glm::vec3(0, 1, 0));
     litMaterial->SetLightColor(glm::vec3(1, 1, 1));
-    litMaterial->SetCameraPosition(GetCamera()->GetTransform().GetPosition());
+    litMaterial->SetCameraPosition(m_engine.GetCamera()->GetTransform().GetPosition());
     litMaterial->SetSpecularPower(2.0f);
 
     std::shared_ptr<Mesh> pCubeMesh = Mesh::Create<float>(BufferAccessor(Prims::Cube_VerticesAndNormals, 6), Primitive::VertexPositionAndNormalsAttribute, BufferAccessor(Prims::Cube_Indices, 1));
-    Entity& indexedCubeEnt = EmplaceEntity();
+    Entity& indexedCubeEnt = m_engine.EmplaceEntity();
     auto indexedCubeTrans = indexedCubeEnt.EmplaceComponent<TransformComponent>(pos);
     indexedCubeEnt.EmplaceComponent<RenderableComponent>(indexedCubeTrans, pCubeMesh, litMaterial);
 }
@@ -206,7 +226,7 @@ void TestBed::AddFbxModel(glm::vec3 pos, const char* fbxFilename)
         );
     const auto& litMaterial = MaterialManager::LoadMaterial(m_assetManager, litMatDef);
 
-    Entity& fbxEnt = EmplaceEntity();
+    Entity& fbxEnt = m_engine.EmplaceEntity();
     auto transformComponentHandle = fbxEnt.EmplaceComponent<TransformComponent>(Transform(pos));
 
     auto fbx = std::shared_ptr<FBXFile>(new FBXFile());

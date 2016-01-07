@@ -25,6 +25,8 @@ public:
 
     ~RenderableComponent() override {} // Make sure the shared_ptrs get cleaned up.
 
+    Material* GetMaterial() { return m_pMaterial.get(); }
+
     virtual void Draw(OpenGLRenderer* pRenderer, Camera* pCamera) const;
 
 protected:

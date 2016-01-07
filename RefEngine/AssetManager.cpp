@@ -38,7 +38,6 @@ ProgramId AssetManager::LoadProgram(const char* vertShaderFileName, const char* 
     return LinkProgram(vertShader, redFragShader);
 }
 
-
 ProgramId AssetManager::LinkProgram(ShaderId fragmentShaderId, ShaderId vertexShaderId)
 {
 	ProgramId programId = m_pProgramFactory->Get(fragmentShaderId, vertexShaderId);

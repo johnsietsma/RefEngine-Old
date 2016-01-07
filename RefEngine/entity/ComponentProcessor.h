@@ -16,7 +16,7 @@ class ComponentDatabase;
 
 // Function which will update all the components in the container.
 template<typename T>
-using ComponentUpdateFunction = std::function<void(double,ComponentContainer<T>&) >;
+using ComponentProcessorFunction = std::function<void(double,ComponentContainer<T>&) >;
 
 // Base class for component processing. Allows generic storage of processors.
 class IComponentProcessor
@@ -27,10 +27,10 @@ public:
 
 // A component processor that is responsible for updating components.
 template<typename T>
-class UpdateProcessor : public IComponentProcessor
+class ComponentProcessor : public IComponentProcessor
 {
 public:
-    UpdateProcessor(ComponentUpdateFunction<T> a_processorFuntion) :
+    ComponentProcessor(ComponentProcessorFunction<T> a_processorFuntion) :
         m_processorFunction(a_processorFuntion)
     {}
 
@@ -40,7 +40,7 @@ public:
     }
 
 private:
-    ComponentUpdateFunction<T> m_processorFunction;
+    ComponentProcessorFunction<T> m_processorFunction;
 };
 
 // Manages component processors.
@@ -50,10 +50,10 @@ class ComponentProcessorManager
 {
 public:
     template<typename T>
-    void RegisterUpdateProcessor(ComponentUpdateFunction<T> processorFunction)
+    void RegisterComponentProcessor(ComponentProcessorFunction<T> processorFunction)
     {
         const auto& typeId = Component::GetTypeId<T>();
-        m_processors.emplace(typeId, std::make_unique< UpdateProcessor<T> >(processorFunction));
+        m_processors.emplace(typeId, std::make_unique< ComponentProcessor<T> >(processorFunction));
     }
 
     void Process(double deltaTime, ComponentDatabase& database);

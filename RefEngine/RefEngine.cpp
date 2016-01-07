@@ -91,8 +91,6 @@ bool RefEngine::Init()
 
 	//Gizmos::create();
 
-	if (!DoInit()) return false;
-
 	m_isValid = true;
 
 	return true;
@@ -145,8 +143,6 @@ bool RefEngine::Update(double deltaTime)
 
 	glfwPollEvents();
 
-	DoUpdate(deltaTime);
-
     m_pComponentProcessor->Process( deltaTime, *m_pComponentDatabase.get() );
 
 	return true;
@@ -165,8 +161,21 @@ void RefEngine::Draw()
 	Gizmos::draw(m_pCamera->GetProjectionViewMatrix());
 
     auto& renderablesContainer = m_pComponentDatabase->GetComponentContainer<RenderableComponent>();
-    for (const auto& component : renderablesContainer) {
-        component.Draw(m_pRenderer.get(), m_pCamera.get());
+
+    // Update lighting values
+    // TODO: Check to see if cam has moved before updating values.
+    // TODO: Collate lit materials.
+    glm::vec3 camPos = GetCamera()->GetTransform().GetPosition();
+    for (auto renderable : renderablesContainer) {
+        Material* pMaterial = renderable.GetMaterial();
+        if (pMaterial->IsLit()) {
+            pMaterial->SetCameraPosition(camPos);
+        }
+    }
+
+    // Render everything
+    for (const auto& renderable : renderablesContainer) {
+        renderable.Draw(m_pRenderer.get(), m_pCamera.get());
     }
 
 	glfwSwapBuffers(m_pWindow);

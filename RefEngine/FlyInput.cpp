@@ -8,10 +8,10 @@
 
 using namespace reng;
 
-void FlyInput::Update(GLFWwindow* pWindow, double deltaTime)
+void FlyInput::Update(double deltaTime)
 {
-	HandleKeyboard(pWindow, deltaTime);
-	HandleMouse(pWindow, deltaTime);
+	HandleKeyboard(m_pWindow, deltaTime);
+	HandleMouse(m_pWindow, deltaTime);
 }
 
 

@@ -28,7 +28,7 @@ class Material
 public:
     Material(ProgramId programId);
 
-    Material(ProgramId programId, TextureId textureId, const char* projViewUniform = "projectionView", const char* texUniform = nullptr);
+    bool IsLit() const { return m_isLit;  }
 
 	ProgramId GetProgramId() const { return m_programId;  }
 
@@ -64,9 +64,7 @@ public:
 private:
 	ProgramId m_programId;
     TextureId m_textureId;
-
-	UniformLocationId m_mvpLocation;
-    UniformLocationId m_texLocation;
+    bool m_isLit;
 };
 
 }

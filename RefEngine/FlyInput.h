@@ -8,12 +8,13 @@ namespace reng {
 
 class FlyInput {
 public:
-	FlyInput( Camera* pCamera ) :
+	FlyInput( Camera* pCamera, GLFWwindow* pWindow ) :
 		m_pCamera(pCamera),
+        m_pWindow(pWindow),
 		m_rotateButtonClicked(false)
 	{}
 
-	void Update(GLFWwindow* pWindow, double deltaTime);
+	void Update(double deltaTime);
 
 private:
 	void HandleKeyboard(GLFWwindow* pWindow, double deltaTime);
@@ -24,6 +25,7 @@ private:
 	void CalculateRotation(double deltaTime, double xOffset, double yOffset);
 
 	Camera* m_pCamera;
+    GLFWwindow* m_pWindow;
 	float m_flySpeed = 5;
 	float m_rotationSpeed = 1;
 	bool m_rotateButtonClicked;

@@ -16,14 +16,16 @@ namespace reng {
 	class RefEngine;
 }
 
-class TestBed : public reng::RefEngine
+class TestBed
 {
 public:
 	TestBed();
 
+    bool Init();
+    void Run();
+
 private:
-	void DoUpdate(double deltaTime) override;
-	bool DoInit() override;
+	//void DoUpdate(double deltaTime) override;
 
     void AddTexturedQuad( glm::vec3 pos );
     void AddSpinningTri( glm::vec3 pos );
@@ -32,5 +34,6 @@ private:
     void AddFbxModel( glm::vec3 pos, const char* fbxPath );
 
     reng::AssetManager m_assetManager;
-	reng::FlyInput m_flyInput;
+
+    reng::RefEngine m_engine;
 };
