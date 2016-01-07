@@ -1,7 +1,7 @@
 #pragma once
 
+#include "component/UpdateComponent.h"
 #include "entity/ComponentContainer.h"
-#include "entity/UpdateComponent.h"
 
 #include "make_unique.h"
 

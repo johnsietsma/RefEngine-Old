@@ -5,8 +5,9 @@
 #include "Color.h"
 #include "GameTime.h"
 
+#include "component/RenderableComponent.h"
+
 #include "entity/Entity.h"
-#include "entity/RenderableComponent.h"
 
 #include "graphics/GLHelpers.h"
 #include "graphics/OpenGLRenderer.h"

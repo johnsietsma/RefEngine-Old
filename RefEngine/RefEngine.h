@@ -5,9 +5,10 @@
 
 #include "Camera.h"
 
+#include "component/UpdateComponent.h"
+
 #include "entity/ComponentDatabase.h"
 #include "entity/ComponentProcessor.h"
-#include "entity/UpdateComponent.h"
 
 class FBXFile;
 struct GLFWwindow;

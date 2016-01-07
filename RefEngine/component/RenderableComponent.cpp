@@ -1,9 +1,11 @@
 #include "RenderableComponent.h"
 
-#include "Entity.h"
+#include "entity/Entity.h"
 
 #include "Camera.h"
 #include "Transform.h"
+
+#include "component/TransformComponent.h"
 
 #include "graphics/OpenGLRenderer.h"
 #include "graphics/Material.h"

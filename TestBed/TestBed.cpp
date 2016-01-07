@@ -7,9 +7,12 @@
 #include "RefEngine.h"
 #include "MaterialManager.h"
 
+#include "component/CameraComponent.h"
+#include "component/FlyInputComponent.h"
+#include "component/RenderableComponent.h"
+#include "component/TransformComponent.h"
+
 #include "entity/Entity.h"
-#include "entity/RenderableComponent.h"
-#include "entity/TransformComponent.h"
 
 #include "graphics/Material.h"
 #include "graphics/Mesh.h"
@@ -43,22 +46,6 @@ static const std::vector<VertexAttribute> FBXVertexAttributes {
     VertexAttribute::Create<float>(offsetof(FBXVertex, texCoord2), 2)
 };
 
-
-class FlyInputComponent : public UpdateComponent
-{
-public:
-    FlyInputComponent(Camera* pCamera,  GLFWwindow* pWindow) :
-        m_flyInput(pCamera, pWindow)
-    {}
-
-    void Update(double deltaTime)
-    {
-        m_flyInput.Update(deltaTime);
-    }
-
-private:
-    FlyInput m_flyInput;
-};
 
 class SpinComponent : public UpdateComponent {
 public:

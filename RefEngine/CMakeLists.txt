@@ -67,6 +67,15 @@ add_library(refeng
     VariadicHash.cpp
     VariadicHash.h
 
+    component/CameraComponent.h
+    component/FlyInputComponent.h
+    component/LightComponent.h
+    component/RenderableComponent.h
+    component/RenderableComponent.cpp
+    component/TransformComponent.h
+    component/UpdateComponent.h
+
+
     entity/Component.h
     entity/ComponentContainer.h
     entity/ComponentDatabase.h
@@ -74,10 +83,6 @@ add_library(refeng
     entity/ComponentProcessor.h
     entity/ComponentProcessor.cpp
     entity/Entity.h
-    entity/RenderableComponent.h
-    entity/RenderableComponent.cpp
-    entity/TransformComponent.h
-    entity/UpdateComponent.h
 
     graphics/Primitive.h
     graphics/Primitive.cpp

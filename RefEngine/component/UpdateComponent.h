@@ -1,6 +1,7 @@
 #pragma once
 
 #include "entity/Component.h"
+#include "entity/ComponentContainer.h"
 
 namespace reng {
 
