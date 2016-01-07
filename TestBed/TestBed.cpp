@@ -189,6 +189,8 @@ void TestBed::AddLitCube(glm::vec3 pos)
 
     litMaterial->SetLightDirection(glm::vec3(0, 1, 0));
     litMaterial->SetLightColor(glm::vec3(1, 1, 1));
+    litMaterial->SetCameraPosition(GetCamera()->GetTransform().GetPosition());
+    litMaterial->SetSpecularPower(2.0f);
 
     std::shared_ptr<Mesh> pCubeMesh = Mesh::Create<float>(BufferAccessor(Prims::Cube_VerticesAndNormals, 6), Primitive::VertexPositionAndNormalsAttribute, BufferAccessor(Prims::Cube_Indices, 1));
     Entity& indexedCubeEnt = EmplaceEntity();

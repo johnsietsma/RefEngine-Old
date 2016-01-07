@@ -13,6 +13,8 @@ const char* WellKnownLocation::ProjectionView = "projectionView";
 const char* WellKnownLocation::Sampler = "tex";
 const char* WellKnownLocation::LightDirection = "lightDirection";
 const char* WellKnownLocation::LightColor = "lightColor";
+const char* WellKnownLocation::CameraPosition = "cameraPosition";
+const char* WellKnownLocation::SpecularPower = "specularPower";
 
 Material::Material(ProgramId programId) :
     m_programId(programId),
@@ -32,6 +34,39 @@ Material::Material(ProgramId programId, TextureId textureId, const char* projVie
         SetTexture(textureId, 0);
     }
 }
+
+
+void Material::SetProjectionView(const glm::mat4x4& mat)
+{
+    SetUniformValue(WellKnownLocation::ProjectionView, mat);
+}
+
+void Material::SetTexture(TextureId textureId, int textureUnit)
+{
+    m_textureId = textureId;
+    SetUniformValue(WellKnownLocation::Sampler, textureUnit);
+}
+
+void Material::SetLightDirection(const glm::vec3& lightDirection)
+{
+    SetUniformValue(WellKnownLocation::LightDirection, lightDirection);
+}
+
+void Material::SetLightColor(const glm::vec3& lightColor)
+{
+    SetUniformValue(WellKnownLocation::LightColor, lightColor);
+}
+
+void Material::SetCameraPosition(const glm::vec3& cameraPosition)
+{
+    SetUniformValue(WellKnownLocation::CameraPosition, cameraPosition);
+}
+
+void Material::SetSpecularPower(float specularPower)
+{
+    SetUniformValue(WellKnownLocation::SpecularPower, specularPower);
+}
+
 
 void Material::BindTexture() const
 {

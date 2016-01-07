@@ -19,6 +19,8 @@ namespace WellKnownLocation {
     extern const char* Sampler;
     extern const char* LightDirection;
     extern const char* LightColor;
+    extern const char* CameraPosition;
+    extern const char* SpecularPower;
 }
 
 class Material
@@ -37,26 +39,17 @@ public:
         return glGetUniformLocation(m_programId.Value(), uniformName);
     }
 
-    void SetProjectionView(const glm::mat4x4& mat)
-    {
-        SetUniformValue(WellKnownLocation::ProjectionView, mat);
-    }
+    void SetProjectionView(const glm::mat4x4& mat);
 
-    void SetTexture(TextureId textureId, int textureUnit)
-    {
-        m_textureId = textureId;
-        SetUniformValue(WellKnownLocation::Sampler, textureUnit);
-    }
+    void SetTexture(TextureId textureId, int textureUnit);
 
-    void SetLightDirection(const glm::vec3& lightDirection)
-    {
-        SetUniformValue(WellKnownLocation::LightDirection, lightDirection);
-    }
+    void SetLightDirection(const glm::vec3& lightDirection);
 
-    void SetLightColor(const glm::vec3& lightColor)
-    {
-        SetUniformValue(WellKnownLocation::LightColor, lightColor);
-    }
+    void SetLightColor(const glm::vec3& lightColor);
+
+    void SetCameraPosition(const glm::vec3& cameraPosition);
+
+    void SetSpecularPower(float specularPower);
 
     template<typename T>
     void SetUniformValue(const char* uniformName, const T& value) const
