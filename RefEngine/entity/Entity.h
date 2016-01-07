@@ -2,7 +2,6 @@
 
 #include "entity/ComponentDatabase.h"
 #include "entity/ComponentHandle.h"
-#include "entity/ComponentProcessor.h"
 
 #include <typeindex>
 #include <unordered_map>
@@ -32,9 +31,6 @@ public:
     }
 
 private:
-    // A map of the components associated with this Entity.
-    std::unordered_map< ComponentTypeId, std::unique_ptr<ComponentId> > m_componentMap;
-
     // The database that contains the components from this Entity.
     ComponentDatabase* m_pDatabase;
 };

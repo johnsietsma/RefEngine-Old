@@ -106,6 +106,8 @@ void RefEngine::Destroy()
 {
     POW2_ASSERT(m_isValid);
 
+    m_debugGUI.DeInit();
+
     if (m_pWindow != nullptr) {
         glfwDestroyWindow(m_pWindow);
         m_pWindow = nullptr;
