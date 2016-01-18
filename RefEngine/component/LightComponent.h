@@ -23,8 +23,8 @@ public:
         m_color(lightColor)
     {}
 
-    const glm::vec3& GetDirection() const { return m_transformComponentHandle.GetComponent().GetTransform().GetForward(); }
-    const glm::vec3& GetColor() const { return m_color;  }
+    glm::vec3 GetDirection() const { return m_transformComponentHandle.GetComponent().GetTransform().GetForward(); }
+    glm::vec3 GetColor() const { return m_color;  }
 
 
 protected:

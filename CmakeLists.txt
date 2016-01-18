@@ -4,7 +4,10 @@ set(PROJECT_NAME RefEngine)
 project(${PROJECT_NAME})
 
 add_subdirectory(dep/glfw)
-add_subdirectory(dep/AntTweakBar)
+
+IF(WINDOWS)
+    add_subdirectory(dep/AntTweakBar)
+ENDIF()
 
 add_subdirectory(RefEngine)
 add_subdirectory(TestBed)

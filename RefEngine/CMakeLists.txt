@@ -18,13 +18,16 @@ ENDIF()
 
 include_directories(../dep/aieutilities)
 include_directories(../dep/glm)
-include_directories(../dep/AntTweakBar/include)
 include_directories(../dep/GLFW/include)
 include_directories(${FBX_SDK_DIR}/include)
 include_directories(${PHYSX_INCLUDE_DIR})
 include_directories(../dep/FBXLoader)
 include_directories(../dep/stb)
 include_directories(src)
+
+IF(WINDOWS)
+    include_directories(../dep/AntTweakBar/include)
+ENDIF()
 
 if (MSVC)
     option(USE_MSVC_RUNTIME_LIBRARY_DLL "Use MSVC runtime library DLL" ON)
@@ -125,7 +128,10 @@ source_group( Utils utils/ )
 
 target_include_directories (refeng PUBLIC ${CMAKE_CURRENT_SOURCE_DIR}\\)
 target_link_libraries(refeng glfw ${GLFW_LIBRARIES})
-target_link_libraries(refeng AntTweakBarStatic)
+
+IF(WINDOWS)
+    target_link_libraries(refeng AntTweakBarStatic)
+ENDIF()
 
 IF(APPLE)
    INCLUDE_DIRECTORIES ( /System/Library/Frameworks )
