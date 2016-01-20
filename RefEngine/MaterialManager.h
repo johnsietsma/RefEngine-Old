@@ -27,7 +27,7 @@ struct MaterialDefinition
 class MaterialManager 
 {
 public:
-    static std::shared_ptr<Material> LoadMaterial(AssetManager& assetManager, const MaterialDefinition& materialDefinition);
+    static std::shared_ptr<Material> LoadMaterial(AssetManager* pAssetManager, const MaterialDefinition& materialDefinition);
 };
 
 }

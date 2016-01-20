@@ -1,4 +1,4 @@
-#if defined DEBUG
+#if defined _DEBUG
 #include <vld.h>
 #endif
 

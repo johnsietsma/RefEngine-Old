@@ -2,6 +2,7 @@
 
 #include "graphics/gl_core_4_4.h"
 
+// TODO: Use stdint.h types instead? Beware of platform size differences.
 
 namespace reng 
 {

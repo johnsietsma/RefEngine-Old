@@ -57,7 +57,6 @@ add_library(refeng
     Color.h
     FlyInput.cpp
     FlyInput.h
-    GameTime.h
     make_unique.h
     MaterialManager.h
     MaterialManager.cpp
@@ -71,6 +70,8 @@ add_library(refeng
     types.h
     VariadicHash.cpp
     VariadicHash.h
+    WindowGLFW.h
+    WindowGLFW.cpp
 
     component/CameraComponent.h
     component/FlyInputComponent.h

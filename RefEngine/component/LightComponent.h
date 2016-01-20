@@ -2,7 +2,6 @@
 
 #include "component/TransformComponent.h"
 
-#include "entity/Component.h"
 #include "entity/ComponentHandle.h"
 
 #include "glm/glm.hpp"
@@ -11,7 +10,7 @@
 
 namespace reng {
 
-class LightComponent : public IComponent 
+class LightComponent 
 {
 public:
     LightComponent(const ComponentHandle<TransformComponent>& trans) :

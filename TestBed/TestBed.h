@@ -1,19 +1,12 @@
 #pragma once
 
-#include "AssetManager.h"
-#include "FlyInput.h"
-#include "RefEngine.h"
-
+#include "WindowGLFW.h"
 
 #include <memory>
-#include <vector>
-
-class FBXFile;
-class SpinProcessor;
 
 namespace reng {
-	class AssetManager;
-	class RefEngine;
+    class AssetManager;
+    class RefEngine;
 }
 
 class TestBed
@@ -33,7 +26,6 @@ private:
     void AddLitCube( glm::vec3 pos );
     void AddFbxModel( glm::vec3 pos, const char* fbxPath );
 
-    reng::AssetManager m_assetManager;
-
-    reng::RefEngine m_engine;
+    std::unique_ptr<reng::WindowGLFW> m_pWindow; 
+    reng::RefEngine* m_pEngine;
 };

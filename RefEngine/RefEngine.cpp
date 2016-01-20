@@ -3,7 +3,6 @@
 #include "AssetManager.h"
 #include "Camera.h"
 #include "Color.h"
-#include "GameTime.h"
 
 #include "component/RenderableComponent.h"
 #include "component/LightComponent.h"
@@ -17,31 +16,16 @@
 
 #include "utils/pow2assert.h"
 
-#include <aie/Gizmos.h>
-#include <GLFW/glfw3.h>
+
+#include <aie/Gizmos.h> // TODO: Remove
 #include <glm/glm.hpp>
-#include <iostream>
 #include <string>
 
 using namespace std;
 using namespace reng;
 
-static void errorCallback(int errorCode, const char* errorDesc)
-{
-	cerr << "GLFW Error(" << errorCode << "): " << errorDesc << endl;
-}
-
-void keyCallback(GLFWwindow* m_pWindow, int key, int /*scanCode*/, int action, int /*mods*/)
-{
-	if (key == GLFW_KEY_ESCAPE && action == GLFW_PRESS)
-	{
-		glfwSetWindowShouldClose(m_pWindow, 1);
-	}
-}
-
 
 RefEngine::RefEngine() :
-	m_isValid(false),
 	m_pAssetManager(std::make_unique<AssetManager>()),
 	m_pCamera(new Camera(glm::vec3(15, 18, -20), glm::vec3(0,5,0), 45, 16 / 9.f)),
     m_pComponentDatabase(std::make_unique<ComponentDatabase>()),
@@ -50,123 +34,33 @@ RefEngine::RefEngine() :
 {
 }
 
-RefEngine::~RefEngine()
-{
-    if (m_isValid) Destroy();
-}
-
 bool RefEngine::Init()
 {
-	POW2_ASSERT(!m_isValid);
-	std::cout << "Running TestBed: " << glfwGetVersionString() << std::endl;
+    if (ogl_LoadFunctions() == ogl_LOAD_FAILED) return false;
 
-	m_isValid = glfwInit() == GL_TRUE;
-	if (!m_isValid) return false;
-
-	// Required to get MacOS out of compatiblity mode
-	glfwWindowHint(GLFW_CONTEXT_VERSION_MAJOR, 3);
-	glfwWindowHint(GLFW_CONTEXT_VERSION_MINOR, 2);
-	glfwWindowHint(GLFW_OPENGL_PROFILE, GLFW_OPENGL_CORE_PROFILE);
-	glfwWindowHint(GLFW_OPENGL_FORWARD_COMPAT, GL_TRUE);
-
-	m_pWindow = glfwCreateWindow(1024, 780, "RefEng", nullptr, nullptr);
-	if (m_pWindow == nullptr) return false;
-
-	glfwSetErrorCallback(errorCallback);
-	glfwSetKeyCallback(m_pWindow, keyCallback);
-	glfwMakeContextCurrent(m_pWindow);
-	glfwSwapInterval(1);
-
-	//int width, height;
-	//glfwGetFramebufferSize(m_pWindow, &width, &height);
-
-	if (ogl_LoadFunctions() == ogl_LOAD_FAILED) return false;
-
-	float clear = 192 / 255.f;
-	glClearColor(clear, clear, clear, 1);
-
+    float clear = 192 / 255.f;
+    glClearColor(clear, clear, clear, 1);
     glEnable(GL_DEPTH_TEST);
     
-	printf("Supported GLSL version is %s.\n", (char *)glGetString(GL_SHADING_LANGUAGE_VERSION));
+    printf("Supported GLSL version is %s.\n", (char *)glGetString(GL_SHADING_LANGUAGE_VERSION));
 
-#ifndef NDEBUG
+#ifdef _DEBUG
 	GLHelpers::TurnOnDebugLogging();
 #endif
 
-	//Gizmos::create();
-
-    m_debugGUI.Init(m_pWindow);
-
-	m_isValid = true;
-
-	return true;
-}
-
-void RefEngine::Destroy()
-{
-    POW2_ASSERT(m_isValid);
-
-    m_debugGUI.DeInit();
-
-    if (m_pWindow != nullptr) {
-        glfwDestroyWindow(m_pWindow);
-        m_pWindow = nullptr;
-    }
-    if (m_isValid) { glfwTerminate(); }
-
-    //Gizmos::destroy();
-
-    m_isValid = false;
-}
-
-void RefEngine::Run()
-{
-    POW2_ASSERT_MSG(m_isValid, "Call Init() first and check return code.");
-
-    double currentTime = glfwGetTime();
-    double deltaTime = 1 / 60.f;
-    double elapsedTime = 0;
-    double accumulator = 0.0;
-    bool isRunning = true;
-
-    while (isRunning) {
-        double newTime = glfwGetTime();
-        double frameTime = newTime - currentTime;
-        if (frameTime > 0.25) frameTime = 0.25;
-        currentTime = newTime;
-        accumulator += frameTime;
-        while (accumulator >= deltaTime && isRunning) {
-            isRunning = Update(deltaTime);
-            elapsedTime += deltaTime;
-            accumulator -= deltaTime;
-        }
-        Draw();
-    }
+    //m_debugGUI.Init(m_pWindow);
+    return true;
 }
 
 bool RefEngine::Update(double deltaTime)
 {
-	POW2_ASSERT(m_isValid);
-	if (glfwWindowShouldClose(m_pWindow)) return false;
-
-	glfwPollEvents();
-
     m_pComponentProcessor->Process( deltaTime, *m_pComponentDatabase.get() );
-
-	return true;
+    return true;
 }
 
 void RefEngine::Draw()
 {
-	POW2_ASSERT(m_pWindow != nullptr);
-	POW2_ASSERT(m_isValid);
-
 	glClear(GL_COLOR_BUFFER_BIT | GL_DEPTH_BUFFER_BIT);
-
-	//Gizmos::addTransform(glm::mat4(1));
-	//DrawWorldGrid();
-
-	Gizmos::draw(m_pCamera->GetProjectionViewMatrix());
 
     glm::vec3 lightDirection;
     glm::vec3 lightColor;
@@ -203,8 +97,6 @@ void RefEngine::Draw()
     }
 
     m_debugGUI.Draw();
-
-	glfwSwapBuffers(m_pWindow);
 }
 
 Entity& RefEngine::EmplaceEntity()

@@ -1,6 +1,7 @@
 #pragma once
 
 #include "entity/Component.h"
+
 #include "utils/pow2assert.h"
 
 #include <vector>

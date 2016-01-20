@@ -1,19 +1,10 @@
 #pragma once
 
-#include "entity/Component.h"
-#include "entity/ComponentHandle.h"
-
-#include <memory>
-
 namespace reng {
 
 class Camera;
-class ComponentDatabase;
-class OpenGLRenderer;
-class Material;
-class Mesh;
 
-class CameraComponent : public IComponent 
+class CameraComponent 
 {
 public:
     CameraComponent(glm::vec3 eye, glm::vec3 center, float fov, float aspectRatio) :

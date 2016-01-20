@@ -2,11 +2,9 @@
 
 #include "Transform.h"
 
-#include "entity/Component.h"
-
 namespace reng {
 
-class TransformComponent : public IComponent 
+class TransformComponent 
 {
 public:
     TransformComponent()

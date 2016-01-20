@@ -1,6 +1,5 @@
 #pragma once
 
-#include "entity/Component.h"
 #include "entity/ComponentContainer.h"
 
 namespace reng {
@@ -8,7 +7,7 @@ namespace reng {
 
 // A component that has it's update function called every frame.
 // Override to create your own updateable component.
-class UpdateComponent : public IComponent
+class UpdateComponent
 {
 public:
     virtual void Update(double deltaTime) = 0;

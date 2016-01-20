@@ -56,7 +56,7 @@ public:
     {
         auto locId = GetUniformLocation(uniformName);
         POW2_ASSERT_MSG(locId != UniformLocationId_Invalid, "The program does not have location %s", uniformName);
-        GLProgram::SetProgramUniform<T>(m_programId, locId, value);
+        GLProgram::SetProgramUniform(m_programId, locId, value);
     }
 
 	void UpdateUniforms( const glm::mat4x4& projectionViewMatrix, const glm::mat4x4& pTransform );
