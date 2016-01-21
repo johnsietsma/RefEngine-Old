@@ -1,6 +1,6 @@
 #pragma once
 
-#include "graphics/gl_core_4_4.h"
+#include "graphics/RefEngOpenGL.h"
 
 // TODO: Use stdint.h types instead? Beware of platform size differences.
 

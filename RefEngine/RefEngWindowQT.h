@@ -3,19 +3,14 @@
 #include "RefEngine.h"
 
 #include <QOpenGLWidget>
-#include <QOpenGLFunctions>
-#include <QOpenGLBuffer>
 
-QT_FORWARD_DECLARE_CLASS(QOpenGLShaderProgram);
-QT_FORWARD_DECLARE_CLASS(QOpenGLTexture)
-
-class RefEngWindowQT : public QOpenGLWidget, protected QOpenGLFunctions
+class RefEngWindowQT : public QOpenGLWidget
 {
     Q_OBJECT
 
 public:
-    explicit RefEngOpenGLWidget(QWidget *parent = 0);
-    ~RefEngOpenGLWidget();
+    explicit RefEngWindowQT(QWidget *parent = 0);
+    ~RefEngWindowQT();
 
     QSize minimumSizeHint() const Q_DECL_OVERRIDE;
     QSize sizeHint() const Q_DECL_OVERRIDE;
@@ -34,16 +29,5 @@ protected:
     void mouseReleaseEvent(QMouseEvent *event) Q_DECL_OVERRIDE;
 
 private:
-    void makeObject();
-
-    QColor clearColor;
-    QPoint lastPos;
-    int xRot;
-    int yRot;
-    int zRot;
-    QOpenGLTexture *textures[6];
-    QOpenGLShaderProgram *program;
-    QOpenGLBuffer vbo;
-    
     reng::RefEngine m_refEng;
 };

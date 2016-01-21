@@ -71,10 +71,6 @@ add_library(refeng
     ReadMe.txt
     RefEngine.cpp
     RefEngine.h
-    RefEngWindowGLFW.h
-    RefEngWindowGLFW.cpp
-    RefEngWindowGLFW.h
-    RefEngWindowGLFW.cpp
     StronglyTyped.h
     targetver.h
     Transform.cpp
@@ -122,6 +118,7 @@ add_library(refeng
     graphics/OpenGLRenderer.h
     graphics/Prims.cpp
     graphics/Prims.h
+    graphics/RefEngOpenGL.h
     graphics/Texture.h
 
     utils/memaligned.cpp
@@ -145,7 +142,7 @@ if( USE_GLFW_WINDOW )
     target_link_libraries(refeng glfw ${GLFW_LIBRARIES})
 elseif( USE_QT_WINDOW )
     find_package(Qt5Widgets)
-    target_link_libraries(AssetRenovator Qt5::Widgets)
+    target_link_libraries(refeng Qt5::Widgets)
 endif()
 
 IF(WINDOWS)

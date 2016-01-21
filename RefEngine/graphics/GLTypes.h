@@ -1,8 +1,8 @@
 #pragma once
 
 #include "StronglyTyped.h"
-#include "graphics/gl_core_4_4.h"
 
+#include "graphics/RefEngOpenGl.h"
 
 //-----------------------------------------------------------------------------
 // Create strong types for various OpenGL ids

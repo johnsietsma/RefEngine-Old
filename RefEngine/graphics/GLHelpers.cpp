@@ -1,6 +1,6 @@
 #include "GLHelpers.h"
 
-#include "graphics/gl_core_4_4.h"
+#include "graphics/RefEngOpenGL.h"
 #include "utils/pow2assert.h"
 
 //#define STB_IMAGE_IMPLEMENTATION
