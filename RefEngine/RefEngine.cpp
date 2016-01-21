@@ -61,6 +61,8 @@ bool RefEngine::Update(double deltaTime)
 void RefEngine::Draw()
 {
 	glClear(GL_COLOR_BUFFER_BIT | GL_DEPTH_BUFFER_BIT);
+    
+    if( !m_pComponentDatabase->HasComponentContainer<RenderableComponent>() ) return;
 
     glm::vec3 lightDirection;
     glm::vec3 lightColor;
@@ -77,7 +79,6 @@ void RefEngine::Draw()
 
     auto& renderablesContainer = m_pComponentDatabase->GetComponentContainer<RenderableComponent>();
 
-    // Update lighting values
     // TODO: Update light directions
     // TODO: Check to see if cam has moved before updating values.
     // TODO: Collate lit materials.

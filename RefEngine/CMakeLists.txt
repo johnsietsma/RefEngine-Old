@@ -48,10 +48,6 @@ add_definitions(-DTW_STATIC)
 
 if( USE_GLFW_WINDOW )
     SET( WINDOW_FILES RefEngWindowGLFW.h RefEngWindowGLFW.cpp )
-elseif( USE_QT_WINDOW )
-    SET( WINDOW_FILES RefEngWindowQT.h RefEngWindowQT.cpp )
-else()
-    MESSAGE( FATAL_ERROR "Please select a windowing library to use." )
 endif()
 
 add_library(refeng
@@ -109,6 +105,7 @@ add_library(refeng
     graphics/GLHelpers.cpp
     graphics/GLHelpers.h
     graphics/GLProgram.h
+    graphics/GLProgram.cpp
     graphics/GLTypes.h
     graphics/Material.cpp
     graphics/Material.h
@@ -140,9 +137,6 @@ target_include_directories (refeng PUBLIC ${CMAKE_CURRENT_SOURCE_DIR}\\)
 
 if( USE_GLFW_WINDOW )
     target_link_libraries(refeng glfw ${GLFW_LIBRARIES})
-elseif( USE_QT_WINDOW )
-    find_package(Qt5Widgets)
-    target_link_libraries(refeng Qt5::Widgets)
 endif()
 
 IF(WINDOWS)
