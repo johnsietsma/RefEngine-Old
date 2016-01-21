@@ -46,6 +46,14 @@ set(CMAKE_CXX_FLAGS "${CMAKE_CXX_FLAGS} ${GCC_CHAR_IS_UNSIGNED_CHAR} ${STD_C11}"
 add_definitions(-DGLM_SWIZZLE)
 add_definitions(-DTW_STATIC)
 
+if( USE_GLFW_WINDOW )
+    SET( WINDOW_FILES RefEngWindowGLFW.h RefEngWindowGLFW.cpp )
+elseif( USE_QT_WINDOW )
+    SET( WINDOW_FILES RefEngWindowQT.h RefEngWindowQT.cpp )
+else()
+    MESSAGE( FATAL_ERROR "Please select a windowing library to use." )
+endif()
+
 add_library(refeng
     ../Readme.md
     AssetManager.cpp
@@ -63,6 +71,10 @@ add_library(refeng
     ReadMe.txt
     RefEngine.cpp
     RefEngine.h
+    RefEngWindowGLFW.h
+    RefEngWindowGLFW.cpp
+    RefEngWindowGLFW.h
+    RefEngWindowGLFW.cpp
     StronglyTyped.h
     targetver.h
     Transform.cpp
@@ -70,8 +82,8 @@ add_library(refeng
     types.h
     VariadicHash.cpp
     VariadicHash.h
-    WindowGLFW.h
-    WindowGLFW.cpp
+    
+    ${WINDOW_FILES}
 
     component/CameraComponent.h
     component/FlyInputComponent.h
@@ -128,7 +140,13 @@ source_group( Graphics graphics/ )
 source_group( Utils utils/ )
 
 target_include_directories (refeng PUBLIC ${CMAKE_CURRENT_SOURCE_DIR}\\)
-target_link_libraries(refeng glfw ${GLFW_LIBRARIES})
+
+if( USE_GLFW_WINDOW )
+    target_link_libraries(refeng glfw ${GLFW_LIBRARIES})
+elseif( USE_QT_WINDOW )
+    find_package(Qt5Widgets)
+    target_link_libraries(AssetRenovator Qt5::Widgets)
+endif()
 
 IF(WINDOWS)
     target_link_libraries(refeng AntTweakBarStatic)

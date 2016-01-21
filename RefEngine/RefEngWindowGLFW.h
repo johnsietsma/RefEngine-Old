@@ -10,11 +10,11 @@ namespace reng {
 
 class RefEngine;
 
-class WindowGLFW
+class RefEngWindowGLFW
 {
 public:
-    WindowGLFW();
-    ~WindowGLFW();
+    RefEngWindowGLFW();
+    ~RefEngWindowGLFW();
 
     bool Init();
     void Run();

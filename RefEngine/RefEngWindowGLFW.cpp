@@ -1,4 +1,4 @@
-#include "WindowGLFW.h"
+#include "RefEngWindowGLFW.h"
 
 #include "RefEngine.h"
 
@@ -25,18 +25,18 @@ void keyCallback(GLFWwindow* m_pWindow, int key, int /*scanCode*/, int action, i
 }
 
 
-WindowGLFW::WindowGLFW() :
+RefEngWindowGLFW::RefEngWindowGLFW() :
     m_isValid(false),
     m_pRefEngine(std::make_unique<RefEngine>())
 {
 }
 
-WindowGLFW::~WindowGLFW()
+RefEngWindowGLFW::~RefEngWindowGLFW()
 {
     if (m_isValid) Destroy();
 }
 
-bool WindowGLFW::Init()
+bool RefEngWindowGLFW::Init()
 {
     POW2_ASSERT(!m_isValid);
     std::cout << "GLFW: " << glfwGetVersionString() << std::endl;
@@ -67,7 +67,7 @@ bool WindowGLFW::Init()
     return true;
 }
 
-void WindowGLFW::Destroy()
+void RefEngWindowGLFW::Destroy()
 {
     POW2_ASSERT(m_isValid);
 
@@ -80,7 +80,7 @@ void WindowGLFW::Destroy()
     m_isValid = false;
 }
 
-void WindowGLFW::Run()
+void RefEngWindowGLFW::Run()
 {
     POW2_ASSERT_MSG(m_isValid, "Call Init() first and check return code.");
 

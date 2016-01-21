@@ -5,7 +5,7 @@
 #include "AssetManager.h"
 #include "RefEngine.h"
 #include "MaterialManager.h"
-#include "WindowGLFW.h"
+#include "RefEngWindowGLFW.h"
 
 #include "component/CameraComponent.h"
 #include "component/FlyInputComponent.h"
@@ -83,7 +83,7 @@ private:
 
 
 TestBed::TestBed() :
-    m_pWindow( std::make_unique<WindowGLFW>() )
+    m_pWindow( std::make_unique<RefEngWindowGLFW>() )
 {}
 
 bool TestBed::Init()

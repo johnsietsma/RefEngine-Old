@@ -3,6 +3,8 @@ cmake_minimum_required(VERSION 2.8 FATAL_ERROR)
 set(PROJECT_NAME RefEngine)
 project(${PROJECT_NAME})
 
+
+set(USE_GLFW_WINDOW TRUE)
 add_subdirectory(dep/glfw)
 
 IF(WINDOWS)
