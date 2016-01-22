@@ -5,7 +5,7 @@
 namespace reng {
 
 
-// A component that has it's update function called every frame.
+// A component that has its update function called every frame.
 // Override to create your own updateable component.
 class UpdateComponent
 {

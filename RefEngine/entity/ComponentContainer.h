@@ -12,6 +12,8 @@ namespace reng
 // Generic parent class to allow homogenous storage of component containers.
 class IComponentContainer
 {
+public:
+    virtual ~IComponentContainer() = default;
 };
 
 // A container for one component type
@@ -19,6 +21,8 @@ template<typename T>
 class ComponentContainer : public IComponentContainer
 {
 public:
+    ~ComponentContainer<T>() override = default;
+
     ComponentId EmplaceComponent() {
         m_components.emplace_back();
         return m_components.size() - 1;

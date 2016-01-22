@@ -205,8 +205,10 @@ bool FBXFile::load(const char* a_filename, UNIT_SCALE a_scale /* = FBXFile::UNIT
         }
 
         // ensure all threads are finished
-        for (auto t : m_threads)
+        for (auto t : m_threads) {
             t->join();
+            delete t;
+        }
         m_threads.clear();
 
         // build skeleton and extract animation keyframes
@@ -272,8 +274,10 @@ bool FBXFile::load(const char* a_filename, UNIT_SCALE a_scale /* = FBXFile::UNIT
             }
     }, texture.second));
 
-    for (auto t : m_threads)
+    for (auto t : m_threads) {
         t->join();
+        delete t;
+    }
     m_threads.clear();
 
 

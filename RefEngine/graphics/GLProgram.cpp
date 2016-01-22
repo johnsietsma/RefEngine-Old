@@ -13,7 +13,7 @@ void GLProgram::SetProgramUniform(ProgramId programId, UniformLocationId locatio
 
 }
 
-void GLProgram::SetProgramUniform(ProgramId programId, UniformLocationId locationId, uint value)
+void GLProgram::SetProgramUniform(ProgramId programId, UniformLocationId locationId, unsigned int value)
 {
     glProgramUniform1ui(programId.Value(), locationId.Value(), value);
 

@@ -6,6 +6,7 @@
 #include "AssetManager.h"
 #include "Camera.h"
 
+#include "component/DebugComponent.h"
 #include "component/UpdateComponent.h"
 
 #include "debug/DebugGUI.h"
@@ -40,7 +41,13 @@ public:
     void RegisterUpdateComponent()
     {
         // Add this component to be updated during the component processing stage.
-        m_pComponentProcessor->RegisterComponentProcessor<T>( UpdateComponent::UpdateProcessor<T> );
+        m_pComponentProcessor->RegisterComponentProcessor<T,double>( UpdateComponent::UpdateProcessor<T> );
+    }
+
+    template<typename T>
+    void RegisterDebugComponent()
+    {
+        m_pComponentProcessor->RegisterComponentProcessor<T,TwBar*>( DebugComponent::AddDebugVarsProcessor<T> );
     }
 
     Entity& EmplaceEntity();

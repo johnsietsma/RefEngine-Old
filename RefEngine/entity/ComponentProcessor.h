@@ -14,32 +14,32 @@ namespace reng
 class ComponentDatabase;
 
 // Function which will update all the components in the container.
-template<typename T>
-using ComponentProcessorFunction = std::function<void(double,ComponentContainer<T>&) >;
+template<typename T, typename TArg>
+using ComponentProcessorFunction = std::function<void(TArg,ComponentContainer<T>&) >;
 
 // Base class for component processing. Allows generic storage of processors.
 class IComponentProcessor
 {
 public:
-    virtual void Process( double deltaTime, IComponentContainer& container ) = 0;
+    virtual void Process( void* arg, IComponentContainer& container ) = 0;
 };
 
 // A component processor that is responsible for updating components.
-template<typename T>
+template<typename T, typename TArg>
 class ComponentProcessor : public IComponentProcessor
 {
 public:
-    ComponentProcessor(ComponentProcessorFunction<T> a_processorFuntion) :
+    ComponentProcessor(ComponentProcessorFunction<T,TArg> a_processorFuntion) :
         m_processorFunction(a_processorFuntion)
     {}
 
-    void Process( double deltaTime, IComponentContainer& baseContainer ) override
+    void Process( void* arg, IComponentContainer& baseContainer ) override
     {
-        m_processorFunction(deltaTime, static_cast<ComponentContainer<T>&>(baseContainer));
+        m_processorFunction(*static_cast<TArg*>(arg), static_cast<ComponentContainer<T>&>(baseContainer));
     }
 
 private:
-    ComponentProcessorFunction<T> m_processorFunction;
+    ComponentProcessorFunction<T,TArg> m_processorFunction;
 };
 
 // Manages component processors.
@@ -48,14 +48,26 @@ private:
 class ComponentProcessorManager
 {
 public:
-    template<typename T>
-    void RegisterComponentProcessor(ComponentProcessorFunction<T> processorFunction)
+    template<typename T, typename TArg>
+    void RegisterComponentProcessor(ComponentProcessorFunction<T, TArg> processorFunction)
     {
         const auto& typeId = Component::GetTypeId<T>();
-        m_processors.emplace(typeId, std::make_unique< ComponentProcessor<T> >(processorFunction));
+        m_processors.emplace(typeId, std::make_unique< ComponentProcessor<T, TArg> >(processorFunction));
     }
 
-    void Process(double deltaTime, ComponentDatabase& database);
+    template<typename TArg>
+    void Process(TArg arg, ComponentDatabase& database)
+    {
+        for (auto& processorPair : m_processors)
+        {
+            auto compTypeId = std::get<0>(processorPair);
+            auto& processor = std::get<1>(processorPair);
+            if (!database.HasComponentContainer(compTypeId)) continue;
+
+            auto& componentContainer = database.GetComponentContainer(compTypeId);
+            processor->Process(&arg, componentContainer);
+        }
+    }
     
 private:
     std::unordered_map<ComponentTypeId, std::unique_ptr<IComponentProcessor>> m_processors;

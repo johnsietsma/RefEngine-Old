@@ -25,7 +25,7 @@ include_directories(../dep/FBXLoader)
 include_directories(../dep/stb)
 include_directories(src)
 
-IF(WINDOWS)
+IF(WIN32)
     include_directories(../dep/AntTweakBar/include)
 ENDIF()
 
@@ -78,12 +78,14 @@ add_library(refeng
     ${WINDOW_FILES}
 
     component/CameraComponent.h
+    component/DebugComponent.h
     component/FlyInputComponent.h
     component/LightComponent.h
     component/RenderableComponent.h
     component/RenderableComponent.cpp
     component/SpinComponent.h
     component/TransformComponent.h
+    component/TransformComponent.cpp
     component/UpdateComponent.h
 
     debug/DebugGUI.h
@@ -94,7 +96,6 @@ add_library(refeng
     entity/ComponentDatabase.h
     entity/ComponentHandle.h
     entity/ComponentProcessor.h
-    entity/ComponentProcessor.cpp
     entity/Entity.h
 
     graphics/Primitive.h
@@ -139,7 +140,7 @@ if( USE_GLFW_WINDOW )
     target_link_libraries(refeng glfw ${GLFW_LIBRARIES})
 endif()
 
-IF(WINDOWS)
+IF(WIN32)
     target_link_libraries(refeng AntTweakBarStatic)
 ENDIF()
 

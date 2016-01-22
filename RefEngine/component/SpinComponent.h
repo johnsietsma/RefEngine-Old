@@ -7,6 +7,8 @@
 
 #include <glm/gtx/transform.hpp>
 
+namespace reng {
+
 class SpinComponent : public reng::UpdateComponent {
 public:
     SpinComponent(reng::ComponentHandle<reng::TransformComponent>& transComp, float spinSpeed) :
@@ -26,3 +28,5 @@ private:
     reng::ComponentHandle<reng::TransformComponent> m_transformComponentHandle;
     float m_spinSpeed;
 };
+
+}

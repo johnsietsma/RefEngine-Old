@@ -209,11 +209,15 @@ Texture GLHelpers::LoadTexture( const char* fileName )
 	glGenerateMipmap(GL_TEXTURE_2D);
 	glBindTexture(GL_TEXTURE_2D, 0);
 
+    delete data;
+
 	return texture;
 }
 
 void GLHelpers::DeleteTexture(Texture texture)
 {
+    const GLuint texIds[1] { texture.textureId.Value() };
+    glDeleteTextures(1, texIds);
 }
 
 void GLHelpers::TurnOnDebugLogging()

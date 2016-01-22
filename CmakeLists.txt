@@ -7,7 +7,7 @@ project(${PROJECT_NAME})
 set(USE_GLFW_WINDOW TRUE)
 add_subdirectory(dep/glfw)
 
-IF(WINDOWS)
+IF(WIN32)
     add_subdirectory(dep/AntTweakBar)
 ENDIF()
 
