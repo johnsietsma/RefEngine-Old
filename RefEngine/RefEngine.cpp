@@ -16,8 +16,6 @@
 
 #include "utils/pow2assert.h"
 
-
-#include <aie/Gizmos.h> // TODO: Remove
 #include <glm/glm.hpp>
 #include <string>
 
@@ -104,17 +102,4 @@ Entity& RefEngine::EmplaceEntity()
 {
     m_pEntities.emplace_back( std::make_unique<Entity>(m_pComponentDatabase.get()) );
     return *m_pEntities.back().get();
-}
-
-void RefEngine::DrawWorldGrid() const
-{
-	for (int i = 0; i < 21; ++i) {
-		Gizmos::addLine(glm::vec3(-10 + i, 0, 10),
-			glm::vec3(-10 + i, 0, -10),
-			i == 10 ? Color::White : Color::Black);
-
-		Gizmos::addLine(glm::vec3(10, 0, -10 + i),
-			glm::vec3(-10, 0, -10 + i),
-			i == 10 ? Color::White : Color::Black);
-	}
 }

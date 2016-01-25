@@ -10,7 +10,6 @@ set(CMAKE_CXX_FLAGS "${CMAKE_CXX_FLAGS} ${GCC_CHAR_IS_UNSIGNED_CHAR} ${STD_C11}"
 
 include_directories(../dep/glm)
 include_directories(../dep/FBXLoader)
-include_directories(${PHYSX_INCLUDE_DIR})
 
 add_executable(TestBed
     Main.cpp

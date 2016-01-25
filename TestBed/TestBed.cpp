@@ -1,7 +1,5 @@
 #include "TestBed.h"
 
-#include "TestPhysics.h"
-
 #include "AssetManager.h"
 #include "RefEngine.h"
 #include "MaterialManager.h"
@@ -16,12 +14,14 @@
 
 #include "entity/Entity.h"
 
+#include "file/FBXFile.h"
+
 #include "graphics/Material.h"
 #include "graphics/Mesh.h"
 #include "graphics/Prims.h"
 
 #include <cmath>
-#include <FBXFile.h>
+
 #include <memory>
 #include <vector>
 #include <glm/gtx/transform.hpp>

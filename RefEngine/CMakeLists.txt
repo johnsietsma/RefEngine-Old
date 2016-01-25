@@ -97,6 +97,10 @@ add_library(refeng
     entity/ComponentHandle.h
     entity/ComponentProcessor.h
     entity/Entity.h
+    
+    file/tiny_obj_loader.h
+    file/FBXFile.h
+    file/FBXFile.cpp
 
     graphics/Primitive.h
     graphics/Primitive.cpp
@@ -123,9 +127,6 @@ add_library(refeng
     utils/memaligned.h
     utils/pow2assert.cpp
     utils/pow2assert.h
-
-    ../dep/FBXLoader/FBXFile.cpp
-    ../dep/aieutilities/aie/Gizmos.cpp
 )
 
 source_group( Components components/ )
