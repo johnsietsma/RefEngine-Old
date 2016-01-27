@@ -29,7 +29,7 @@ RefEngine::RefEngine() :
 	m_pAssetManager(std::make_unique<AssetManager>()),
 	m_pCamera(new Camera(glm::vec3(15, 18, -20), glm::vec3(0,5,0), 45, 16 / 9.f)),
     m_pComponentDatabase(std::make_unique<ComponentDatabase>()),
-    m_pComponentProcessor(std::make_unique<ComponentProcessorManager>()),
+	m_pUpdateComponentProcessor(std::make_unique<ComponentProcessorManager>()),
     m_pRenderer(new OpenGLRenderer())
 {
 }
@@ -48,13 +48,12 @@ bool RefEngine::Init()
 	GLHelpers::TurnOnDebugLogging();
 #endif
 
-    //m_debugGUI.Init(m_pWindow);
     return true;
 }
 
 bool RefEngine::Update(double deltaTime)
 {
-    m_pComponentProcessor->Process( deltaTime, *m_pComponentDatabase.get() );
+	m_pUpdateComponentProcessor->Process( deltaTime, *m_pComponentDatabase.get() );
     return true;
 }
 

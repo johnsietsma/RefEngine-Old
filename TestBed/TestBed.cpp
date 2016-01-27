@@ -83,7 +83,7 @@ private:
 
 
 TestBed::TestBed() :
-    m_pWindow( std::make_unique<RefEngWindowGLFW>() )
+    m_pWindow(std::make_unique<RefEngWindowGLFW>())
 {}
 
 bool TestBed::Init()
@@ -94,8 +94,6 @@ bool TestBed::Init()
     m_pEngine->RegisterUpdateComponent<FlyInputComponent>();
     m_pEngine->RegisterUpdateComponent<SpinComponent>();
     m_pEngine->RegisterUpdateComponent<VertexColorComponent>();
-
-    m_pEngine->RegisterDebugComponent<TransformComponent>();
 
     Entity& flyEntity = m_pEngine->EmplaceEntity();
     flyEntity.EmplaceComponent<FlyInputComponent>(m_pEngine->GetCamera(), m_pWindow->GetWindow());

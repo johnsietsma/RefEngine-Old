@@ -15,6 +15,8 @@ public:
 
     void Draw();
 
+    TwBar* GetBar() { return m_bar;  }
+
 private:
     TwBar *m_bar;
 };

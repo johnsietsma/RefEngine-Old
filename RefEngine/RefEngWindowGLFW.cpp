@@ -1,5 +1,6 @@
 #include "RefEngWindowGLFW.h"
 
+#include "AntTweakBar.h"
 #include "RefEngine.h"
 
 #include "utils/pow2assert.h"
@@ -27,7 +28,8 @@ void keyCallback(GLFWwindow* m_pWindow, int key, int /*scanCode*/, int action, i
 
 RefEngWindowGLFW::RefEngWindowGLFW() :
     m_isValid(false),
-    m_pRefEngine(std::make_unique<RefEngine>())
+    m_pRefEngine(std::make_unique<RefEngine>()),
+    m_pDebugGUI(std::make_unique<DebugGUI>())
 {
 }
 
@@ -63,6 +65,9 @@ bool RefEngWindowGLFW::Init()
     //int width, height;
     //glfwGetFramebufferSize(m_pWindow, &width, &height);
 
+    m_pDebugGUI->Init(m_pWindow);
+    m_pRefEngine->ProcessComponents<DebugComponent, TwBar*>(m_pDebugGUI->GetBar(), DebugComponent::AddDebugVarsProcessor<DebugComponent>);
+    
     m_isValid = true;
     return true;
 }
@@ -71,11 +76,14 @@ void RefEngWindowGLFW::Destroy()
 {
     POW2_ASSERT(m_isValid);
 
+	m_pDebugGUI->DeInit();
+
     if (m_pWindow != nullptr) {
         glfwDestroyWindow(m_pWindow);
         m_pWindow = nullptr;
     }
     if (m_isValid) { glfwTerminate(); }
+
 
     m_isValid = false;
 }
@@ -104,6 +112,8 @@ void RefEngWindowGLFW::Run()
             accumulator -= deltaTime;
         }
         m_pRefEngine->Draw();
+
+
         glfwSwapBuffers(m_pWindow);
     }
 }

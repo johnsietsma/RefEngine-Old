@@ -1,15 +1,12 @@
 #include "DebugGUI.h"
 
-#ifdef WINDOWS // Only windows for now...
 #include "AntTweakBar.h"
 
 #include "GLFW/glfw3.h"
-#endif //WINDOWS
 
 
 using namespace reng;
 
-#ifdef WINDOWS // Only windows for now...
 void OnMouseButton(GLFWwindow*, int b, int a, int m) {
     TwEventMouseButtonGLFW(b, a);
 }
@@ -29,20 +26,9 @@ void OnWindowResize(GLFWwindow*, int w, int h) {
     TwWindowSize(w, h);
     glViewport(0, 0, w, h);
 }
-#endif //WINDOWS
-
-void DebugGUI::DeInit()
-{
-#ifdef WINDOWS
-    TwTerminate();
-#endif //WINDOWS
-}
-
-float speed;
 
 void DebugGUI::Init(GLFWwindow* pWindow)
 {
-#ifdef WINDOWS
     TwInit(TW_OPENGL_CORE, NULL);
 
     int width, height;
@@ -60,17 +46,14 @@ void DebugGUI::Init(GLFWwindow* pWindow)
     glfwSetScrollCallback(pWindow, OnMouseScroll);
     glfwSetKeyCallback(pWindow, OnKey);
     glfwSetCharCallback(pWindow, OnChar);
+}
 
-    TwDefine(" GLOBAL help='This example shows how to integrate AntTweakBar with GLFW and OpenGL.' ");
-
-    TwAddVarRW(m_bar, "speed", TW_TYPE_FLOAT, &speed, nullptr);
-#endif //WINDOWS
-
+void DebugGUI::DeInit()
+{
+    TwTerminate();
 }
 
 void DebugGUI::Draw()
 {
-#ifdef WINDOWS
     TwDraw();
-#endif //WINDOWS
 }

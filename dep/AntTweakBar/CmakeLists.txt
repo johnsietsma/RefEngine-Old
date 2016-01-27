@@ -7,7 +7,7 @@ endif()
 
 add_definitions(-DTW_STATIC)
 
-if(WINDOWS)
+if(WIN32)
     set( PLATFORM_SRC src/TwEventWin.c )
 endif()
 
@@ -38,8 +38,8 @@ add_library(AntTweakBarStatic
     src/TwOpenGLCore.h
     src/TwPrecomp.h
 
-    # src/LoadOGL.cpp
-    # src/LoadOGLCore.cpp
+    src/LoadOGL.cpp
+    src/LoadOGLCore.cpp
     src/TwBar.cpp
     src/TwColors.cpp
     # src/TwDirect3D10.cpp

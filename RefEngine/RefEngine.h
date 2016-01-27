@@ -41,13 +41,15 @@ public:
     void RegisterUpdateComponent()
     {
         // Add this component to be updated during the component processing stage.
-        m_pComponentProcessor->RegisterComponentProcessor<T,double>( UpdateComponent::UpdateProcessor<T> );
+		m_pUpdateComponentProcessor->RegisterComponentProcessor<T,double>( UpdateComponent::UpdateProcessor<T> );
     }
 
-    template<typename T>
-    void RegisterDebugComponent()
+    template<typename T, typename TArg>
+    void ProcessComponents(TArg arg, ComponentProcessorFunction<T,TArg> processorFunction)
     {
-        m_pComponentProcessor->RegisterComponentProcessor<T,TwBar*>( DebugComponent::AddDebugVarsProcessor<T> );
+        if (!m_pComponentDatabase->HasComponentContainer<T>()) return;;
+        auto& componentContainer = m_pComponentDatabase->GetComponentContainer<T>();
+        processorFunction(arg, componentContainer);
     }
 
     Entity& EmplaceEntity();
@@ -59,7 +61,7 @@ private:
 	std::unique_ptr<AssetManager> m_pAssetManager;
 	std::unique_ptr<Camera> m_pCamera;
     std::unique_ptr<ComponentDatabase> m_pComponentDatabase;
-    std::unique_ptr<ComponentProcessorManager> m_pComponentProcessor;
+    std::unique_ptr<ComponentProcessorManager> m_pUpdateComponentProcessor;
     std::unique_ptr<OpenGLRenderer> m_pRenderer;
     std::vector<std::unique_ptr<Entity>> m_pEntities;
 

@@ -7,6 +7,7 @@
 namespace reng {
     class AssetManager;
     class RefEngine;
+    class DebugGUI;
 }
 
 class TestBed

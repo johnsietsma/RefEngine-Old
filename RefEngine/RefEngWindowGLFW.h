@@ -8,6 +8,7 @@ struct GLFWwindow;
 
 namespace reng {
 
+class DebugGUI;
 class RefEngine;
 
 class RefEngWindowGLFW
@@ -29,6 +30,7 @@ private:
     bool m_isValid;
     GLFWwindow* m_pWindow;
     std::unique_ptr<RefEngine> m_pRefEngine;
+    std::unique_ptr<reng::DebugGUI> m_pDebugGUI;
 };
 
 }
