@@ -1,7 +1,5 @@
 #include "TestBed.h"
 
-#include "TestPhysics.h"
-
 #include "AssetManager.h"
 #include "RefEngine.h"
 #include "MaterialManager.h"
@@ -16,12 +14,14 @@
 
 #include "entity/Entity.h"
 
+#include "file/FBXFile.h"
+
 #include "graphics/Material.h"
 #include "graphics/Mesh.h"
 #include "graphics/Prims.h"
 
 #include <cmath>
-#include <FBXFile.h>
+
 #include <memory>
 #include <vector>
 #include <glm/gtx/transform.hpp>
@@ -113,7 +113,7 @@ bool TestBed::Init()
 
     AddLitCube(glm::vec3(0, 0, -5));
 
-    AddFbxModel(glm::vec3(0, 0, 3), "data/models/cube.fbx");
+    AddFbxModel(glm::vec3(0, 0, 3), "assets/models/cube.fbx");
 
     return true;
 }
@@ -126,9 +126,9 @@ void TestBed::Run()
 void TestBed::AddTexturedQuad(glm::vec3 pos)
 {
     MaterialDefinition texturedMatDef(
-        "data/shaders/textured.vert",
-        "data/shaders/textured.frag",
-        "data/textures/Big_pebbles_pxr128.png"
+        "assets/shaders/textured.vert",
+        "assets/shaders/textured.frag",
+        "assets/textures/Big_pebbles_pxr128.png"
         );
 
     auto texturedMat = MaterialManager::LoadMaterial(m_pEngine->GetAssetManager(), texturedMatDef);
@@ -143,8 +143,8 @@ void TestBed::AddTexturedQuad(glm::vec3 pos)
 void TestBed::AddSpinningTri(glm::vec3 pos)
 {
     MaterialDefinition redMatDef(
-        "data/shaders/default.vert",
-        "data/shaders/red.frag"
+        "assets/shaders/default.vert",
+        "assets/shaders/red.frag"
         );
     const auto& pRedMaterial = MaterialManager::LoadMaterial(m_pEngine->GetAssetManager(), redMatDef);
 
@@ -165,8 +165,8 @@ void TestBed::AddVertexColoredCube(glm::vec3 pos)
     std::shared_ptr<Mesh> pColoredCubeMesh = Mesh::Create(cubeBuffers, BufferAccessor(Prims::Cube_Indices, 1));
 
     MaterialDefinition vertColoredMatDef(
-        "data/shaders/vertexColor.vert",
-        "data/shaders/vertexColor.frag"
+        "assets/shaders/vertexColor.vert",
+        "assets/shaders/vertexColor.frag"
         );
     const auto& pVertexColorMaterial = MaterialManager::LoadMaterial(m_pEngine->GetAssetManager(), vertColoredMatDef);
 
@@ -179,8 +179,8 @@ void TestBed::AddVertexColoredCube(glm::vec3 pos)
 void TestBed::AddLitCube(glm::vec3 pos)
 {
     MaterialDefinition litMatDef(
-        "data/shaders/lit.vert",
-        "data/shaders/lit.frag"
+        "assets/shaders/lit.vert",
+        "assets/shaders/lit.frag"
         );
     const auto& litMaterial = MaterialManager::LoadMaterial(m_pEngine->GetAssetManager(), litMatDef);
     litMaterial->SetSpecularPower(2.0f);
@@ -194,8 +194,8 @@ void TestBed::AddLitCube(glm::vec3 pos)
 void TestBed::AddFbxModel(glm::vec3 pos, const char* fbxFilename)
 {
     MaterialDefinition litMatDef(
-        "data/shaders/lit.vert",
-        "data/shaders/lit.frag"
+        "assets/shaders/lit.vert",
+        "assets/shaders/lit.frag"
         );
     const auto& litMaterial = MaterialManager::LoadMaterial(m_pEngine->GetAssetManager(), litMatDef);
 

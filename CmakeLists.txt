@@ -3,6 +3,22 @@ cmake_minimum_required(VERSION 2.8 FATAL_ERROR)
 set(PROJECT_NAME RefEngine)
 project(${PROJECT_NAME})
 
+set(ASSETS_DIR "${CMAKE_CURRENT_SOURCE_DIR}/assets" CACHE STRING "Path to the assets.")
+
+
+set(REFENG_ASSET_SHADER_FILES
+    ${ASSETS_DIR}/shaders/default.vert
+    ${ASSETS_DIR}/shaders/lit.vert
+    ${ASSETS_DIR}/shaders/passthrough.vert
+    ${ASSETS_DIR}/shaders/diffuse.frag
+    ${ASSETS_DIR}/shaders/lit.frag
+    ${ASSETS_DIR}/shaders/red.frag
+    ${ASSETS_DIR}/shaders/textured.frag
+    ${ASSETS_DIR}/shaders/textured.vert
+    ${ASSETS_DIR}/shaders/vertexColor.frag
+    ${ASSETS_DIR}/shaders/vertexColor.vert
+    ${ASSETS_DIR}/shaders/white.frag
+)
 
 set(USE_GLFW_WINDOW TRUE)
 add_subdirectory(dep/glfw)

@@ -1,6 +1,3 @@
-[submodule "dep/aieutilities"]
-	path = dep/aieutilities
-url=https://github.com/notoes/aieutilities.git
 [submodule "dep/glm"]
 	path = dep/glm
 url=https://github.com/notoes/glm.git
