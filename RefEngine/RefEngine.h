@@ -30,7 +30,8 @@ public:
 	RefEngine();
 	~RefEngine() = default;
 
-    bool Init();
+    bool Init( std::shared_ptr<DebugGUI> pDebugGUI );
+	void DeInit();
     bool Update(double deltaTime);
     void Draw();
 
@@ -48,8 +49,7 @@ public:
 	template<typename T>
 	void RegisterDebugComponent()
 	{
-		// Add this component to be updated during the component processing stage.
-		m_pDebugComponentProcessor->RegisterComponentProcessor<T, double>(DebugComponent::DebugProcessor<T>);
+		m_pDebugComponentProcessor->RegisterComponentProcessor<T,void*>(DebugComponent::DebugProcessor<T>);
 	}
 
     template<typename T, typename TArg>
@@ -69,12 +69,12 @@ private:
 	std::unique_ptr<AssetManager> m_pAssetManager;
 	std::unique_ptr<Camera> m_pCamera;
     std::unique_ptr<ComponentDatabase> m_pComponentDatabase;
-	std::unique_ptr<ComponentProcessorManager> m_pUpdateComponentProcessor;
 	std::unique_ptr<ComponentProcessorManager> m_pDebugComponentProcessor;
+	std::unique_ptr<ComponentProcessorManager> m_pUpdateComponentProcessor;
     std::unique_ptr<OpenGLRenderer> m_pRenderer;
     std::vector<std::unique_ptr<Entity>> m_pEntities;
 
-    DebugGUI m_debugGUI;
+    std::shared_ptr<DebugGUI> m_pDebugGUI;
 };
 
 }

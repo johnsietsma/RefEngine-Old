@@ -3,8 +3,8 @@
 #include "Transform.h"
 
 #include "component/DebugComponent.h"
-
 #include "entity/Component.h"
+
 
 namespace reng {
 
@@ -22,6 +22,7 @@ public:
 	const Transform& GetTransform() const { return m_transform; }
 	void SetTransform(const Transform& transform) { m_transform = transform; }
 
+	void DrawDebugUI() override;
 
 protected:
     Transform m_transform;

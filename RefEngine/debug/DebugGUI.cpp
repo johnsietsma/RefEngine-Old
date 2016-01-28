@@ -9,9 +9,14 @@
 using namespace reng;
 
 
-void DebugGUI::Init(GLFWwindow* pWindow, ComponentDatabase* pComponentDatabase)
+DebugGUI::DebugGUI(GLFWwindow* pWindow) :
+	m_pWindow(pWindow)
 {
-	ImGui_ImplGlfwGL3_Init(pWindow, true);
+}
+
+void DebugGUI::Init()
+{
+	ImGui_ImplGlfwGL3_Init(m_pWindow, true);
 }
 
 void DebugGUI::DeInit()
@@ -19,8 +24,12 @@ void DebugGUI::DeInit()
 	ImGui_ImplGlfwGL3_Shutdown();
 }
 
-void DebugGUI::Draw()
+void DebugGUI::NewFrame()
 {
 	ImGui_ImplGlfwGL3_NewFrame();
+}
+
+void DebugGUI::Draw()
+{
 	ImGui::Render();
 }

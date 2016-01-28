@@ -26,6 +26,14 @@ target_link_libraries(TestBed refeng)
 FILE(GLOB frag_shaders data/shaders/*.*)
 source_group(data\\shaders FILES ${frag_shaders})
 
+IF(APPLE)
+	set(TARGET_ASSETS_DIR $<TARGET_FILE_DIR:TestBed>/assets)
+ELSE(APPLE)
+	set(TARGET_ASSETS_DIR $<TARGET_FILE_DIR:TestBed>/../assets)
+ENDIF (APPLE)
+
+
 add_custom_command(TARGET TestBed POST_BUILD
-    COMMAND ${CMAKE_COMMAND} -E copy_directory ${ASSETS_DIR} $<TARGET_FILE_DIR:TestBed>/assets COMMENT "Copying assets to output directory."
+    COMMAND ${CMAKE_COMMAND} -E copy_directory ${ASSETS_DIR} ${TARGET_ASSETS_DIR} COMMENT "Copying assets to output directory."
 )
+ 

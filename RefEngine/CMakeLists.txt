@@ -91,6 +91,7 @@ add_library(refeng
     component/RenderableComponent.cpp
     component/SpinComponent.h
     component/TransformComponent.h
+	component/TransformComponent.cpp
     component/UpdateComponent.h
 
     debug/DebugGUI.h

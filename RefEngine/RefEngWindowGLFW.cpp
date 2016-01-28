@@ -27,8 +27,7 @@ void keyCallback(GLFWwindow* m_pWindow, int key, int /*scanCode*/, int action, i
 
 RefEngWindowGLFW::RefEngWindowGLFW() :
     m_isValid(false),
-    m_pRefEngine(std::make_unique<RefEngine>()),
-    m_pDebugGUI(std::make_unique<DebugGUI>())
+    m_pRefEngine(std::make_unique<RefEngine>())
 {
 }
 
@@ -59,12 +58,10 @@ bool RefEngWindowGLFW::Init()
     glfwMakeContextCurrent(m_pWindow);
     glfwSwapInterval(1);
 
-    m_pRefEngine->Init();
+    m_pRefEngine->Init( std::make_shared<DebugGUI>(m_pWindow) );
 
     //int width, height;
     //glfwGetFramebufferSize(m_pWindow, &width, &height);
-
-    m_pDebugGUI->Init(m_pWindow, m_pRefEngine->GetComponentDatabase());
 
     //m_pRefEngine->ProcessComponents<DebugComponent, TwBar*>(m_pDebugGUI->GetBar(), DebugComponent::AddDebugVarsProcessor<DebugComponent>);
     
@@ -76,7 +73,7 @@ void RefEngWindowGLFW::Destroy()
 {
     POW2_ASSERT(m_isValid);
 
-	m_pDebugGUI->DeInit();
+	m_pRefEngine->DeInit();
 
     if (m_pWindow != nullptr) {
         glfwDestroyWindow(m_pWindow);

@@ -27,13 +27,16 @@ RefEngine::RefEngine() :
 	m_pAssetManager(std::make_unique<AssetManager>()),
 	m_pCamera(new Camera(glm::vec3(15, 18, -20), glm::vec3(0,5,0), 45, 16 / 9.f)),
     m_pComponentDatabase(std::make_unique<ComponentDatabase>()),
+	m_pDebugComponentProcessor(std::make_unique<ComponentProcessorManager>()),
 	m_pUpdateComponentProcessor(std::make_unique<ComponentProcessorManager>()),
     m_pRenderer(new OpenGLRenderer())
 {
 }
 
-bool RefEngine::Init()
+bool RefEngine::Init(std::shared_ptr<DebugGUI> pDebugGUI )
 {
+	m_pDebugGUI.swap(pDebugGUI);
+
     if (ogl_LoadFunctions() == ogl_LOAD_FAILED) return false;
 
     float clear = 192 / 255.f;
@@ -46,7 +49,14 @@ bool RefEngine::Init()
 	GLHelpers::TurnOnDebugLogging();
 #endif
 
+	m_pDebugGUI->Init();
+
     return true;
+}
+
+void RefEngine::DeInit()
+{
+	m_pDebugGUI->DeInit();
 }
 
 bool RefEngine::Update(double deltaTime)
@@ -60,6 +70,9 @@ void RefEngine::Draw()
 	glClear(GL_COLOR_BUFFER_BIT | GL_DEPTH_BUFFER_BIT);
     
     if( !m_pComponentDatabase->HasComponentContainer<RenderableComponent>() ) return;
+
+	m_pDebugGUI->NewFrame();
+	m_pDebugComponentProcessor->Process(nullptr, *m_pComponentDatabase.get());
 
     glm::vec3 lightDirection;
     glm::vec3 lightColor;
@@ -94,7 +107,7 @@ void RefEngine::Draw()
         renderable.Draw(m_pRenderer.get(), m_pCamera.get());
     }
 
-    m_debugGUI.Draw();
+    m_pDebugGUI->Draw();
 }
 
 Entity& RefEngine::EmplaceEntity(const char* pName)

@@ -5,26 +5,20 @@ struct GLFWwindow;
 namespace reng 
 {
 
-class ComponentDatabase;
-
 class DebugGUI
 {
 public:
-    void Init(GLFWwindow* pWindow, ComponentDatabase* pComponentDatabase);
+	DebugGUI(GLFWwindow* pWindow);
+	DebugGUI() = default;
+
+    void Init();
     void DeInit();
 
-    void Draw();
-
-	/*template<typename T>
-	static void AddDebugVars(TwBar* pBar, T& component) {}
-
-	template<>
-	static void AddDebugVars<DebugComponent>(TwBar* pBar, DebugComponent& debugComponent)
-	{
-		debugComponent.AddDebugVars(pBar);
-	}*/
+	void NewFrame();
+	void Draw();
 
 private:
+	GLFWwindow* m_pWindow;
 };
 
 }
