@@ -3,6 +3,7 @@
 #include "entity/ComponentDatabase.h"
 #include "entity/ComponentHandle.h"
 
+#include <string>
 #include <typeindex>
 #include <unordered_map>
 
@@ -11,7 +12,8 @@ namespace reng {
 class Entity
 {
 public:
-    Entity(ComponentDatabase* a_pDatabase) :
+    Entity(const char* name, ComponentDatabase* a_pDatabase) :
+		m_name(name),
         m_pDatabase(a_pDatabase)
     {}
 
@@ -31,6 +33,9 @@ public:
     }
 
 private:
+	std::string m_name;
+
+
     // The database that contains the components from this Entity.
     ComponentDatabase* m_pDatabase;
 };

@@ -17,16 +17,18 @@ ENDIF()
 
 include_directories(../dep/aieutilities)
 include_directories(../dep/glm)
-include_directories(../dep/GLFW/include)
-include_directories(${FBX_SDK_DIR}/include)
-include_directories(${PHYSX_INCLUDE_DIR})
+include_directories(../dep/imgui)
+
+if( USE_GLFW_WINDOW )
+	include_directories(../dep/imgui/examples/opengl3_example/)
+	include_directories(../dep/GLFW/include)
+endif( USE_GLFW_WINDOW )
+
 include_directories(../dep/FBXLoader)
+include_directories(${FBX_SDK_DIR}/include)
+include_directories(../dep/imgui)
 include_directories(../dep/stb)
 include_directories(src)
-
-IF(WIN32)
-    include_directories(../dep/AntTweakBar/include)
-ENDIF()
 
 if (MSVC)
     option(USE_MSVC_RUNTIME_LIBRARY_DLL "Use MSVC runtime library DLL" ON)
@@ -46,7 +48,12 @@ add_definitions(-DGLM_SWIZZLE)
 add_definitions(-DTW_STATIC)
 
 if( USE_GLFW_WINDOW )
-    SET( WINDOW_FILES RefEngWindowGLFW.h RefEngWindowGLFW.cpp )
+    SET( WINDOW_FILES 
+		RefEngWindowGLFW.h 
+		RefEngWindowGLFW.cpp 
+		imgui_impl_glfw_gl3.h 
+		imgui_impl_glfw_gl3.cpp
+	)
 endif()
 
 add_library(refeng
@@ -135,13 +142,11 @@ source_group( Utils utils/ )
 
 target_include_directories (refeng PUBLIC ${CMAKE_CURRENT_SOURCE_DIR}\\)
 
+target_link_libraries(refeng imgui)
+
 if( USE_GLFW_WINDOW )
     target_link_libraries(refeng glfw ${GLFW_LIBRARIES})
 endif()
-
-IF(WIN32)
-    target_link_libraries(refeng AntTweakBarStatic)
-ENDIF()
 
 IF(APPLE)
    INCLUDE_DIRECTORIES ( /System/Library/Frameworks )

@@ -1,6 +1,5 @@
 #include "RefEngWindowGLFW.h"
 
-#include "AntTweakBar.h"
 #include "RefEngine.h"
 
 #include "utils/pow2assert.h"
@@ -65,8 +64,9 @@ bool RefEngWindowGLFW::Init()
     //int width, height;
     //glfwGetFramebufferSize(m_pWindow, &width, &height);
 
-    m_pDebugGUI->Init(m_pWindow);
-    m_pRefEngine->ProcessComponents<DebugComponent, TwBar*>(m_pDebugGUI->GetBar(), DebugComponent::AddDebugVarsProcessor<DebugComponent>);
+    m_pDebugGUI->Init(m_pWindow, m_pRefEngine->GetComponentDatabase());
+
+    //m_pRefEngine->ProcessComponents<DebugComponent, TwBar*>(m_pDebugGUI->GetBar(), DebugComponent::AddDebugVarsProcessor<DebugComponent>);
     
     m_isValid = true;
     return true;

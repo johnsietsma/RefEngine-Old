@@ -6,8 +6,6 @@
 
 #include "entity/Component.h"
 
-typedef struct CTwBar TwBar;
-
 namespace reng {
 
 class TransformComponent : public DebugComponent
@@ -21,11 +19,9 @@ public:
         m_transform(trans)
     {}
 
-    const Transform& GetTransform() const { return m_transform; }
+	const Transform& GetTransform() const { return m_transform; }
+	void SetTransform(const Transform& transform) { m_transform = transform; }
 
-    void SetTransform(const Transform& transform) { m_transform = transform;  }
-
-    void AddDebugVars(TwBar* pBar) override;
 
 protected:
     Transform m_transform;

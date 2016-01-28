@@ -99,9 +99,9 @@ void RefEngine::Draw()
     m_debugGUI.Draw();
 }
 
-Entity& RefEngine::EmplaceEntity()
+Entity& RefEngine::EmplaceEntity(const char* pName)
 {
-    m_pEntities.emplace_back( std::make_unique<Entity>(m_pComponentDatabase.get()) );
+    m_pEntities.emplace_back( std::make_unique<Entity>(pName, m_pComponentDatabase.get()) );
     return *m_pEntities.back().get();
 }
 

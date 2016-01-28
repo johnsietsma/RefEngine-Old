@@ -1,24 +1,30 @@
 #pragma once
 
 struct GLFWwindow;
-struct CTwBar;
-typedef struct CTwBar TwBar;
 
 namespace reng 
 {
 
+class ComponentDatabase;
+
 class DebugGUI
 {
 public:
-    void Init(GLFWwindow* pWindow);
+    void Init(GLFWwindow* pWindow, ComponentDatabase* pComponentDatabase);
     void DeInit();
 
     void Draw();
 
-    TwBar* GetBar() { return m_bar;  }
+	/*template<typename T>
+	static void AddDebugVars(TwBar* pBar, T& component) {}
+
+	template<>
+	static void AddDebugVars<DebugComponent>(TwBar* pBar, DebugComponent& debugComponent)
+	{
+		debugComponent.AddDebugVars(pBar);
+	}*/
 
 private:
-    TwBar *m_bar;
 };
 
 }
