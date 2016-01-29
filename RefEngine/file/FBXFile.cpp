@@ -71,7 +71,7 @@ bool FBXFile::load(const char* a_filename, UNIT_SCALE a_scale /* = FBXFile::UNIT
     // The first thing to do is to create the FBX SDK manager which is the
     // object allocator for almost all the classes in the SDK.
     lSdkManager = FbxManager::Create();
-    if ( !lSdkManager )
+    if ( lSdkManager==nullptr )
     {
         printf("Unable to create the FBX SDK manager\n");
         return false;

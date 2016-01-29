@@ -113,7 +113,7 @@ bool TestBed::Init()
 
     AddLitCube(glm::vec3(0, 0, -5));
 
-    AddFbxModel(glm::vec3(0, 0, 3), "assets/models/cube.fbx");
+    AddFbxModel(glm::vec3(0, 0, 3), "assets/models/cube/cube.fbx");
 
     return true;
 }
