@@ -11,7 +11,7 @@
 namespace reng {
 
 
-// A dataabse that maps ComponentTypeIds to ComponentContainers
+// A database that maps ComponentTypeIds to ComponentContainers
 class ComponentDatabase
 {
 public:
@@ -25,7 +25,7 @@ public:
 
 	template<typename T>
 	const T& GetComponent( const ComponentHandle& componentHandle) const {
-		return GetComponent(componentHandle);
+		return GetComponent<T>(componentHandle);
 	}
 
     template<typename T>
