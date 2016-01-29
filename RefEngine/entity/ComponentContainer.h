@@ -4,6 +4,7 @@
 
 #include "utils/pow2assert.h"
 
+#include <functional>
 #include <vector>
 
 namespace reng 
@@ -14,6 +15,9 @@ class IComponentContainer
 {
 public:
     virtual ~IComponentContainer() = default;
+
+	virtual void* GetComponentPointer(ComponentId id) = 0;
+
 };
 
 // A container for one component type
@@ -22,6 +26,19 @@ class ComponentContainer : public IComponentContainer
 {
 public:
     ~ComponentContainer<T>() override = default;
+
+	void* GetComponentPointer(ComponentId id) override
+	{
+		POW2_ASSERT(id >= 0);
+		POW2_ASSERT(id < m_components.size());
+		return &m_components[id];
+	}
+
+	T& GetComponent(ComponentId id) {
+		POW2_ASSERT(id >= 0);
+		POW2_ASSERT(id < m_components.size());
+		return m_components[id];
+	}
 
     ComponentId EmplaceComponent() {
         m_components.emplace_back();
@@ -32,12 +49,6 @@ public:
     ComponentId EmplaceComponent(TArgs... args) {
         m_components.emplace_back(args...);
         return m_components.size() - 1;
-    }
-
-    T& GetComponent(ComponentId id) {
-        POW2_ASSERT(id >= 0);
-        POW2_ASSERT(id < m_components.size());
-        return m_components[id];
     }
 
     // Supporting ranged for loops.

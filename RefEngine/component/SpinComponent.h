@@ -9,23 +9,23 @@
 
 namespace reng {
 
-class SpinComponent : public reng::UpdateComponent {
+class SpinComponent : public UpdateComponent {
 public:
-    SpinComponent(reng::ComponentHandle<reng::TransformComponent>& transComp, float spinSpeed) :
-        m_transformComponentHandle(transComp),
+    SpinComponent(reng::ComponentHandle transComponentHandle, float spinSpeed) :
+        m_transformComponentHandle(transComponentHandle),
         m_spinSpeed(spinSpeed)
     {}
 
-    void Update(double deltaTime) override
+    void Update(double deltaTime, ComponentDatabase& database) override
     {
-        auto& transComponent = m_transformComponentHandle.GetComponent();
+        auto& transComponent = database.GetComponent<TransformComponent>( m_transformComponentHandle );
         auto trans = transComponent.GetTransform();
         trans = glm::rotate<float>(trans.GetMartix(), (float)(m_spinSpeed * deltaTime), glm::vec3(0, 1.f, 0));
         transComponent.SetTransform(trans);
     }
 
 private:
-    reng::ComponentHandle<reng::TransformComponent> m_transformComponentHandle;
+    reng::ComponentHandle m_transformComponentHandle;
     float m_spinSpeed;
 };
 

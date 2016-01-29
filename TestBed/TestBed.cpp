@@ -59,7 +59,7 @@ public:
         colorPrim.accessor = BufferAccessor(colors, 1);
     }
 
-    void Update(double deltaTime) override 
+    void Update(double deltaTime, ComponentDatabase& database ) override 
     {
         accumTime += deltaTime;
         size_t colorsSize = colorPrim.accessor.count;
@@ -94,8 +94,6 @@ bool TestBed::Init()
     m_pEngine->RegisterUpdateComponent<FlyInputComponent>();
     m_pEngine->RegisterUpdateComponent<SpinComponent>();
     m_pEngine->RegisterUpdateComponent<VertexColorComponent>();
-
-	m_pEngine->RegisterDebugComponent<TransformComponent>();
 
     Entity& flyEntity = m_pEngine->EmplaceEntity("FlyInput");
     flyEntity.EmplaceComponent<FlyInputComponent>(m_pEngine->GetCamera(), m_pWindow->GetWindow());

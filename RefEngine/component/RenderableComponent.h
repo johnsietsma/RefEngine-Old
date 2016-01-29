@@ -1,5 +1,6 @@
 #pragma once
 
+#include "entity/ComponentContainer.h"
 #include "entity/ComponentHandle.h"
 
 #include <memory>
@@ -15,8 +16,8 @@ class TransformComponent;
 class RenderableComponent 
 {
 public:
-    RenderableComponent(const ComponentHandle<TransformComponent>& trans, std::shared_ptr<Mesh> pMesh, std::shared_ptr<Material> pMaterial) :
-        m_transformComponentHandle(trans),
+    RenderableComponent(const ComponentHandle& transComponentHandle, std::shared_ptr<Mesh> pMesh, std::shared_ptr<Material> pMaterial) :
+        m_transformComponentHandle(transComponentHandle),
         m_pMesh(pMesh),
         m_pMaterial(pMaterial)
     {}
@@ -25,10 +26,10 @@ public:
 
     Material* GetMaterial() { return m_pMaterial.get(); }
 
-    void Draw(OpenGLRenderer* pRenderer, Camera* pCamera) const;
+    void Draw(OpenGLRenderer* pRenderer, Camera* pCamera, ComponentContainer<TransformComponent>& transformContainer) const;
 
 protected:
-    const ComponentHandle<TransformComponent> m_transformComponentHandle;
+    const ComponentHandle m_transformComponentHandle;
     std::shared_ptr<Mesh> m_pMesh;
     std::shared_ptr<Material> m_pMaterial;
 

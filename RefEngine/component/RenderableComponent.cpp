@@ -12,11 +12,11 @@
 
 using namespace reng;
 
-void RenderableComponent::Draw(OpenGLRenderer* pRenderer, Camera* pCamera) const
+void RenderableComponent::Draw(OpenGLRenderer* pRenderer, Camera* pCamera, ComponentContainer<TransformComponent>& transformContainer) const
 {
     pRenderer->UseProgram(m_pMaterial->GetProgramId());
 
-    auto& transform = m_transformComponentHandle.GetComponent().GetTransform();
+	auto& transform = transformContainer.GetComponent(m_transformComponentHandle.id).GetTransform();
 
     // TODO: Cache this
     m_pMaterial->UpdateUniforms(pCamera->GetProjectionViewMatrix(), transform.GetMartix());

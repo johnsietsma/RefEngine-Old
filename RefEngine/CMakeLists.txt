@@ -99,9 +99,9 @@ add_library(refeng
 
     entity/Component.h
     entity/ComponentContainer.h
+    entity/ComponentContainerProcessor.h
     entity/ComponentDatabase.h
     entity/ComponentHandle.h
-    entity/ComponentProcessor.h
     entity/Entity.h
     
     file/tiny_obj_loader.h

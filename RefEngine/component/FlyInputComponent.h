@@ -3,6 +3,7 @@
 #include "component/UpdateComponent.h"
 
 #include "entity/Component.h"
+#include "entity/ComponentDatabase.h"
 #include "entity/ComponentHandle.h"
 
 #include "FlyInput.h"
@@ -22,7 +23,7 @@ public:
         m_flyInput(pCamera, pWindow)
     {}
 
-    void Update(double deltaTime)
+    void Update(double deltaTime, ComponentDatabase& database)
     {
         m_flyInput.Update(deltaTime);
     }

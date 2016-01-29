@@ -1,6 +1,7 @@
 #pragma once
 
 #include "entity/ComponentContainer.h"
+#include "entity/ComponentDatabase.h"
 
 namespace reng {
 
@@ -10,14 +11,14 @@ namespace reng {
 class UpdateComponent
 {
 public:
-    virtual void Update(double deltaTime) = 0;
+    virtual void Update(double deltaTime, ComponentDatabase& database) = 0;
 
     // Updates all the components in the container.
     template<typename T>
-    static void UpdateProcessor(double deltaTime, ComponentContainer<T>& container)
+    static void UpdateProcessor(double deltaTime, ComponentContainer<T>& container, ComponentDatabase& database )
     {
         for (auto& component : container) {
-            component.Update(deltaTime);
+            component.Update(deltaTime, database);
         }
     }
 };

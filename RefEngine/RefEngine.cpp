@@ -27,8 +27,7 @@ RefEngine::RefEngine() :
 	m_pAssetManager(std::make_unique<AssetManager>()),
 	m_pCamera(new Camera(glm::vec3(15, 18, -20), glm::vec3(0,5,0), 45, 16 / 9.f)),
     m_pComponentDatabase(std::make_unique<ComponentDatabase>()),
-	m_pDebugComponentProcessor(std::make_unique<ComponentProcessorManager>()),
-	m_pUpdateComponentProcessor(std::make_unique<ComponentProcessorManager>()),
+	m_pUpdateComponentProcessor(std::make_unique<ComponentContainerProcessorManager>()),
     m_pRenderer(new OpenGLRenderer())
 {
 }
@@ -72,7 +71,14 @@ void RefEngine::Draw()
     if( !m_pComponentDatabase->HasComponentContainer<RenderableComponent>() ) return;
 
 	m_pDebugGUI->NewFrame();
-	m_pDebugComponentProcessor->Process(nullptr, *m_pComponentDatabase.get());
+
+	for (auto& pEntity : m_pEntities)
+	{
+		if (pEntity->HasDebugComponents() && m_pDebugGUI->StartEntity(pEntity->GetName())) {
+			pEntity->DrawDebugUI(*GetComponentDatabase());
+			m_pDebugGUI->EndEntity();
+		}
+	}
 
     glm::vec3 lightDirection;
     glm::vec3 lightColor;
@@ -81,7 +87,8 @@ void RefEngine::Draw()
         auto& lightContainer = m_pComponentDatabase->GetComponentContainer<LightComponent>();
         for (auto& light : lightContainer)
         {
-            lightDirection = light.GetDirection();
+			const auto& transformComponent = m_pComponentDatabase->GetComponent<TransformComponent>(light.GetTransformComponentHandle());
+			lightDirection = transformComponent.GetTransform().GetForward();
             lightColor = light.GetColor();
             break; // Just one light for now;
         }
@@ -104,7 +111,7 @@ void RefEngine::Draw()
 
     // Render everything
     for (const auto& renderable : renderablesContainer) {
-        renderable.Draw(m_pRenderer.get(), m_pCamera.get());
+        renderable.Draw(m_pRenderer.get(), m_pCamera.get(), m_pComponentDatabase->GetComponentContainer<TransformComponent>() );
     }
 
     m_pDebugGUI->Draw();

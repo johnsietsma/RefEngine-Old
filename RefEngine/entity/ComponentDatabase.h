@@ -2,6 +2,7 @@
 
 #include "entity/Component.h"
 #include "entity/ComponentContainer.h"
+#include "entity/ComponentHandle.h"
 #include "utils/pow2assert.h"
 #include "make_unique.h"
 
@@ -14,6 +15,19 @@ namespace reng {
 class ComponentDatabase
 {
 public:
+	template<typename T>
+	T& GetComponent( const ComponentHandle& componentHandle ) 
+	{
+		POW2_ASSERT(Component::GetTypeId<T>() == componentHandle.typeId);
+		auto& container = GetComponentContainer<T>();
+		return container.GetComponent(componentHandle.id); 
+	}
+
+	template<typename T>
+	const T& GetComponent( const ComponentHandle& componentHandle) const {
+		return GetComponent(componentHandle);
+	}
+
     template<typename T>
     bool HasComponentContainer() {
         const auto& typeId = Component::GetTypeId<T>();

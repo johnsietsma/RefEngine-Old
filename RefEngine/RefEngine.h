@@ -12,7 +12,7 @@
 #include "debug/DebugGUI.h"
 
 #include "entity/ComponentDatabase.h"
-#include "entity/ComponentProcessor.h"
+#include "entity/ComponentContainerProcessor.h"
 #include "entity/Entity.h"
 
 #include "graphics/OpenGLRenderer.h"
@@ -43,17 +43,11 @@ public:
     void RegisterUpdateComponent()
     {
         // Add this component to be updated during the component processing stage.
-		m_pUpdateComponentProcessor->RegisterComponentProcessor<T,double>( UpdateComponent::UpdateProcessor<T> );
+		m_pUpdateComponentProcessor->AddComponentProcessor<T,double>( UpdateComponent::UpdateProcessor<T> );
     }
 
-	template<typename T>
-	void RegisterDebugComponent()
-	{
-		m_pDebugComponentProcessor->RegisterComponentProcessor<T,void*>(DebugComponent::DebugProcessor<T>);
-	}
-
     template<typename T, typename TArg>
-    void ProcessComponents(TArg arg, ComponentProcessorFunction<T,TArg> processorFunction)
+    void ProcessComponents(TArg arg, ComponentContainerProcessorFunction<T,TArg> processorFunction)
     {
         if (!m_pComponentDatabase->HasComponentContainer<T>()) return;;
         auto& componentContainer = m_pComponentDatabase->GetComponentContainer<T>();
@@ -69,8 +63,7 @@ private:
 	std::unique_ptr<AssetManager> m_pAssetManager;
 	std::unique_ptr<Camera> m_pCamera;
     std::unique_ptr<ComponentDatabase> m_pComponentDatabase;
-	std::unique_ptr<ComponentProcessorManager> m_pDebugComponentProcessor;
-	std::unique_ptr<ComponentProcessorManager> m_pUpdateComponentProcessor;
+	std::unique_ptr<ComponentContainerProcessorManager> m_pUpdateComponentProcessor;
     std::unique_ptr<OpenGLRenderer> m_pRenderer;
     std::vector<std::unique_ptr<Entity>> m_pEntities;
 

@@ -24,6 +24,17 @@ void DebugGUI::DeInit()
 	ImGui_ImplGlfwGL3_Shutdown();
 }
 
+bool DebugGUI::StartEntity(const std::string& name)
+{
+	return ImGui::TreeNode(name.c_str());
+}
+
+void DebugGUI::EndEntity()
+{
+	ImGui::TreePop();
+}
+
+
 void DebugGUI::NewFrame()
 {
 	ImGui_ImplGlfwGL3_NewFrame();
