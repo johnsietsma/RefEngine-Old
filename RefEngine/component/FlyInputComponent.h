@@ -19,8 +19,8 @@ class Camera;
 class FlyInputComponent : public UpdateComponent
 {
 public:
-    FlyInputComponent(Camera* pCamera, GLFWwindow* pWindow) :
-        m_flyInput(pCamera, pWindow)
+    FlyInputComponent(Camera* pCamera, GLFWwindow* pWindow, float flySpeed, float rotationSpeed) :
+        m_flyInput(pCamera, pWindow, flySpeed, rotationSpeed)
     {}
 
     void Update(double deltaTime, ComponentDatabase& database)

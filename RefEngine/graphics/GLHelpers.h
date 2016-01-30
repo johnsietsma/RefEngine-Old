@@ -38,10 +38,10 @@ public:
     static void DestroyProgram(ProgramId programId);
 
 	/**
-	 *  Load a texture from disk and create a new OpenGl texture id.
+	 * Load a texture from disk and create a new OpenGl texture id.
 	 * Returns a Texture structure with image information.
 	 */
-	static Texture LoadTexture(const char* fileName);
+	static Texture LoadTexture(const char* fileName, unsigned int textureUnit=0);
 
     static void DeleteTexture(Texture texture);
 

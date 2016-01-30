@@ -7,6 +7,8 @@
 #include <glm/glm.hpp>
 #include <glm/gtc/type_ptr.hpp>
 
+#include <string>
+
 using namespace reng;
 
 const char* WellKnownLocation::ProjectionView = "projectionView";
@@ -32,7 +34,13 @@ void Material::SetProjectionView(const glm::mat4x4& mat)
 void Material::SetTexture(TextureId textureId, int textureUnit)
 {
     m_textureId = textureId;
-    SetUniformValue(WellKnownLocation::Sampler, textureUnit);
+    std::string samplerName = WellKnownLocation::Sampler;
+    if( textureUnit > 0 ) {
+        char numStr[15];
+        sprintf(numStr, "%d", textureUnit);
+        samplerName += numStr;
+    }
+    SetUniformValue(samplerName.c_str(), textureUnit);
 }
 
 void Material::SetLightDirection(const glm::vec3& lightDirection)
@@ -56,10 +64,10 @@ void Material::SetSpecularPower(float specularPower)
 }
 
 
-void Material::BindTexture() const
+void Material::BindTexture(int textureUnit) const
 {
     if (m_textureId != TextureId_Invalid) {
-        glActiveTexture(GL_TEXTURE0);
+        glActiveTexture(GL_TEXTURE0 + textureUnit);
         glBindTexture(GL_TEXTURE_2D, m_textureId.Value());
     }
 }

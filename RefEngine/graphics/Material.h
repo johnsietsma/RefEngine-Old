@@ -32,7 +32,7 @@ public:
 
 	ProgramId GetProgramId() const { return m_programId;  }
 
-    void BindTexture() const;
+    void BindTexture( int textureUnit = 0 ) const;
 
     UniformLocationId GetUniformLocation(const char* uniformName) const
     {
@@ -54,7 +54,7 @@ public:
     template<typename T>
     void SetUniformValue(const char* uniformName, const T& value) const
     {
-        auto locId = GetUniformLocation(uniformName);
+        auto locId = GetUniformLocation(uniformName); 
         POW2_ASSERT_MSG(locId != UniformLocationId_Invalid, "The program does not have location %s", uniformName);
         GLProgram::SetProgramUniform(m_programId, locId, value);
     }

@@ -1070,6 +1070,7 @@ FBXMaterial* FBXFile::extractMaterial(void* a_mesh, int a_materialIndex)
 
 void FBXFile::initialiseOpenGLTextures()
 {
+    int textureUnit = 0;
     for (auto texture : m_textures)
     {
     //  texture.second->handle = SOIL_create_OGL_texture(texture.second->data, texture.second->width, texture.second->height, texture.second->channels,
@@ -1083,6 +1084,7 @@ void FBXFile::initialiseOpenGLTextures()
         };
 
         glGenTextures(1, &texture.second->handle);
+        glActiveTexture(GL_TEXTURE0 + textureUnit);
         glBindTexture(GL_TEXTURE_2D, texture.second->handle);
         glTexImage2D(GL_TEXTURE_2D, 0, texture.second->format, texture.second->width, texture.second->height, 0, texture.second->format, GL_UNSIGNED_BYTE, texture.second->data);
     //  glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_MAG_FILTER, GL_LINEAR);
