@@ -6,8 +6,11 @@ enable_testing()
 set(gtest_force_shared_crt ON)
 include_directories(${gtest_SOURCE_DIR}/include ${gtest_SOURCE_DIR})
 
+include_directories(../dep/glm)
+
 add_executable(RefEngineTests
     CachingFactoryTests.cpp
+    FileLoadPerfTests.cpp
     VariadicHashTests.cpp
  )
 
@@ -21,18 +24,22 @@ ENDIF(APPLE)
 
 set(CMAKE_CXX_FLAGS "${CMAKE_CXX_FLAGS} ${GCC_CHAR_IS_UNSIGNED_CHAR} ${STD_C11}")
 
-target_link_libraries(RefEngineTests
-    debug ${gtest_BINARY_DIR}/Debug/${CMAKE_FIND_LIBRARY_PREFIXES}gtest${CMAKE_FIND_LIBRARY_SUFFIXES}
-    optimized ${gtest_BINARY_DIR}/Release/${CMAKE_FIND_LIBRARY_PREFIXES}gtest${CMAKE_FIND_LIBRARY_SUFFIXES}
-)
-target_link_libraries(RefEngineTests
-    debug ${gtest_BINARY_DIR}/Debug/${CMAKE_FIND_LIBRARY_PREFIXES}gtest_main${CMAKE_FIND_LIBRARY_SUFFIXES}
-    optimized ${gtest_BINARY_DIR}/Release/${CMAKE_FIND_LIBRARY_PREFIXES}gtest_main${CMAKE_FIND_LIBRARY_SUFFIXES}
-)
-
+target_link_libraries(RefEngineTests gtest gtest_main)
 
 target_link_libraries(RefEngineTests refeng)
 
 add_test(
     NAME MethodBarDoesAbc
     COMMAND RefEngineTest)
+
+IF(APPLE)
+set(TARGET_ASSETS_DIR $<TARGET_FILE_DIR:RefEngineTests>/assets)
+ELSE(APPLE)
+set(TARGET_ASSETS_DIR $<TARGET_FILE_DIR:RefEngineTests>/../assets)
+ENDIF (APPLE)
+
+
+add_custom_command(TARGET RefEngineTests POST_BUILD
+    COMMAND ${CMAKE_COMMAND} -E copy_directory ${CMAKE_CURRENT_SOURCE_DIR}/assets ${TARGET_ASSETS_DIR} COMMENT "Copying assets to output directory."
+)
+

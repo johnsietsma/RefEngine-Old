@@ -33,6 +33,13 @@ struct ImportAssistor
     std::map<std::string,int> boneIndexList;
 };
 
+FBXTexture::~FBXTexture()
+{
+    delete[] data;
+    if( handle != (unsigned int)-1 ) glDeleteTextures(1, &handle);
+}
+
+
 void FBXFile::unload()
 {
     delete m_root;
@@ -285,184 +292,6 @@ bool FBXFile::load(const char* a_filename, UNIT_SCALE a_scale /* = FBXFile::UNIT
     return true;
 }
 
-bool FBXFile::loadAnimationsOnly(const char* a_filename, UNIT_SCALE a_scale /* = FBXFile::UNITS_METER */)
-{
-    if (m_root != nullptr)
-    {
-        printf("Scene already loaded!\n");
-        return false;
-    }
-
-    FbxManager* lSdkManager = nullptr;
-    FbxScene* lScene = nullptr;
-
-    // The first thing to do is to create the FBX SDK manager which is the
-    // object allocator for almost all the classes in the SDK.
-    lSdkManager = FbxManager::Create();
-    if ( !lSdkManager )
-    {
-        printf("Unable to create the FBX SDK manager\n");
-        return false;
-    }
-
-    // create an IOSettings object
-    FbxIOSettings * ios = FbxIOSettings::Create(lSdkManager, IOSROOT );
-    lSdkManager->SetIOSettings(ios);
-
-    // Create an importer.
-    FbxImporter* lImporter = FbxImporter::Create(lSdkManager,"");
-
-    // Initialize the importer by providing a filename.
-    bool lImportStatus = lImporter->Initialize(a_filename, -1, lSdkManager->GetIOSettings());
-
-    if ( !lImportStatus )
-    {
-        printf("Call to FbxImporter::Initialize() failed:\n\t%s\n", lImporter->GetStatus().GetErrorString());
-        lImporter->Destroy();
-        return false;
-    }
-
-    // Create the entity that will hold the scene.
-    int lFileMajor, lFileMinor, lFileRevision;
-    int lSDKMajor,  lSDKMinor,  lSDKRevision;
-
-    unsigned int i;
-    bool lStatus;
-
-    // Get the file version number generate by the FBX SDK.
-    FbxManager::GetFileFormatVersion(lSDKMajor, lSDKMinor, lSDKRevision);
-    lImporter->GetFileVersion(lFileMajor, lFileMinor, lFileRevision);
-
-    lScene = FbxScene::Create(lSdkManager,"root");
-
-    // Import the scene.
-    lStatus = lImporter->Import(lScene);
-    lImporter->Destroy();
-    if (lStatus == false)
-    {
-        printf("Unable to open FBX file!\n");
-        return false;
-    }
-
-    float unitScale = 1;
-
-    // convert scale
-    if ( lScene->GetGlobalSettings().GetSystemUnit() != FbxSystemUnit::sPredefinedUnits[a_scale] )
-    {
-        const FbxSystemUnit::ConversionOptions lConversionOptions = {
-            false, // mConvertRrsNodes
-            true, // mConvertAllLimits
-            true, // mConvertClusters
-            true, // mConvertLightIntensity
-            true, // mConvertPhotometricLProperties
-            true  // mConvertCameraClipPlanes
-        };
-
-        unitScale = (float)(lScene->GetGlobalSettings().GetSystemUnit().GetScaleFactor() / FbxSystemUnit::sPredefinedUnits[a_scale].GetScaleFactor());
-
-        // Convert the scene to meters using the defined options.
-        FbxSystemUnit::sPredefinedUnits[a_scale].ConvertScene(lScene, lConversionOptions);
-    }
-
-    // convert the scene to OpenGL axis (right-handed Y up)
-    FbxAxisSystem::OpenGL.ConvertScene(lScene);
-
-    FbxNode* lNode = lScene->GetRootNode();
-
-    if (lNode != nullptr)
-    {
-        // store the folder path of the scene
-        m_path = a_filename;
-        long iLastForward = m_path.find_last_of('/');
-        long iLastBackward = m_path.find_last_of('\\');
-        if (iLastForward > iLastBackward)
-        {
-            m_path.resize(iLastForward + 1);
-        }
-        else if (iLastBackward != 0)
-        {
-            m_path.resize(iLastBackward + 1);
-        }
-        else
-        {
-            m_path = "";
-        }
-
-        m_importAssistor = new ImportAssistor();
-
-        m_importAssistor->scene = lScene;
-        m_importAssistor->evaluator = lScene->GetAnimationEvaluator();
-        m_importAssistor->importer = lImporter;
-        m_importAssistor->loadTextures = false;
-        m_importAssistor->loadAnimations = true;
-        m_importAssistor->loadAnimationOnly = true;
-        m_importAssistor->unitScale = unitScale;
-
-        m_root = new FBXNode();
-        m_root->m_name = "root";
-        m_root->m_globalTransform = m_root->m_localTransform = glm::mat4(1,0,0,0,0,1,0,0,0,0,1,0,0,0,0,1);
-
-        // grab the ambient light data from the scene
-        for (i = 0; i < (unsigned int)lNode->GetChildCount(); ++i)
-        {
-            gatherBones((void*)lNode->GetChild(i));
-        }
-
-        // extract children
-        for (i = 0; i < (unsigned int)lNode->GetChildCount(); ++i)
-        {
-            extractObject(m_root, (void*)lNode->GetChild(i));
-        }
-
-        if (m_importAssistor->bones.size() > 0)
-        {
-            FBXSkeleton* skeleton = new FBXSkeleton();
-            skeleton->m_boneCount = (unsigned int)m_importAssistor->bones.size();
-            skeleton->m_nodes = new FBXNode * [ skeleton->m_boneCount ];
-
-			void* pBonesBuffer = aligned_malloc(sizeof(FBXSkeleton*)*skeleton->m_boneCount, 16);
-            skeleton->m_bones = new(pBonesBuffer) glm::mat4[ skeleton->m_boneCount ];
-
-			void* pBindPoseBuffer = aligned_malloc(sizeof(FBXSkeleton*)*skeleton->m_boneCount, 16);
-            skeleton->m_bindPoses = new(pBindPoseBuffer) glm::mat4[ skeleton->m_boneCount ];
-
-			skeleton->m_parentIndex = new int[skeleton->m_boneCount];
-
-            for ( i = 0 ; i < skeleton->m_boneCount ; ++i )
-            {
-                skeleton->m_nodes[ i ] = m_importAssistor->bones[ i ];
-                skeleton->m_bones[ i ] = skeleton->m_nodes[ i ]->m_localTransform;
-            }
-            for ( i = 0 ; i < skeleton->m_boneCount ; ++i )
-            {
-                skeleton->m_parentIndex[i] = -1;
-                for ( int j = 0 ; j < (int)skeleton->m_boneCount ; ++j )
-                {
-                    if (skeleton->m_nodes[i]->m_parent == skeleton->m_nodes[j])
-                    {
-                        skeleton->m_parentIndex[i] = j;
-                        break;
-                    }
-                }
-            }
-
-            extractSkeleton(skeleton, lScene);
-
-            m_skeletons.push_back(skeleton);
-
-            extractAnimation(lScene);
-        }
-
-        m_root->updateGlobalTransform();
-
-        delete m_importAssistor;
-        m_importAssistor = nullptr;
-    }
-
-    lSdkManager->Destroy();
-
-    return true;
-}
 
 void FBXFile::extractObject(FBXNode* a_parent, void* a_object)
 {
@@ -1938,12 +1767,6 @@ void FBXCameraNode::updateGlobalTransform()
 
     for (auto child : m_children)
         child->updateGlobalTransform();
-}
-
-FBXTexture::~FBXTexture()
-{
-    delete[] data;
-    glDeleteTextures(1, &handle);
 }
 
 FBXAnimation* FBXAnimation::clone() const
