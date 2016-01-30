@@ -2,6 +2,8 @@
 
 #include "graphics/RefEngOpenGL.h"
 
+#include "utils/pow2assert.h"
+
 #include <fbxsdk.h>
 #include <algorithm>
 #include <set>
@@ -16,8 +18,18 @@
 
 struct ImportAssistor
 {
-    ImportAssistor() : evaluator(nullptr), loadAnimationOnly(false) {}
-    ~ImportAssistor() { evaluator = nullptr; }
+    ImportAssistor() :
+        scene(nullptr),
+        evaluator(nullptr),
+        importer(nullptr),
+        loadTextures(false),
+        loadAnimations(false),
+        loadMeshes(false),
+        loadCameras(false),
+        loadLights(false)
+    {}
+    
+    ~ImportAssistor() = default;
 
     FbxScene*               scene;
     FbxAnimEvaluator*       evaluator;
@@ -26,12 +38,312 @@ struct ImportAssistor
 
     bool                    loadTextures;
     bool                    loadAnimations;
-    bool                    loadAnimationOnly;
+    bool                    loadMeshes;
+    bool                    loadCameras;
+    bool                    loadLights;
     float                   unitScale;
     bool                    flipTextureY;
 
     std::map<std::string,int> boneIndexList;
 };
+
+
+//------------  Helpers --------------------
+
+template<typename T>
+int GetDirectIndex( FbxLayerElementTemplate<T>* pElementArray, int defaultIndex )
+{
+    POW2_ASSERT(pElementArray!=nullptr);
+    
+    int directIndex = defaultIndex;
+    switch (pElementArray->GetReferenceMode())
+    {
+        case FbxGeometryElement::eDirect: break; // Just use the control point index in the direct array.
+        case FbxGeometryElement::eIndexToDirect:
+            directIndex = pElementArray->GetIndexArray().GetAt(defaultIndex);
+            break;
+        default:
+            //POW2_ASSERT_FAIL( "Reference mode not supported." );
+            directIndex = -1;
+            break;
+    }
+    return directIndex;
+}
+
+template<typename T>
+int GetPolygonVertexDirectIndex( FbxLayerElementTemplate<T>* pElementArray, FbxMesh* pFbxMesh, int polygonIndex, int vertIndex )
+{
+    int directIndex = -1;
+    
+    switch (pElementArray->GetReferenceMode())
+    {
+        case FbxGeometryElement::eDirect:
+        case FbxGeometryElement::eIndexToDirect:
+            directIndex = pFbxMesh->GetTextureUVIndex(polygonIndex, vertIndex);
+            break;
+        default:
+            break; // other reference modes not shown here!
+    }
+    
+    return directIndex;
+}
+
+int GetVertexCoordDirectIndex( FbxMesh* pFbxMesh, FbxLayerElementUV* pFbxTexCoord, int controlPointIndex, int polygonIndex, int vertIndex)
+{
+    int directIndex = -1;
+    switch (pFbxTexCoord->GetMappingMode())
+    {
+        case FbxGeometryElement::eByControlPoint:
+            directIndex = GetDirectIndex(pFbxTexCoord, controlPointIndex);
+            break;
+            
+        case FbxGeometryElement::eByPolygonVertex:
+            directIndex = GetPolygonVertexDirectIndex(pFbxTexCoord, pFbxMesh, polygonIndex, vertIndex);
+            break;
+            
+        case FbxGeometryElement::eByPolygon: // doesn't make much sense for UVs
+        case FbxGeometryElement::eAllSame:   // doesn't make much sense for UVs
+        case FbxGeometryElement::eNone:      // doesn't make much sense for UVs
+        default: break;
+    }
+    
+    return directIndex;
+}
+
+int GetVertexColorDirectIndex( FbxGeometryElementVertexColor* pVertexColor, int controlPointIndex )
+{
+    int directIndex = -1;
+    
+    switch (pVertexColor->GetMappingMode())
+    {
+        case FbxGeometryElement::eByControlPoint:
+            directIndex = GetDirectIndex(pVertexColor, controlPointIndex);
+            break;
+            
+        case FbxGeometryElement::eByPolygonVertex:
+        {
+            switch (pVertexColor->GetReferenceMode())
+            {
+                case FbxGeometryElement::eDirect:
+                case FbxGeometryElement::eIndexToDirect:
+                    directIndex = GetDirectIndex(pVertexColor, controlPointIndex);
+                    break;
+                default:
+                    break; // other reference modes not shown here!
+            }
+        }
+            break;
+            
+        case FbxGeometryElement::eByPolygon:
+        case FbxGeometryElement::eAllSame:
+        case FbxGeometryElement::eNone:
+        default: break;
+    }
+    
+    return directIndex;
+    
+}
+
+void LoadVertexPositions( FbxVector4* pVertexPositions, int vertexCount, std::vector<FBXVertex>& vertices )
+{
+    vertices.resize(vertexCount);
+    
+    for (int i = 0; i < vertexCount; ++i)
+    {
+        auto& vertex = vertices[i];
+        FbxVector4 vPos = pVertexPositions[i];
+        vertex.position.x = (float)vPos[0];
+        vertex.position.y = (float)vPos[1];
+        vertex.position.z = (float)vPos[2];
+        vertex.position.w = 1;
+    }
+}
+
+void LoadVertexIndices( FbxMesh* pFbxMesh, std::vector<unsigned int>& indices)
+{
+    int polygonCount = pFbxMesh->GetPolygonCount();
+    indices.resize(polygonCount*3);
+    
+    int indexID = 0;
+    for (int polygonIndex = 0; polygonIndex < polygonCount; polygonIndex++)
+    {
+        int polygonSize = pFbxMesh->GetPolygonSize(polygonIndex);
+        for (int i = 0; i < polygonSize; i++)
+        {
+            POW2_ASSERT(polygonSize==3);
+            POW2_ASSERT(indexID<indices.size());
+            indices[indexID++] = pFbxMesh->GetPolygonVertex(polygonIndex, i);
+        }
+    }
+    
+}
+
+void LoadVertexColors( FbxGeometryElementVertexColor* pVertexColors, int vertexCount, std::vector<FBXVertex>& vertices )
+{
+    for (int i = 0; i < vertexCount; ++i)
+    {
+        auto& vertex = vertices[i];
+        int directIndex = GetVertexColorDirectIndex(pVertexColors, i );
+        if( directIndex >= 0 ) {
+            FbxColor fbxColour = pVertexColors->GetDirectArray().GetAt(directIndex);
+            
+            vertex.colour.x = (float)fbxColour.mRed;
+            vertex.colour.y = (float)fbxColour.mGreen;
+            vertex.colour.z = (float)fbxColour.mBlue;
+            vertex.colour.w = (float)fbxColour.mAlpha;
+        }
+    }
+}
+
+void LoadTexCoords( FbxLayerElementUV* pTexCoord, FbxMesh* pFbxMesh, bool shouldFlipTextureY, std::vector<FBXVertex>& vertices, int uvNumber)
+{
+    int polygonCount = pFbxMesh->GetPolygonCount();
+    
+    for (int polygonIndex = 0; polygonIndex < polygonCount; ++polygonIndex)
+    {
+        int polygonSize = pFbxMesh->GetPolygonSize(polygonIndex);
+        
+        for (int polyVertexIndex = 0; polyVertexIndex < polygonSize; ++polyVertexIndex)
+        {
+            POW2_ASSERT(polyVertexIndex < 3);
+            int vertexIndex = pFbxMesh->GetPolygonVertex(polygonIndex, polyVertexIndex);
+            
+            int directIndex = GetVertexCoordDirectIndex(pFbxMesh, pTexCoord, vertexIndex, polygonIndex, polyVertexIndex);
+            if( directIndex>=0 ) {
+                FbxVector2 fbxUV = pTexCoord->GetDirectArray().GetAt(directIndex);
+                
+                POW2_ASSERT(vertexIndex < vertices.size());
+                auto& vertex = vertices[vertexIndex];
+                
+                
+                if( uvNumber == 0 ) {
+                    vertex.texCoord1.x = (float)fbxUV[0];
+                    vertex.texCoord1.y = (float)fbxUV[1];
+                    
+                    if (shouldFlipTextureY) vertex.texCoord1.y = 1.0f - vertex.texCoord1.y;
+                }
+                else if( uvNumber == 1 ) {
+                    vertex.texCoord2.x = (float)fbxUV[0];
+                    vertex.texCoord2.y = (float)fbxUV[1];
+                    
+                    if (shouldFlipTextureY) vertex.texCoord2.y = 1.0f - vertex.texCoord2.y;
+                }
+                
+            }
+        }
+    }
+    
+}
+
+void LoadNormals(FbxGeometryElementNormal* pNormal, int vertexCount, std::vector<FBXVertex>& vertices)
+{
+    for (int i = 0; i < vertexCount; ++i)
+    {
+        int directIndex = -1;
+        
+        if (pNormal->GetMappingMode() == FbxGeometryElement::eByControlPoint ||
+            pNormal->GetMappingMode() == FbxGeometryElement::eByPolygonVertex)
+        {
+            directIndex = GetDirectIndex(pNormal, i);
+        }
+        
+        if( directIndex >= 0 )
+        {
+            FbxVector4 normal = pNormal->GetDirectArray().GetAt(directIndex);
+            auto& vertex = vertices[i];
+            vertex.normal.x = (float)normal[0];
+            vertex.normal.y = (float)normal[1];
+            vertex.normal.z = (float)normal[2];
+            vertex.normal.w = 0;
+        }
+    }
+}
+
+void LoadSkinningData( FbxMesh* pFbxMesh, std::vector<FBXVertex>& vertices, std::map<std::string,int> boneIndexList )
+{
+    FbxSkin* fbxSkin = (FbxSkin*)pFbxMesh->GetDeformer(0, FbxDeformer::eSkin);
+    int skinClusterCount = fbxSkin != nullptr ? fbxSkin->GetClusterCount() : 0;
+    FbxCluster** skinClusters = nullptr;
+    int* skinClusterBoneIndices = nullptr;
+    if (skinClusterCount > 0)
+    {
+        skinClusters = new FbxCluster * [ skinClusterCount ];
+        skinClusterBoneIndices = new int[ skinClusterCount ];
+        
+        for (int i = 0 ; i < skinClusterCount ; ++i)
+        {
+            skinClusters[i] = fbxSkin->GetCluster(i);
+            if (skinClusters[i]->GetLink() == nullptr)
+            {
+                skinClusterBoneIndices[i] = -1;
+            }
+            else
+            {
+                skinClusterBoneIndices[i] = boneIndexList[ skinClusters[i]->GetLink()->GetName() ];
+            }
+        }
+    }
+    
+    
+    int polygonCount = pFbxMesh->GetPolygonCount();
+    
+    // process each polygon
+    for (int polygonIndex = 0; polygonIndex < polygonCount; ++polygonIndex)
+    {
+        int polygonSize = pFbxMesh->GetPolygonSize(polygonIndex);
+        
+        for (int polyVertexIndex = 0; polyVertexIndex < polygonSize && polyVertexIndex < 4 ; ++polyVertexIndex)
+        {
+            int vertexIndex = pFbxMesh->GetPolygonVertex(polygonIndex, polyVertexIndex);
+            FBXVertex& vertex = vertices[vertexIndex];
+            
+            for (int skinClusterIndex = 0; skinClusterIndex != skinClusterCount; ++skinClusterIndex)
+            {
+                if (skinClusterBoneIndices[skinClusterIndex] == -1)
+                    continue;
+                
+                int lIndexCount = skinClusters[skinClusterIndex]->GetControlPointIndicesCount();
+                int* lIndices = skinClusters[skinClusterIndex]->GetControlPointIndices();
+                double* lWeights = skinClusters[skinClusterIndex]->GetControlPointWeights();
+                
+                for (int l = 0; l < lIndexCount; l++)
+                {
+                    if (vertexIndex == lIndices[l])
+                    {
+                        // add weight and index
+                        if (vertex.weights.x == 0)
+                        {
+                            vertex.weights.x = (float)lWeights[l];
+                            vertex.indices.x = (float)skinClusterBoneIndices[skinClusterIndex];
+                        }
+                        else if (vertex.weights.y == 0)
+                        {
+                            vertex.weights.y = (float)lWeights[l];
+                            vertex.indices.y = (float)skinClusterBoneIndices[skinClusterIndex];
+                        }
+                        else if (vertex.weights.z == 0)
+                        {
+                            vertex.weights.z = (float)lWeights[l];
+                            vertex.indices.z = (float)skinClusterBoneIndices[skinClusterIndex];
+                        }
+                        else
+                        {
+                            vertex.weights.w = (float)lWeights[l];
+                            vertex.indices.w = (float)skinClusterBoneIndices[skinClusterIndex];
+                        }
+                    }
+                }
+            }
+        }
+    }
+    
+    delete[] skinClusters;
+    delete[] skinClusterBoneIndices;
+}
+
+
+// ---------------- Class impl ----------------------
+
 
 FBXTexture::~FBXTexture()
 {
@@ -63,8 +375,16 @@ void FBXFile::unload()
     m_textures.clear();
 }
 
-bool FBXFile::load(const char* a_filename, UNIT_SCALE a_scale /* = FBXFile::UNITS_METER */,
-    bool a_loadTextures /* = true */, bool a_loadAnimations /* = true */, bool a_flipTextureY /*= true*/)
+bool FBXFile::load(
+                   const char* a_filename,
+                   UNIT_SCALE a_scale /* = FBXFile::UNITS_METER */,
+                   bool a_loadTextures /* = true */,
+                   bool a_loadAnimations /* = true */,
+                   bool a_loadMeshes /* = true */,
+                   bool a_loadCameras /* = false */,
+                   bool a_loadLights /* = false */,
+                   bool a_flipTextureY /*= true*/
+)
 {
     if (m_root != nullptr)
     {
@@ -146,15 +466,9 @@ bool FBXFile::load(const char* a_filename, UNIT_SCALE a_scale /* = FBXFile::UNIT
     // convert the scene to OpenGL axis (right-handed Y up)
     FbxAxisSystem::OpenGL.ConvertScene(lScene);
 
-    // DID NOT KNOW WE COULD DO THIS!!!!
-    /*
     // Convert mesh, NURBS and patch into triangle mesh
-    FbxGeometryConverter lGeomConverter(mSdkManager);
-    lGeomConverter.Triangulate(mScene, true);
-
-    // Split meshes per material, so that we only have one material per mesh (for VBO support)
-    lGeomConverter.SplitMeshesPerMaterial(mScene, true);
-    */
+    FbxGeometryConverter geomConverter(lSdkManager);
+    geomConverter.Triangulate(lScene, true);
 
     FbxNode* lNode = lScene->GetRootNode();
 
@@ -183,6 +497,9 @@ bool FBXFile::load(const char* a_filename, UNIT_SCALE a_scale /* = FBXFile::UNIT
         m_importAssistor->importer = lImporter;
         m_importAssistor->loadTextures = a_loadTextures;
         m_importAssistor->loadAnimations = a_loadAnimations;
+        m_importAssistor->loadMeshes = a_loadMeshes;
+        m_importAssistor->loadCameras = a_loadCameras;
+        m_importAssistor->loadLights = a_loadLights;
         m_importAssistor->unitScale = unitScale;
         m_importAssistor->flipTextureY = a_flipTextureY;
 
@@ -302,41 +619,38 @@ void FBXFile::extractObject(FBXNode* a_parent, void* a_object)
     FbxNodeAttribute::EType lAttributeType;
     int i;
 
-    bool bIsBone = false;
+    bool isBone = false;
+    
+    //JPS: Assuming only one attribute
+    POW2_ASSERT( fbxNode->GetNodeAttributeCount()<=1 );
+    
+    FbxNodeAttribute* pNodeAttribute = fbxNode->GetNodeAttribute();
 
-    if (fbxNode->GetNodeAttribute() != nullptr)
+
+    if (pNodeAttribute != nullptr)
     {
-        lAttributeType = (fbxNode->GetNodeAttribute()->GetAttributeType());
+        lAttributeType = pNodeAttribute->GetAttributeType();
 
         switch (lAttributeType)
         {
         case FbxNodeAttribute::eSkeleton:
             {
-                bIsBone = true;
+                isBone = true;
             }
             break;
 
         case FbxNodeAttribute::eMesh:
             {
-                if (m_importAssistor->loadAnimationOnly == false)
+                if (m_importAssistor->loadMeshes)
                 {
-                    if (fbxNode->GetMaterialCount() > 1)
-                    {
-                        node = new FBXNode();
-                        extractMeshes(fbxNode,node);
-                    }
-                    else
-                    {
-                        node = new FBXMeshNode();
-                        extractMeshes(fbxNode,node);
-                    }
+                    extractMeshes(fbxNode->GetMesh());
                 }
             }
             break;
 
         case FbxNodeAttribute::eCamera:
             {
-                if (m_importAssistor->loadAnimationOnly == false)
+                if (m_importAssistor->loadCameras == false)
                 {
                     node = new FBXCameraNode();
                     extractCamera((FBXCameraNode*)node,fbxNode);
@@ -350,7 +664,7 @@ void FBXFile::extractObject(FBXNode* a_parent, void* a_object)
 
         case FbxNodeAttribute::eLight:
             {
-                if (m_importAssistor->loadAnimationOnly == false)
+                if (m_importAssistor->loadLights == false)
                 {
                     node = new FBXLightNode();
                     extractLight((FBXLightNode*)node,fbxNode);
@@ -388,7 +702,7 @@ void FBXFile::extractObject(FBXNode* a_parent, void* a_object)
                                         lLocal[3][0], lLocal[3][1], lLocal[3][2], lLocal[3][3] );
 
     if (m_importAssistor->loadAnimations == true &&
-        bIsBone == true)
+        isBone == true)
     {
         m_importAssistor->bones.push_back(node);
     }
@@ -400,475 +714,67 @@ void FBXFile::extractObject(FBXNode* a_parent, void* a_object)
     }
 }
 
-void FBXFile::extractMeshes(void* a_object, void* a_aieNode)
+void FBXFile::extractMeshes(void* a_object)
 {
-    FbxNode* fbxNode = (FbxNode*)a_object;
-    FbxMesh* fbxMesh = (FbxMesh*)fbxNode->GetNodeAttribute();
+    POW2_ASSERT(a_object!=nullptr);
+    FbxMesh* pFbxMesh = static_cast<FbxMesh*>(a_object);
+    
+    m_meshes.push_back( new FBXMeshNode() );
+    FBXMeshNode& meshNode = *m_meshes.back();
+    
+    FbxVector4* pVertexPositions = pFbxMesh->GetControlPoints();
+    int vertexCount = pFbxMesh->GetControlPointsCount();
+    
+    LoadVertexPositions(pVertexPositions, vertexCount, meshNode.m_vertices);
+    
+    LoadVertexIndices(pFbxMesh, meshNode.m_indices);
+    
 
-    int i, j, k, l, lPolygonCount = fbxMesh->GetPolygonCount();
-    FbxVector4* lControlPoints = fbxMesh->GetControlPoints();
-    FbxGeometryElementMaterial* lMaterialElement = fbxMesh->GetElementMaterial(0);
+    FbxGeometryElementVertexColor* fbxColours = pFbxMesh->GetElementVertexColor(0);
+    if( fbxColours!=nullptr )
+    {
+        meshNode.m_vertexAttributes |= FBXVertex::eCOLOUR;
+        LoadVertexColors( fbxColours, vertexCount, meshNode.m_vertices );
+    }
+    
+    FbxGeometryElementUV* fbxTexCoord0 = pFbxMesh->GetElementUV(0);
+    if( fbxTexCoord0 )
+    {
+        LoadTexCoords( fbxTexCoord0,  pFbxMesh, m_importAssistor->flipTextureY, meshNode.m_vertices, 0);
+        meshNode.m_vertexAttributes |= FBXVertex::eTEXCOORD1;
+    }
 
-    int materialCount = fbxNode->GetMaterialCount();
+    FbxGeometryElementUV* fbxTexCoord1 = pFbxMesh->GetElementUV(0);
+    if( fbxTexCoord1 )
+    {
+        LoadTexCoords( fbxTexCoord1,  pFbxMesh, m_importAssistor->flipTextureY, meshNode.m_vertices, 1);
+        meshNode.m_vertexAttributes |= FBXVertex::eTEXCOORD2;
+    }
 
-    FBXMeshNode** meshes = new FBXMeshNode * [ materialCount ];
-    if (materialCount == 1)
-        meshes[0] = (FBXMeshNode*)a_aieNode;
-    else
-        for ( j = 0 ; j < materialCount ; ++j )
-        {
-            meshes[j] = new FBXMeshNode();
-            meshes[j]->m_vertexAttributes = 0;
-        }
+    FbxGeometryElementNormal* fbxNormal = pFbxMesh->GetElementNormal(0);
+    if( fbxNormal )
+    {
+        LoadNormals(fbxNormal, vertexCount, meshNode.m_vertices);
+        meshNode.m_vertexAttributes |= FBXVertex::eNORMAL;
 
-    //unsigned int vertexIndex[4] = {};
-    FBXVertex vertexQuad[4];
+    }
 
-    unsigned int* nextIndex = new unsigned int[ materialCount ];
-    for ( j = 0 ; j < materialCount ; ++j )
-        nextIndex[j] = 0;
-
-    FbxGeometryElementVertexColor* fbxColours = fbxMesh->GetElementVertexColor(0);
-    FbxGeometryElementUV* fbxTexCoord0 = fbxMesh->GetElementUV(0);
-    FbxGeometryElementUV* fbxTexCoord1 = fbxMesh->GetElementUV(1);
-    FbxGeometryElementNormal* fbxNormal = fbxMesh->GetElementNormal(0);
-
+    
     // gather skinning info
-    FbxSkin* fbxSkin = (FbxSkin*)fbxMesh->GetDeformer(0, FbxDeformer::eSkin);
-    int skinClusterCount = fbxSkin != nullptr ? fbxSkin->GetClusterCount() : 0;
-    FbxCluster** skinClusters = nullptr;
-    int* skinClusterBoneIndices = nullptr;
-    if (skinClusterCount > 0)
-    {
-        skinClusters = new FbxCluster * [ skinClusterCount ];
-        skinClusterBoneIndices = new int[ skinClusterCount ];
-
-        for (i = 0 ; i < skinClusterCount ; ++i)
-        {
-            skinClusters[i] = fbxSkin->GetCluster(i);
-            if (skinClusters[i]->GetLink() == nullptr)
-            {
-                skinClusterBoneIndices[i] = -1;
-            }
-            else
-            {
-                skinClusterBoneIndices[i] = m_importAssistor->boneIndexList[ skinClusters[i]->GetLink()->GetName() ];
-            }
-        }
-    }
-
-    // needed for accessing certain vertex properties
-    int vertexId = 0;
-
-    // process each polygon (tris and quads only)
-    for (i = 0; i < lPolygonCount; ++i)
-    {
-        int polygonSize = fbxMesh->GetPolygonSize(i);
-
-        int material = lMaterialElement->GetIndexArray().GetAt(i);
-
-        for (j = 0; j < polygonSize && j < 4 ; ++j)
-        {
-            FBXVertex vertex;
-
-            int controlPointIndex = fbxMesh->GetPolygonVertex(i, j);
-
-            FbxVector4 vPos = lControlPoints[controlPointIndex];
-            vertex.position.x = (float)vPos[0];
-            vertex.position.y = (float)vPos[1];
-            vertex.position.z = (float)vPos[2];
-            vertex.position.w = 1;
-
-            meshes[material]->m_vertexAttributes |= FBXVertex::ePOSITION;
-
-            // extract colour data
-            if (fbxColours != nullptr)
-            {
-                switch (fbxColours->GetMappingMode())
-                {
-                case FbxGeometryElement::eByControlPoint:
-                    switch (fbxColours->GetReferenceMode())
-                    {
-                    case FbxGeometryElement::eDirect:
-                        {
-                            FbxColor colour = fbxColours->GetDirectArray().GetAt(controlPointIndex);
-                            meshes[material]->m_vertexAttributes |= FBXVertex::eCOLOUR;
-
-                            vertex.colour.x = (float)colour.mRed;
-                            vertex.colour.y = (float)colour.mGreen;
-                            vertex.colour.z = (float)colour.mBlue;
-                            vertex.colour.w = (float)colour.mAlpha;
-                        }
-                        break;
-                    case FbxGeometryElement::eIndexToDirect:
-                        {
-                            int id = fbxColours->GetIndexArray().GetAt(controlPointIndex);
-                            FbxColor colour = fbxColours->GetDirectArray().GetAt(id);
-                            meshes[material]->m_vertexAttributes |= FBXVertex::eCOLOUR;
-
-                            vertex.colour.x = (float)colour.mRed;
-                            vertex.colour.y = (float)colour.mGreen;
-                            vertex.colour.z = (float)colour.mBlue;
-                            vertex.colour.w = (float)colour.mAlpha;
-                        }
-                        break;
-                    default:
-                        break; // other reference modes not shown here!
-                    }
-                    break;
-
-                case FbxGeometryElement::eByPolygonVertex:
-                    {
-                        switch (fbxColours->GetReferenceMode())
-                        {
-                        case FbxGeometryElement::eDirect:
-                            {
-                                FbxColor colour = fbxColours->GetDirectArray().GetAt(vertexId);
-                                meshes[material]->m_vertexAttributes |= FBXVertex::eCOLOUR;
-
-                                vertex.colour.x = (float)colour.mRed;
-                                vertex.colour.y = (float)colour.mGreen;
-                                vertex.colour.z = (float)colour.mBlue;
-                                vertex.colour.w = (float)colour.mAlpha;
-                            }
-                            break;
-                        case FbxGeometryElement::eIndexToDirect:
-                            {
-                                int id = fbxColours->GetIndexArray().GetAt(vertexId);
-                                FbxColor colour = fbxColours->GetDirectArray().GetAt(id);
-                                meshes[material]->m_vertexAttributes |= FBXVertex::eCOLOUR;
-
-                                vertex.colour.x = (float)colour.mRed;
-                                vertex.colour.y = (float)colour.mGreen;
-                                vertex.colour.z = (float)colour.mBlue;
-                                vertex.colour.w = (float)colour.mAlpha;
-                            }
-                            break;
-                        default:
-                            break; // other reference modes not shown here!
-                        }
-                    }
-                    break;
-
-                case FbxGeometryElement::eByPolygon: // doesn't make much sense for UVs
-                case FbxGeometryElement::eAllSame:   // doesn't make much sense for UVs
-                case FbxGeometryElement::eNone:       // doesn't make much sense for UVs
-                    break;
-                    default:    break;
-                }
-            }
-            // extract first texture coordinate set
-            if (fbxTexCoord0 != nullptr)
-            {
-                switch (fbxTexCoord0->GetMappingMode())
-                {
-                case FbxGeometryElement::eByControlPoint:
-                    switch (fbxTexCoord0->GetReferenceMode())
-                    {
-                    case FbxGeometryElement::eDirect:
-                        {
-                            FbxVector2 uv = fbxTexCoord0->GetDirectArray().GetAt(controlPointIndex);
-                            meshes[material]->m_vertexAttributes |= FBXVertex::eTEXCOORD1;
-
-                            vertex.texCoord1.x = (float)uv[0];
-                            if (m_importAssistor->flipTextureY == true)
-                                vertex.texCoord1.y = 1.0f - (float)uv[1];
-                            else
-                                vertex.texCoord1.y = (float)uv[1];
-                        }
-                        break;
-                    case FbxGeometryElement::eIndexToDirect:
-                        {
-                            int id = fbxTexCoord0->GetIndexArray().GetAt(controlPointIndex);
-                            FbxVector2 uv = fbxTexCoord0->GetDirectArray().GetAt(id);
-                            meshes[material]->m_vertexAttributes |= FBXVertex::eTEXCOORD1;
-
-                            vertex.texCoord1.x = (float)uv[0];
-                            if (m_importAssistor->flipTextureY == true)
-                                vertex.texCoord1.y = 1.0f - (float)uv[1];
-                            else
-                                vertex.texCoord1.y = (float)uv[1];
-                        }
-                        break;
-                    default:
-                        break; // other reference modes not shown here!
-                    }
-                    break;
-
-                case FbxGeometryElement::eByPolygonVertex:
-                    {
-                        int lTextureUVIndex = fbxMesh->GetTextureUVIndex(i, j);
-                        switch (fbxTexCoord0->GetReferenceMode())
-                        {
-                        case FbxGeometryElement::eDirect:
-                        case FbxGeometryElement::eIndexToDirect:
-                            {
-                                FbxVector2 uv = fbxTexCoord0->GetDirectArray().GetAt(lTextureUVIndex);
-                                meshes[material]->m_vertexAttributes |= FBXVertex::eTEXCOORD1;
-
-                                vertex.texCoord1.x = (float)uv[0];
-                                if (m_importAssistor->flipTextureY == true)
-                                    vertex.texCoord1.y = 1.0f - (float)uv[1];
-                                else
-                                    vertex.texCoord1.y = (float)uv[1];
-                            }
-                            break;
-                        default:
-                            break; // other reference modes not shown here!
-                        }
-                    }
-                    break;
-
-                case FbxGeometryElement::eByPolygon: // doesn't make much sense for UVs
-                case FbxGeometryElement::eAllSame:   // doesn't make much sense for UVs
-                case FbxGeometryElement::eNone:       // doesn't make much sense for UVs
-                    break;
-                default: break;
-                }
-            }
-
-            // extract second coordinate set
-            if (fbxTexCoord1 != nullptr)
-            {
-                switch (fbxTexCoord1->GetMappingMode())
-                {
-                case FbxGeometryElement::eByControlPoint:
-                    switch (fbxTexCoord1->GetReferenceMode())
-                    {
-                    case FbxGeometryElement::eDirect:
-                        {
-                            FbxVector2 uv = fbxTexCoord1->GetDirectArray().GetAt(controlPointIndex);
-                            meshes[material]->m_vertexAttributes |= FBXVertex::eTEXCOORD2;
-
-                            vertex.texCoord2.x = (float)uv[0];
-                            if (m_importAssistor->flipTextureY == true)
-                                vertex.texCoord2.y = 1.0f - (float)uv[1];
-                            else
-                                vertex.texCoord2.y = (float)uv[1];
-                        }
-                        break;
-                    case FbxGeometryElement::eIndexToDirect:
-                        {
-                            int id = fbxTexCoord1->GetIndexArray().GetAt(controlPointIndex);
-                            FbxVector2 uv = fbxTexCoord1->GetDirectArray().GetAt(id);
-                            meshes[material]->m_vertexAttributes |= FBXVertex::eTEXCOORD2;
-
-                            vertex.texCoord2.x = (float)uv[0];
-                            if (m_importAssistor->flipTextureY == true)
-                                vertex.texCoord2.y = 1.0f - (float)uv[1];
-                            else
-                                vertex.texCoord2.y = (float)uv[1];
-                        }
-                        break;
-                    default:
-                        break; // other reference modes not shown here!
-                    }
-                    break;
-
-                case FbxGeometryElement::eByPolygonVertex:
-                    {
-                        int lTextureUVIndex = fbxMesh->GetTextureUVIndex(i, j);
-                        switch (fbxTexCoord1->GetReferenceMode())
-                        {
-                        case FbxGeometryElement::eDirect:
-                        case FbxGeometryElement::eIndexToDirect:
-                            {
-                                FbxVector2 uv = fbxTexCoord1->GetDirectArray().GetAt(lTextureUVIndex);
-                                meshes[material]->m_vertexAttributes |= FBXVertex::eTEXCOORD2;
-
-                                vertex.texCoord2.x = (float)uv[0];
-                                if (m_importAssistor->flipTextureY == true)
-                                    vertex.texCoord2.y = 1.0f - (float)uv[1];
-                                else
-                                    vertex.texCoord2.y = (float)uv[1];
-                            }
-                            break;
-                        default:
-                            break; // other reference modes not shown here!
-                        }
-                    }
-                    break;
-
-                case FbxGeometryElement::eByPolygon: // doesn't make much sense for UVs
-                case FbxGeometryElement::eAllSame:   // doesn't make much sense for UVs
-                case FbxGeometryElement::eNone:       // doesn't make much sense for UVs
-                    break;
-                    default:    break;
-                }
-            }
-
-            // extract normal data
-            if (fbxNormal != nullptr)
-            {
-                if (fbxNormal->GetMappingMode() == FbxGeometryElement::eByControlPoint)
-                {
-                    switch (fbxNormal->GetReferenceMode())
-                    {
-                    case FbxGeometryElement::eDirect:
-                        {
-                            FbxVector4 normal = fbxNormal->GetDirectArray().GetAt(controlPointIndex);
-                            meshes[material]->m_vertexAttributes |= FBXVertex::eNORMAL;
-
-                            vertex.normal.x = (float)normal[0];
-                            vertex.normal.y = (float)normal[1];
-                            vertex.normal.z = (float)normal[2];
-                            vertex.normal.w = 0;
-                        }
-                        break;
-                    case FbxGeometryElement::eIndexToDirect:
-                        {
-                            int id = fbxNormal->GetIndexArray().GetAt(controlPointIndex);
-                            FbxVector4 normal = fbxNormal->GetDirectArray().GetAt(id);
-                            meshes[material]->m_vertexAttributes |= FBXVertex::eNORMAL;
-
-                            vertex.normal.x = (float)normal[0];
-                            vertex.normal.y = (float)normal[1];
-                            vertex.normal.z = (float)normal[2];
-                            vertex.normal.w = 0;
-                        }
-                        break;
-                    default:
-                        break; // other reference modes not shown here!
-                    }
-                }
-                else if(fbxNormal->GetMappingMode() == FbxGeometryElement::eByPolygonVertex)
-                {
-                    switch (fbxNormal->GetReferenceMode())
-                    {
-                    case FbxGeometryElement::eDirect:
-                        {
-                            FbxVector4 normal = fbxNormal->GetDirectArray().GetAt(vertexId);
-                            meshes[material]->m_vertexAttributes |= FBXVertex::eNORMAL;
-
-                            vertex.normal.x = (float)normal[0];
-                            vertex.normal.y = (float)normal[1];
-                            vertex.normal.z = (float)normal[2];
-                            vertex.normal.w = 0;
-                        }
-                        break;
-                    case FbxGeometryElement::eIndexToDirect:
-                        {
-                            int id = fbxNormal->GetIndexArray().GetAt(vertexId);
-                            FbxVector4 normal = fbxNormal->GetDirectArray().GetAt(id);
-                            meshes[material]->m_vertexAttributes |= FBXVertex::eNORMAL;
-
-                            vertex.normal.x = (float)normal[0];
-                            vertex.normal.y = (float)normal[1];
-                            vertex.normal.z = (float)normal[2];
-                            vertex.normal.w = 0;
-                        }
-                        break;
-                    default:
-                        break; // other reference modes not shown here!
-                    }
-                }
-            }
-
-            // gather skinning data (slow but can't find any other way, yet!)
-            if (fbxSkin != nullptr)
-            {
-                for (k = 0; k != skinClusterCount; ++k)
-                {
-                    if (skinClusterBoneIndices[k] == -1)
-                        continue;
-
-                    int lIndexCount = skinClusters[k]->GetControlPointIndicesCount();
-                    int* lIndices = skinClusters[k]->GetControlPointIndices();
-                    double* lWeights = skinClusters[k]->GetControlPointWeights();
-
-                    for (l = 0; l < lIndexCount; l++)
-                    {
-                        if (controlPointIndex == lIndices[l])
-                        {
-                            // add weight and index
-                            if (vertex.weights.x == 0)
-                            {
-                                vertex.weights.x = (float)lWeights[l];
-                                vertex.indices.x = (float)skinClusterBoneIndices[k];
-                            }
-                            else if (vertex.weights.y == 0)
-                            {
-                                vertex.weights.y = (float)lWeights[l];
-                                vertex.indices.y = (float)skinClusterBoneIndices[k];
-                            }
-                            else if (vertex.weights.z == 0)
-                            {
-                                vertex.weights.z = (float)lWeights[l];
-                                vertex.indices.z = (float)skinClusterBoneIndices[k];
-                            }
-                            else
-                            {
-                                vertex.weights.w = (float)lWeights[l];
-                                vertex.indices.w = (float)skinClusterBoneIndices[k];
-                            }
-                        }
-                    }
-                }
-            }
-
-            vertex.index[0] = nextIndex[material]++;
-            vertexQuad[j] = vertex;
-            meshes[material]->m_vertices.push_back(vertex);
-            vertexId++;
-        }
-
-        // add triangle indices
-        meshes[material]->m_indices.push_back(vertexQuad[0].index[0]);
-        meshes[material]->m_indices.push_back(vertexQuad[1].index[0]);
-        meshes[material]->m_indices.push_back(vertexQuad[2].index[0]);
-
-        // handle quads
-        if (polygonSize == 4)
-        {
-            meshes[material]->m_indices.push_back(vertexQuad[3].index[0]);
-
-            vertexQuad[0].index[0] = nextIndex[material]++;
-            meshes[material]->m_vertices.push_back(vertexQuad[0]);
-            meshes[material]->m_indices.push_back(vertexQuad[0].index[0]);
-
-            vertexQuad[2].index[0] = nextIndex[material]++;
-            meshes[material]->m_vertices.push_back(vertexQuad[2]);
-            meshes[material]->m_indices.push_back(vertexQuad[2].index[0]);
-        }
-    }
-
-    for (int i = 0 ; i < materialCount ; ++i )
-        m_threads.push_back( new std::thread( optimiseMesh, meshes[i] ) );
+    LoadSkinningData(pFbxMesh, meshNode.m_vertices, m_importAssistor->boneIndexList);
 
     // set mesh names, vertex attributes, extract material and add to mesh map
-    for ( j = 0 ; j < materialCount ; ++j )
+    for ( int i = 0 ; i < pFbxMesh->GetElementMaterialCount(); ++i )
     {
-        meshes[j]->m_name = fbxNode->GetName();
-
-        // append material name to mesh name
-        if (materialCount > 1)
-            meshes[j]->m_name += fbxNode->GetMaterial(j)->GetName();
-
-        meshes[j]->m_material = extractMaterial(fbxMesh,j);
-        m_meshes.push_back(meshes[j]);
+        meshNode.m_name = pFbxMesh->GetName();
+        meshNode.m_materials.push_back( extractMaterial(pFbxMesh,i) );
     }
 
-    // if there is a single mesh return it, else make a new parent node and return that
-    if (materialCount > 1)
-    {
-        FBXNode* node = (FBXNode*)a_aieNode;
-        node->m_name = fbxNode->GetName();
-        for ( j = 0 ; j < materialCount ; ++j )
-        {
-            node->m_children.push_back( meshes[j] );
-            meshes[j]->m_parent = node;
-        }
-    }
-
-    delete[] skinClusters;
-    delete[] skinClusterBoneIndices;
-
-    delete[] meshes;
-    delete[] nextIndex;
 }
 
 void FBXFile::optimiseMesh(FBXMeshNode* a_mesh)
 {
+    /*
     //sort the vertex array so all common verts are adjacent in the array
     std::sort(a_mesh->m_vertices.begin(), a_mesh->m_vertices.end());
 
@@ -902,6 +808,7 @@ void FBXFile::optimiseMesh(FBXMeshNode* a_mesh)
         a_mesh->m_vertexAttributes |= FBXVertex::eTANGENT|FBXVertex::eBINORMAL;
         calculateTangentsBinormals(a_mesh->m_vertices,a_mesh->m_indices);
     }
+     */
 }
 
 void FBXFile::extractLight(FBXLightNode* a_light, void* a_object)

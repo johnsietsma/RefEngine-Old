@@ -179,7 +179,7 @@ public:
 	virtual ~FBXMeshNode();
 
 	unsigned int				m_vertexAttributes;
-	FBXMaterial*				m_material;
+    std::vector<FBXMaterial*>	m_materials;
 	std::vector<FBXVertex>		m_vertices;
 	std::vector<unsigned int>	m_indices;
 
@@ -338,7 +338,16 @@ public:
 	};
 
 	// must unload a scene before loading a new one over top
-	bool			load(const char* a_filename, UNIT_SCALE a_scale = FBXFile::UNITS_METER, bool a_loadTextures = true, bool a_loadAnimations = true, bool a_flipTextureY = true);
+	bool			load(
+                         const char* a_filename,
+                         UNIT_SCALE a_scale = FBXFile::UNITS_METER,
+                         bool a_loadTextures = true,
+                         bool a_loadAnimations = true,
+                         bool a_loadMeshes = true,
+                         bool a_loadCameras = false,
+                         bool a_loadLights = false,
+                         bool a_flipTextureY = true
+                         );
 	void			unload();
 
 	// goes through all loaded textures and creates their GL versions
@@ -385,7 +394,7 @@ private:
 
 	void	extractObject(FBXNode* a_parent, void* a_object);
 
-	void	extractMeshes(void* a_object, void* a_aieNode);
+	void	extractMeshes(void* a_object);
 	void	extractLight(FBXLightNode* a_light, void* a_object);
 	void	extractCamera(FBXCameraNode* a_camera, void* a_object);
 
@@ -502,9 +511,7 @@ inline FBXNode::~FBXNode()
 		delete n;
 }
 
-inline FBXMeshNode::FBXMeshNode()
-	: m_vertexAttributes(0),
-	m_material(nullptr),
+inline FBXMeshNode::FBXMeshNode() :
 	m_vertices(0),
 	m_indices(0)
 {
