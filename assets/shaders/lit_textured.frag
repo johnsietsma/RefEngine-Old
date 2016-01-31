@@ -10,10 +10,7 @@ uniform vec3 lightDirection;
 uniform vec3 lightColor;
 uniform vec3 cameraPosition;
 uniform float specularPower = 1;
-uniform sampler2D tex;
-uniform sampler2D tex1;
-uniform sampler2D tex2;
-
+uniform sampler2D diffuseSampler;
 
 void main()
 {
@@ -24,9 +21,7 @@ void main()
     s = pow( s, specularPower );
     vec4 lightOutputColor = vec4(lightColor * d + lightColor * s, 1);
 
-   vec4 texColor0 = texture( tex, vTexCoord );
-   vec4 texColor1 = texture( tex1, vTexCoord );
-   vec4 texColor2 = texture( tex2, vTexCoord );
+   vec4 diffuseColor = texture( diffuseSampler, vTexCoord );
    
-   outputColor = texColor0 * lightOutputColor;
+   outputColor = diffuseColor * lightOutputColor;
 }

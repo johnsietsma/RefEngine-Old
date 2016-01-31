@@ -193,6 +193,15 @@ void TestBed::AddLitCube(glm::vec3 pos)
     indexedCubeEnt.EmplaceComponent<RenderableComponent>(indexedCubeTrans, pCubeMesh, litMaterial);
 }
 
+void LoadAndSetTexture(AssetManager* pAssetManager, Material* pMaterial, FBXMaterial* pFbxMaterial, FBXMaterial::TextureTypes textureType, const char* location, int textureUnit)
+{
+    if( FBXTexture* pFbxTexture = pFbxMaterial->textures[textureType] ) {
+        auto texture = pAssetManager->LoadTexture(pFbxTexture->path.c_str(), textureUnit);
+        pMaterial->SetSampler(location, texture.textureId, textureUnit);
+        
+    }
+}
+
 void TestBed::AddFbxModel(glm::vec3 pos, const char* fbxFilename)
 {
     MaterialDefinition litMatDef(
@@ -207,24 +216,24 @@ void TestBed::AddFbxModel(glm::vec3 pos, const char* fbxFilename)
     auto fbx = std::shared_ptr<FBXFile>(new FBXFile());
     fbx->load(fbxFilename);
     
-    for (uint i = 0; i < fbx->getTextureCount(); i++) {
-        FBXTexture* pTexure = fbx->getTextureByIndex(i);
-        
-        // Load into texture unit 'i'
-        const Texture& texture = m_pEngine->GetAssetManager()->LoadTexture(pTexure->path.c_str(), i);
-        
-        // Set the uniform to texture unit 'i'
-        litMaterial->SetTexture(texture.textureId, i);
-    }
-
+    auto pAssetManager = m_pEngine->GetAssetManager();
+    
     for (uint i = 0; i < fbx->getMeshCount(); i++) {
         FBXMeshNode* pMesh = fbx->getMeshByIndex(i);
         if (pMesh->m_vertices.size() >  0) {
-            const BufferAccessor accessor(pMesh->m_vertices, 1);
-            auto pFbxMesh = Mesh::Create<FBXVertex>(accessor, FBXVertexAttributes, BufferAccessor(pMesh->m_indices, 1));
-            fbxEnt.EmplaceComponent<RenderableComponent>(transformComponentHandle, pFbxMesh, litMaterial);
+            auto pMaterial = std::make_shared<Material>(*litMaterial); // Take a copy
             
+            // Create one mesh instanace for each material
+            for( auto pFbxMaterial : pMesh->m_materials )
+            {
+                LoadAndSetTexture(pAssetManager, pMaterial.get(), pFbxMaterial, FBXMaterial::DiffuseTexture, WellKnownLocation::DiffuseSampler, (int)WellKnownTextureUnit::Diffuse);
+                
+                LoadAndSetTexture(pAssetManager, pMaterial.get(), pFbxMaterial, FBXMaterial::NormalTexture, WellKnownLocation::NormalSampler, (int)WellKnownTextureUnit::Normal);
             
+                const BufferAccessor accessor(pMesh->m_vertices, 1);
+                auto pFbxMesh = Mesh::Create<FBXVertex>(accessor, FBXVertexAttributes, BufferAccessor(pMesh->m_indices, 1));
+                fbxEnt.EmplaceComponent<RenderableComponent>(transformComponentHandle, pFbxMesh, pMaterial);
+            }
         }
     }
 

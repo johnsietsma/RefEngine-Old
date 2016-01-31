@@ -17,8 +17,8 @@ std::shared_ptr<Material> MaterialManager::LoadMaterial(AssetManager* pAssetMana
 
     if (materialDefinition.textureName!=nullptr)
     {
-        const Texture& texture = pAssetManager->LoadTexture(materialDefinition.textureName);
-        material->SetTexture(texture.textureId, 0);
+        auto texture = pAssetManager->LoadTexture( materialDefinition.textureName );
+        material->SetDiffuseSampler( texture.textureId );
     }
 
     return material;
