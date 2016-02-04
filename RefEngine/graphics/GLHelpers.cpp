@@ -175,6 +175,9 @@ ProgramId GLHelpers::CreateProgram(ShaderId fragmentShaderId, ShaderId vertexSha
     glDetachShader(programId.Value(), vertexShaderId.Value());
     glDetachShader(programId.Value(), fragmentShaderId.Value());
 
+	// It's possible to delete the shaders now. But we'll leave them because they may be used by another program.
+	// The user can delete them if required.
+
 	return programId;
 }
 
