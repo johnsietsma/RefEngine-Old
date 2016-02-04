@@ -8,9 +8,11 @@ namespace reng {
 
 class FlyInput {
 public:
-	FlyInput( Camera* pCamera, GLFWwindow* pWindow ) :
+	FlyInput( Camera* pCamera, GLFWwindow* pWindow, float flySpeed=5, float rotationSpeed=1 ) :
 		m_pCamera(pCamera),
         m_pWindow(pWindow),
+        m_flySpeed(flySpeed),
+        m_rotationSpeed(rotationSpeed),
 		m_rotateButtonClicked(false)
 	{}
 
@@ -26,8 +28,8 @@ private:
 
 	Camera* m_pCamera;
     GLFWwindow* m_pWindow;
-	float m_flySpeed = 5;
-	float m_rotationSpeed = 1;
+	float m_flySpeed ;
+	float m_rotationSpeed;
 	bool m_rotateButtonClicked;
 	float m_cursorX, m_cursorY;
 };

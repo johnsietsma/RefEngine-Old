@@ -12,7 +12,7 @@ namespace reng {
 
 typedef CachingFactory<ShaderId, const char*, ShaderType> ShaderFactory;
 typedef CachingFactory<ProgramId, ShaderId, ShaderId> ProgramFactory;
-typedef CachingFactory<Texture, const char*> TextureFactory;
+typedef CachingFactory<Texture, const char*, unsigned int> TextureFactory;
 typedef CachingFactory<Material, const char*> MaterialFactory;
 
 
@@ -33,7 +33,7 @@ public:
 
 	ShaderId CreateShader(const char* shaderFileName, ShaderType shaderType);
 
-	Texture LoadTexture(const char* fileName);
+	Texture LoadTexture(const char* fileName, unsigned int textureUnit=0);
 
     ProgramId LoadProgram(const char* vertShaderFileName, const char* fragShaderFileName);
 

@@ -53,30 +53,30 @@ void FlyInput::HandleKeyboard(GLFWwindow* pWindow, double deltaTime)
 	if (fLength > 0.01f)
 	{
 		moveDir = ((float)deltaTime * m_flySpeed) * glm::normalize(moveDir);
-		transform.SetPosition(transform.GetPosition() + moveDir);
+		transform.Translate(moveDir);
 		SetTransform(transform);
 	}
 }
 
 void FlyInput::HandleMouse(GLFWwindow* pWindow, double deltaTime)
 {
-	if (glfwGetMouseButton(pWindow, GLFW_MOUSE_BUTTON_2) == GLFW_PRESS)
+	if (glfwGetMouseButton(pWindow, GLFW_MOUSE_BUTTON_1) == GLFW_PRESS)
 	{
 		int width, height;
 		glfwGetFramebufferSize(pWindow, &width, &height);
+        
+        double mouseX, mouseY;
+        glfwGetCursorPos(pWindow, &mouseX, &mouseY);
 
 		if (m_rotateButtonClicked == false)
 		{
-			m_cursorX = (float)floor(width / 2.0);
-			m_cursorY = (float)floor(height / 2.0);
+			m_cursorX = mouseX;
+			m_cursorY = mouseY;
 
 			m_rotateButtonClicked = true;
 		}
 		else
 		{
-			double mouseX, mouseY;
-			glfwGetCursorPos(pWindow, &mouseX, &mouseY);
-
 			double xOffset = mouseX - m_cursorX;
 			double yOffset = mouseY - m_cursorY;
 
@@ -84,7 +84,7 @@ void FlyInput::HandleMouse(GLFWwindow* pWindow, double deltaTime)
 
 		}
 
-		glfwSetCursorPos(pWindow, width / 2, height / 2);
+//		glfwSetCursorPos(pWindow, width / 2, height / 2);
 	}
 	else
 	{

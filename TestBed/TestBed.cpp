@@ -96,11 +96,11 @@ bool TestBed::Init()
     m_pEngine->RegisterUpdateComponent<VertexColorComponent>();
 
     Entity& flyEntity = m_pEngine->EmplaceEntity("FlyInput");
-    flyEntity.EmplaceComponent<FlyInputComponent>(m_pEngine->GetCamera(), m_pWindow->GetWindow());
+    flyEntity.EmplaceComponent<FlyInputComponent>(m_pEngine->GetCamera(), m_pWindow->GetWindow(), 5, 0.1f);
 
     Entity& lightEntity = m_pEngine->EmplaceEntity("Light");
-    float rot = glm::half_pi<float>();
-    Transform lightTransform(glm::vec3(0), glm::quat(glm::vec3(rot)));
+    
+    Transform lightTransform(glm::vec3(5,5,5), glm::vec3(0,0,0));
     auto lightTransformHandle = lightEntity.EmplaceComponent<TransformComponent>(lightTransform);
     lightEntity.EmplaceComponent<LightComponent>(lightTransformHandle);
 
@@ -113,7 +113,9 @@ bool TestBed::Init()
 
     AddLitCube(glm::vec3(0, 0, -5));
 
-    AddFbxModel(glm::vec3(0, 0, 3), "assets/models/cube.fbx");
+    AddFbxModel(glm::vec3(0, 0, 3), "assets/models/cube/cube.fbx");
+    
+    AddFbxModel(glm::vec3(2, -2, 3), "assets/models/ruinedtank/tank.fbx");
 
     return true;
 }
@@ -191,11 +193,20 @@ void TestBed::AddLitCube(glm::vec3 pos)
     indexedCubeEnt.EmplaceComponent<RenderableComponent>(indexedCubeTrans, pCubeMesh, litMaterial);
 }
 
+void LoadAndSetTexture(AssetManager* pAssetManager, Material* pMaterial, FBXMaterial* pFbxMaterial, FBXMaterial::TextureTypes textureType, const char* location, int textureUnit)
+{
+    if( FBXTexture* pFbxTexture = pFbxMaterial->textures[textureType] ) {
+        auto texture = pAssetManager->LoadTexture(pFbxTexture->path.c_str(), textureUnit);
+        pMaterial->SetSampler(location, texture.textureId, textureUnit);
+        
+    }
+}
+
 void TestBed::AddFbxModel(glm::vec3 pos, const char* fbxFilename)
 {
     MaterialDefinition litMatDef(
-        "assets/shaders/lit.vert",
-        "assets/shaders/lit.frag"
+        "assets/shaders/lit_textured.vert",
+        "assets/shaders/lit_textured.frag"
         );
     const auto& litMaterial = MaterialManager::LoadMaterial(m_pEngine->GetAssetManager(), litMatDef);
 
@@ -204,22 +215,27 @@ void TestBed::AddFbxModel(glm::vec3 pos, const char* fbxFilename)
 
     auto fbx = std::shared_ptr<FBXFile>(new FBXFile());
     fbx->load(fbxFilename);
-
+    
+    auto pAssetManager = m_pEngine->GetAssetManager();
+    
     for (uint i = 0; i < fbx->getMeshCount(); i++) {
         FBXMeshNode* pMesh = fbx->getMeshByIndex(i);
         if (pMesh->m_vertices.size() >  0) {
-            uint numIndices = 0;
-            uint* pIndices = nullptr;
-            if (pMesh->m_indices.size() > 0) {
-                numIndices = pMesh->m_indices.size();
-                pIndices = &(pMesh->m_indices[0]);
+            auto pMaterial = std::make_shared<Material>(*litMaterial); // Take a copy
+            
+            // Create one mesh instanace for each material
+            for( auto pFbxMaterial : pMesh->m_materials )
+            {
+                LoadAndSetTexture(pAssetManager, pMaterial.get(), pFbxMaterial, FBXMaterial::DiffuseTexture, WellKnownLocation::DiffuseSampler, (int)WellKnownTextureUnit::Diffuse);
+                
+                LoadAndSetTexture(pAssetManager, pMaterial.get(), pFbxMaterial, FBXMaterial::NormalTexture, WellKnownLocation::NormalSampler, (int)WellKnownTextureUnit::Normal);
+            
+                const BufferAccessor accessor(pMesh->m_vertices, 1);
+                auto pFbxMesh = Mesh::Create<FBXVertex>(accessor, FBXVertexAttributes, BufferAccessor(pMesh->m_indices, 1));
+                fbxEnt.EmplaceComponent<RenderableComponent>(transformComponentHandle, pFbxMesh, pMaterial);
             }
-
-            const BufferAccessor accessor(pMesh->m_vertices, 1);
-            auto pFbxMesh = Mesh::Create<FBXVertex>(accessor, FBXVertexAttributes, BufferAccessor(pMesh->m_indices, 1));
-            fbxEnt.EmplaceComponent<RenderableComponent>(transformComponentHandle, pFbxMesh, litMaterial);
         }
     }
 
-    fbx->initialiseOpenGLTextures();
+
 }

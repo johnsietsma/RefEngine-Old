@@ -22,9 +22,9 @@ ShaderId AssetManager::CreateShader(const char* shaderFileName, ShaderType shade
 }
 
 
-Texture AssetManager::LoadTexture(const char* fileName)
+Texture AssetManager::LoadTexture(const char* fileName, unsigned int textureUnit)
 {
-    Texture texture = m_pTextureFactory->Get(fileName);
+    Texture texture = m_pTextureFactory->Get(fileName, textureUnit);
     if (texture.textureId == TextureId_Invalid) throw BadAssetLoad(std::string("Failed to load texture ") + fileName);
     return texture;
 }

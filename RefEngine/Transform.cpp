@@ -6,6 +6,13 @@
 
 using namespace reng;
 
+
+Transform::Transform(const glm::vec3& position)
+: Transform(position, glm::quat(), glm::vec3(1) )
+{
+}
+
+
 Transform::Transform(const glm::vec3& position, const glm::quat& rot) :
 Transform(position, rot, glm::vec3(1))
 {
@@ -18,7 +25,8 @@ Transform::Transform(const glm::vec3& position, const glm::quat& rot, const glm:
     m_globalTransform *= glm::scale(scale);
 }
 
-Transform::Transform(glm::vec3 position)
-    : Transform(position, glm::quat(), glm::vec3(1) )
+
+Transform::Transform(const glm::vec3& position, const glm::vec3& lookAt)
 {
+    m_globalTransform = glm::lookAt(position, lookAt, glm::vec3(0,1,0));
 }

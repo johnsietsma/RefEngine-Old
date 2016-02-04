@@ -138,6 +138,7 @@ add_library(refeng
 source_group( Component component/ )
 source_group( Debug debug/ )
 source_group( Entity entity/ )
+source_group( File file/ )
 source_group( Graphics graphics/ )
 source_group( Utils utils/ )
 

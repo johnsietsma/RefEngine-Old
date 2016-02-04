@@ -14,10 +14,11 @@ public:
         m_globalTransform(1)
     {}
 
+    Transform(const glm::vec3& position);
     Transform(const glm::vec3& position, const glm::quat& rot);
     Transform(const glm::vec3& position, const glm::quat& rot, const glm::vec3& scale);
-
-    Transform(glm::vec3 position);
+    
+    Transform(const glm::vec3& position, const glm::vec3& lookAt);
 
 	Transform( const glm::mat4x4& transform ) :
 		m_globalTransform(transform)
@@ -30,7 +31,7 @@ public:
 	glm::vec3 GetForward() const { return glm::vec3(m_globalTransform[2]); }
 
 	void SetMatrix( const glm::mat4x4& transform )  { m_globalTransform = transform; }
-	void SetPosition(const glm::vec3& position) { m_globalTransform[3] = glm::vec4(position, 0); }
+	void SetPosition(const glm::vec3& position) { m_globalTransform[3] = glm::vec4(position, 1); }
 
 	void SetRight(const glm::vec3& right) {
 		m_globalTransform[0] = glm::vec4(glm::normalize(right), 0);

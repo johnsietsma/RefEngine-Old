@@ -2,13 +2,12 @@
 
 in vec2 vTexCoord;
 
-uniform sampler2D tex;
+uniform sampler2D diffuseSampler;
 
 out vec4 outputColor;
 
 
 void main()
 {
-   outputColor = texture( tex, vTexCoord );
-   //outputColor = vec4(vTexCoord, 0.0, 1.0);
+   outputColor = texture( diffuseSampler, vTexCoord );
 }
