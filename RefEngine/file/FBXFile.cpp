@@ -357,6 +357,8 @@ void FBXFile::unload()
     delete m_root;
     m_root = nullptr;
 
+	for (auto m : m_meshes)
+		delete m;
     for (auto m : m_materials)
         delete m.second;
     for (auto s : m_skeletons)
