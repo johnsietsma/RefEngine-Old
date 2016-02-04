@@ -4,22 +4,23 @@ set(PROJECT_NAME RefEngine)
 project(${PROJECT_NAME})
 
 set(ASSETS_DIR "${CMAKE_CURRENT_SOURCE_DIR}/assets" CACHE STRING "Path to the assets.")
+set(SHADERS_DIR "${ASSETS_DIR}" CACHE STRING "Path to the shaders.")
 
 
-set(REFENG_ASSET_SHADER_FILES
-    ${ASSETS_DIR}/shaders/default.vert
-    ${ASSETS_DIR}/shaders/passthrough.vert
-    ${ASSETS_DIR}/shaders/diffuse.frag
-    ${ASSETS_DIR}/shaders/lit.vert
-    ${ASSETS_DIR}/shaders/lit.frag
-    ${ASSETS_DIR}/shaders/lit_textured.vert
-    ${ASSETS_DIR}/shaders/lit_textured.frag
-    ${ASSETS_DIR}/shaders/red.frag
-    ${ASSETS_DIR}/shaders/textured.frag
-    ${ASSETS_DIR}/shaders/textured.vert
-    ${ASSETS_DIR}/shaders/vertexColor.frag
-    ${ASSETS_DIR}/shaders/vertexColor.vert
-    ${ASSETS_DIR}/shaders/white.frag
+set(SHADER_FILES
+    ${SHADERS_DIR}/default.vert
+    ${SHADERS_DIR}/passthrough.vert
+    ${SHADERS_DIR}/diffuse.frag
+    ${SHADERS_DIR}/lit.vert
+    ${SHADERS_DIR}/lit.frag
+    ${SHADERS_DIR}/lit_textured.vert
+    ${SHADERS_DIR}/lit_textured.frag
+    ${SHADERS_DIR}/red.frag
+    ${SHADERS_DIR}/textured.frag
+    ${SHADERS_DIR}/textured.vert
+    ${SHADERS_DIR}/vertexColor.frag
+    ${SHADERS_DIR}/vertexColor.vert
+    ${SHADERS_DIR}/white.frag
 )
 
 set(USE_GLFW_WINDOW TRUE)

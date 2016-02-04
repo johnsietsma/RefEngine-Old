@@ -164,7 +164,7 @@ void LoadVertexIndices( FbxMesh* pFbxMesh, std::vector<unsigned int>& indices)
     int polygonCount = pFbxMesh->GetPolygonCount();
     indices.resize(polygonCount*3);
     
-    int indexID = 0;
+    unsigned int indexID = 0;
     for (int polygonIndex = 0; polygonIndex < polygonCount; polygonIndex++)
     {
         int polygonSize = pFbxMesh->GetPolygonSize(polygonIndex);
@@ -209,10 +209,10 @@ void LoadTexCoords( FbxLayerElementUV* pTexCoord, FbxMesh* pFbxMesh, bool should
             int vertexIndex = pFbxMesh->GetPolygonVertex(polygonIndex, polyVertexIndex);
             
             int directIndex = GetVertexCoordDirectIndex(pFbxMesh, pTexCoord, vertexIndex, polygonIndex, polyVertexIndex);
-            if( directIndex>=0 ) {
+            if( vertexIndex!=-1 &&  directIndex>=0 ) {
                 FbxVector2 fbxUV = pTexCoord->GetDirectArray().GetAt(directIndex);
                 
-                POW2_ASSERT(vertexIndex < vertices.size());
+                POW2_ASSERT((unsigned int)vertexIndex < vertices.size());
                 auto& vertex = vertices[vertexIndex];
                 
                 

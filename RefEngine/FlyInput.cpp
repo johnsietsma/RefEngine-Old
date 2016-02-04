@@ -70,8 +70,8 @@ void FlyInput::HandleMouse(GLFWwindow* pWindow, double deltaTime)
 
 		if (m_rotateButtonClicked == false)
 		{
-			m_cursorX = mouseX;
-			m_cursorY = mouseY;
+			m_cursorX = (float)mouseX;
+			m_cursorY = (float)mouseY;
 
 			m_rotateButtonClicked = true;
 		}

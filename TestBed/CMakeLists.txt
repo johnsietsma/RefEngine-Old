@@ -17,13 +17,10 @@ add_executable(TestBed
     ${ASSET_FILES}
 )
 
-source_group( Assets assets/ )
+# ---- Put the shaders in a folder group ----
+source_group( Shaders FILES ${SHADERS_FILES}/ )
 
 target_link_libraries(TestBed refeng)
-
-# ---- Put the shaders in a folder group ----
-FILE(GLOB frag_shaders data/shaders/*.*)
-source_group(data\\shaders FILES ${frag_shaders})
 
 IF(APPLE)
 	set(TARGET_ASSETS_DIR $<TARGET_FILE_DIR:TestBed>/assets)

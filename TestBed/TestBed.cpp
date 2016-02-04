@@ -128,8 +128,8 @@ void TestBed::Run()
 void TestBed::AddTexturedQuad(glm::vec3 pos)
 {
     MaterialDefinition texturedMatDef(
-        "assets/shaders/textured.vert",
-        "assets/shaders/textured.frag",
+        "assets/shaders/TexCoord.vert",
+        "assets/shaders/Textured.frag",
         "assets/textures/Big_pebbles_pxr128.png"
         );
 
@@ -145,8 +145,8 @@ void TestBed::AddTexturedQuad(glm::vec3 pos)
 void TestBed::AddSpinningTri(glm::vec3 pos)
 {
     MaterialDefinition redMatDef(
-        "assets/shaders/default.vert",
-        "assets/shaders/red.frag"
+        "assets/shaders/Default.vert",
+        "assets/shaders/Red.frag"
         );
     const auto& pRedMaterial = MaterialManager::LoadMaterial(m_pEngine->GetAssetManager(), redMatDef);
 
@@ -167,8 +167,8 @@ void TestBed::AddVertexColoredCube(glm::vec3 pos)
     std::shared_ptr<Mesh> pColoredCubeMesh = Mesh::Create(cubeBuffers, BufferAccessor(Prims::Cube_Indices, 1));
 
     MaterialDefinition vertColoredMatDef(
-        "assets/shaders/vertexColor.vert",
-        "assets/shaders/vertexColor.frag"
+        "assets/shaders/Color.vert",
+        "assets/shaders/VertexColor.frag"
         );
     const auto& pVertexColorMaterial = MaterialManager::LoadMaterial(m_pEngine->GetAssetManager(), vertColoredMatDef);
 
@@ -181,8 +181,8 @@ void TestBed::AddVertexColoredCube(glm::vec3 pos)
 void TestBed::AddLitCube(glm::vec3 pos)
 {
     MaterialDefinition litMatDef(
-        "assets/shaders/lit.vert",
-        "assets/shaders/lit.frag"
+        "assets/shaders/Normal.vert",
+        "assets/shaders/VertexLit.frag"
         );
     const auto& litMaterial = MaterialManager::LoadMaterial(m_pEngine->GetAssetManager(), litMatDef);
     litMaterial->SetSpecularPower(2.0f);
@@ -205,8 +205,8 @@ void LoadAndSetTexture(AssetManager* pAssetManager, Material* pMaterial, FBXMate
 void TestBed::AddFbxModel(glm::vec3 pos, const char* fbxFilename)
 {
     MaterialDefinition litMatDef(
-        "assets/shaders/lit_textured.vert",
-        "assets/shaders/lit_textured.frag"
+        "assets/shaders/NormalTexCoord.vert",
+        "assets/shaders/LitTextured.frag"
         );
     const auto& litMaterial = MaterialManager::LoadMaterial(m_pEngine->GetAssetManager(), litMatDef);
 
@@ -236,6 +236,4 @@ void TestBed::AddFbxModel(glm::vec3 pos, const char* fbxFilename)
             }
         }
     }
-
-
 }
