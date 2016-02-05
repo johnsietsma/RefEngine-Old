@@ -2,6 +2,8 @@
 
 #include "RefEngine.h"
 
+#include "glm/vec2.hpp"
+
 #include <memory>
 
 struct GLFWwindow;
@@ -21,6 +23,8 @@ public:
 
     GLFWwindow* GetWindow() { return m_pWindow; }
     RefEngine* GetEngine() { return m_pRefEngine.get(); }
+
+	glm::vec2 GetSize() const;
 
 private:
 

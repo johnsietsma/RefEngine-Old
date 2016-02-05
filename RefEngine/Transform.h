@@ -17,8 +17,6 @@ public:
     Transform(glm::vec3 position);
     Transform(glm::vec3 position, glm::quat rot);
     Transform(glm::vec3 position, glm::quat rot, glm::vec3 scale);
-    Transform(glm::vec3 position, glm::vec3 lookAt);
-	Transform(glm::mat4 matrix);
 
 	glm::vec3 GetPosition() const { return m_position;  }
 	glm::quat GetRotation() const { return m_rotation; }
@@ -35,6 +33,8 @@ public:
 	void SetRotation(glm::quat rotation) { m_rotation = rotation; }
 	void SetEulerAngles(glm::vec3 rotation) { m_rotation = glm::quat(rotation); }
 	void SetScale(glm::vec3 scale) { m_scale = scale; }
+
+	void LookAt(glm::vec3 lookTarget);
 
 	void Translate(glm::vec3 positionDelta) { m_position += positionDelta; }
 	void Rotate(glm::quat rotation) { m_rotation = rotation * m_rotation; }

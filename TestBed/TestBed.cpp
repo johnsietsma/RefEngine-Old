@@ -96,11 +96,14 @@ bool TestBed::Init()
     m_pEngine->RegisterUpdateComponent<SpinComponent>();
     m_pEngine->RegisterUpdateComponent<VertexColorComponent>();
 
+	glm::vec2 windowSize = m_pWindow->GetSize();
+
 	// Add a default camera
-	// TODO: User should do this, error check for scene with no camera
-	std::shared_ptr<Camera> pCamera = std::make_shared<Camera>(45.f, 16 / 9.f, 0.1f, 100.f);
+	std::shared_ptr<Camera> pCamera = std::make_shared<Camera>(45.f, windowSize.x/windowSize.y, 0.1f, 100.f);
 	Entity& cameraEntity = m_pEngine->EmplaceEntity("Camera");
-	auto& cameraTransformHandle = cameraEntity.EmplaceComponent<TransformComponent>(Transform(glm::vec3(5, 20, -20), glm::vec3(0, 0, 0)));
+	Transform cameraTransform = Transform(glm::vec3(0, 20, 20));
+	cameraTransform.LookAt(glm::vec3(0));
+	auto& cameraTransformHandle = cameraEntity.EmplaceComponent<TransformComponent>(cameraTransform);
 	cameraEntity.EmplaceComponent<CameraComponent>(cameraTransformHandle, pCamera);
 
     Entity& flyEntity = m_pEngine->EmplaceEntity("FlyInput");
@@ -108,7 +111,8 @@ bool TestBed::Init()
 
     Entity& lightEntity = m_pEngine->EmplaceEntity("Light");
     
-    Transform lightTransform(glm::vec3(-50,50,0), glm::vec3(0,0,0));
+    Transform lightTransform(glm::vec3(-50,50,0));
+	lightTransform.LookAt(glm::vec3(0));
     auto lightTransformHandle = lightEntity.EmplaceComponent<TransformComponent>(lightTransform);
     lightEntity.EmplaceComponent<LightComponent>(lightTransformHandle);
 

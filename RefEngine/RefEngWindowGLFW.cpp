@@ -114,3 +114,10 @@ void RefEngWindowGLFW::Run()
         glfwSwapBuffers(m_pWindow);
     }
 }
+
+glm::vec2 RefEngWindowGLFW::GetSize() const
+{
+	int width, height;
+	glfwGetWindowSize(m_pWindow, &width, &height);
+	return glm::vec2(width, height);
+}
