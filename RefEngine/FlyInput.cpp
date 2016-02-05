@@ -8,17 +8,20 @@
 
 using namespace reng;
 
-void FlyInput::Update(double deltaTime)
+
+
+Transform FlyInput::UpdateTransform(const Transform& transform, double deltaTime)
 {
-	HandleKeyboard(m_pWindow, deltaTime);
-	HandleMouse(m_pWindow, deltaTime);
+	Transform newTransform = transform;
+	HandleKeyboard(newTransform, m_pWindow, deltaTime);
+	HandleMouse(newTransform, m_pWindow, deltaTime);
+	return newTransform;
 }
 
 
-void FlyInput::HandleKeyboard(GLFWwindow* pWindow, double deltaTime)
+void FlyInput::HandleKeyboard(Transform& transform, GLFWwindow* pWindow, double deltaTime)
 {
 	glm::vec3 moveDir(0.0f);
-	Transform transform = GetTransform();
 
 	if (glfwGetKey(pWindow, GLFW_KEY_W) == GLFW_PRESS)
 	{
@@ -54,11 +57,10 @@ void FlyInput::HandleKeyboard(GLFWwindow* pWindow, double deltaTime)
 	{
 		moveDir = ((float)deltaTime * m_flySpeed) * glm::normalize(moveDir);
 		transform.Translate(moveDir);
-		SetTransform(transform);
 	}
 }
 
-void FlyInput::HandleMouse(GLFWwindow* pWindow, double deltaTime)
+void FlyInput::HandleMouse(Transform& transform, GLFWwindow* pWindow, double deltaTime)
 {
 	if (glfwGetMouseButton(pWindow, GLFW_MOUSE_BUTTON_1) == GLFW_PRESS)
 	{
@@ -80,8 +82,11 @@ void FlyInput::HandleMouse(GLFWwindow* pWindow, double deltaTime)
 			double xOffset = mouseX - m_cursorX;
 			double yOffset = mouseY - m_cursorY;
 
-			CalculateRotation(deltaTime, xOffset, yOffset);
+			m_cursorX = (float)mouseX;
+			m_cursorY = (float)mouseY;
 
+			glm::quat rot = CalculateRotation(glm::vec3(0, 1, 0), transform.GetRight(), deltaTime, xOffset, yOffset);
+			transform.Rotate(rot);
 		}
 
 //		glfwSetCursorPos(pWindow, width / 2, height / 2);
@@ -93,37 +98,18 @@ void FlyInput::HandleMouse(GLFWwindow* pWindow, double deltaTime)
 }
 
 
-void FlyInput::CalculateRotation(double deltaTime, double xOffset, double yOffset)
+glm::quat FlyInput::CalculateRotation(glm::vec3 up, glm::vec3 right, double deltaTime, double xOffset, double yOffset)
 {
-	Transform transform = GetTransform();
-	glm::mat4x4 transformMatrix = transform.GetMartix();
-
+	glm::quat vertRot, horzRot;
 	if (xOffset != 0.0)
 	{
-		glm::mat4x4 rot = glm::rotate((float)(m_rotationSpeed * deltaTime * -xOffset), glm::vec3(0, 1, 0));
-		transformMatrix *= rot;
+		vertRot = glm::angleAxis((float)(-xOffset * m_rotationSpeed * deltaTime), up);
 	}
 
 	if (yOffset != 0.0)
 	{
-		glm::mat4x4 rot = glm::rotate((float)(m_rotationSpeed * deltaTime * -yOffset), glm::vec3(1, 0, 0));
-		transformMatrix *= rot;
+		horzRot = glm::angleAxis((float)(-yOffset * m_rotationSpeed * deltaTime), right);
 	}
 
-	//Clean up rotation
-	glm::mat4 oldTrans = transformMatrix;
-	glm::mat4 trans;
-	glm::vec3 worldUp = glm::vec3(0, 1, 0);
-
-	//Right
-	trans[0] = glm::normalize(glm::vec4(glm::cross(worldUp, oldTrans[2].xyz()), 0));
-	//Up
-	trans[1] = glm::normalize(glm::vec4(glm::cross(oldTrans[2].xyz(), trans[0].xyz()), 0));
-	//Forward
-	trans[2] = glm::normalize(oldTrans[2]);
-
-	//Position
-	trans[3] = oldTrans[3];
-
-	SetTransform(trans);
+	return horzRot * vertRot;
 }

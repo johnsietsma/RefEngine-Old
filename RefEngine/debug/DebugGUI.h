@@ -18,7 +18,7 @@ public:
 
 	void NewFrame();
 
-	bool StartEntity( const std::string& name );
+	bool StartEntity( int id, const std::string& name );
 	void EndEntity();
 
 	void Draw();

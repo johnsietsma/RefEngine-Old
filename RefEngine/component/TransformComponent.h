@@ -3,6 +3,7 @@
 #include "Transform.h"
 
 #include "component/DebugComponent.h"
+
 #include "entity/Component.h"
 
 
@@ -22,7 +23,7 @@ public:
 	const Transform& GetTransform() const { return m_transform; }
 	void SetTransform(const Transform& transform) { m_transform = transform; }
 
-	void DrawDebugUI() override;
+	void DrawDebugUI( ComponentId componentId ) override;
 
 protected:
     Transform m_transform;

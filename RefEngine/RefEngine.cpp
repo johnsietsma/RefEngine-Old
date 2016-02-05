@@ -4,6 +4,7 @@
 #include "Camera.h"
 #include "Color.h"
 
+#include "component/CameraComponent.h"
 #include "component/RenderableComponent.h"
 #include "component/LightComponent.h"
 
@@ -25,7 +26,6 @@ using namespace reng;
 
 RefEngine::RefEngine() :
 	m_pAssetManager(std::make_unique<AssetManager>()),
-	m_pCamera(new Camera(glm::vec3(15, 18, -20), glm::vec3(0,5,0), 45, 16 / 9.f)),
     m_pComponentDatabase(std::make_unique<ComponentDatabase>()),
 	m_pUpdateComponentProcessor(std::make_unique<ComponentContainerProcessorManager>()),
     m_pRenderer(new OpenGLRenderer())
@@ -74,7 +74,7 @@ void RefEngine::Draw()
 
 	for (auto& pEntity : m_pEntities)
 	{
-		if (pEntity->HasDebugComponents() && m_pDebugGUI->StartEntity(pEntity->GetName())) {
+		if (pEntity->HasDebugComponents() && m_pDebugGUI->StartEntity(pEntity->GetId(), pEntity->GetName())) {
 			pEntity->DrawDebugUI(*GetComponentDatabase());
 			m_pDebugGUI->EndEntity();
 		}
@@ -88,7 +88,7 @@ void RefEngine::Draw()
         for (auto& light : lightContainer)
         {
 			const auto& transformComponent = m_pComponentDatabase->GetComponent<TransformComponent>(light.GetTransformComponentHandle());
-			lightDirection = transformComponent.GetTransform().GetForward();
+			lightDirection = -transformComponent.GetTransform().GetForward();
             lightColor = light.GetColor();
             break; // Just one light for now;
         }
@@ -96,22 +96,26 @@ void RefEngine::Draw()
 
     auto& renderablesContainer = m_pComponentDatabase->GetComponentContainer<RenderableComponent>();
 
-    // TODO: Update light directions
     // TODO: Check to see if cam has moved before updating values.
     // TODO: Collate lit materials.
-    glm::vec3 camPos = GetCamera()->GetTransform().GetPosition();
-    for (auto renderable : renderablesContainer) {
-        Material* pMaterial = renderable.GetMaterial();
-        if (pMaterial->IsLit()) {
-            pMaterial->SetCameraPosition(camPos);
-            pMaterial->SetLightDirection(lightDirection);
-            pMaterial->SetLightColor(lightColor);
-        }
-    }
+	if (m_pComponentDatabase->HasComponentContainer<CameraComponent>()) {
+		auto& cameraContainer = m_pComponentDatabase->GetComponentContainer<CameraComponent>();
+		for (auto& cameraComponent : cameraContainer) {
+			Camera* pCamera = cameraComponent.GetCamera();
+			glm::vec3 camPos = pCamera->GetTransform().GetPosition();
 
-    // Render everything
-    for (const auto& renderable : renderablesContainer) {
-        renderable.Draw(m_pRenderer.get(), m_pCamera.get(), m_pComponentDatabase->GetComponentContainer<TransformComponent>() );
+			for (auto& renderable : renderablesContainer) {
+				Material* pMaterial = renderable.GetMaterial();
+				if (pMaterial->IsLit()) {
+					pMaterial->SetCameraPosition(camPos);
+					pMaterial->SetLightDirection(lightDirection);
+					pMaterial->SetLightColor(lightColor);
+				}
+
+				// Render everything from this camera
+				renderable.Draw(m_pRenderer.get(), pCamera, m_pComponentDatabase->GetComponentContainer<TransformComponent>());
+			}
+		}
     }
 
     m_pDebugGUI->Draw();
@@ -119,6 +123,6 @@ void RefEngine::Draw()
 
 Entity& RefEngine::EmplaceEntity(const char* pName)
 {
-    m_pEntities.emplace_back( std::make_unique<Entity>(pName, m_pComponentDatabase.get()) );
+    m_pEntities.emplace_back( std::make_unique<Entity>(m_pEntities.size(), pName, m_pComponentDatabase.get()) );
     return *m_pEntities.back().get();
 }

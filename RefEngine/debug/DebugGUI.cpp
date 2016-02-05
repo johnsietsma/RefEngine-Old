@@ -24,13 +24,18 @@ void DebugGUI::DeInit()
 	ImGui_ImplGlfwGL3_Shutdown();
 }
 
-bool DebugGUI::StartEntity(const std::string& name)
+bool DebugGUI::StartEntity(int id, const std::string& name)
 {
-	return ImGui::TreeNode(name.c_str());
+	char nameBuffer[512];
+	sprintf(nameBuffer, "%s - %d", name.c_str(), id);
+	bool isOpen = ImGui::TreeNode(nameBuffer);
+	if( isOpen ) ImGui::PushID(id);
+	return isOpen;
 }
 
 void DebugGUI::EndEntity()
 {
+	ImGui::PopID();
 	ImGui::TreePop();
 }
 

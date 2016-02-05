@@ -20,7 +20,8 @@ public:
     {
         auto& transComponent = database.GetComponent<TransformComponent>( m_transformComponentHandle );
         auto trans = transComponent.GetTransform();
-        trans = glm::rotate<float>(trans.GetMartix(), (float)(m_spinSpeed * deltaTime), glm::vec3(0, 1.f, 0));
+		glm::quat rot = glm::angleAxis((float)(m_spinSpeed * deltaTime), glm::vec3(0, 1.f, 0));
+		trans.Rotate(rot);
         transComponent.SetTransform(trans);
     }
 

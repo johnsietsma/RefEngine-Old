@@ -91,31 +91,40 @@ bool TestBed::Init()
     if( !m_pWindow->Init() ) return false;
     m_pEngine = m_pWindow->GetEngine();
 
-    m_pEngine->RegisterUpdateComponent<FlyInputComponent>();
+	m_pEngine->RegisterUpdateComponent<CameraComponent>();
+	m_pEngine->RegisterUpdateComponent<FlyInputComponent>();
     m_pEngine->RegisterUpdateComponent<SpinComponent>();
     m_pEngine->RegisterUpdateComponent<VertexColorComponent>();
 
+	// Add a default camera
+	// TODO: User should do this, error check for scene with no camera
+	std::shared_ptr<Camera> pCamera = std::make_shared<Camera>(45.f, 16 / 9.f, 0.1f, 100.f);
+	Entity& cameraEntity = m_pEngine->EmplaceEntity("Camera");
+	auto& cameraTransformHandle = cameraEntity.EmplaceComponent<TransformComponent>(Transform(glm::vec3(5, 20, -20), glm::vec3(0, 0, 0)));
+	cameraEntity.EmplaceComponent<CameraComponent>(cameraTransformHandle, pCamera);
+
     Entity& flyEntity = m_pEngine->EmplaceEntity("FlyInput");
-    flyEntity.EmplaceComponent<FlyInputComponent>(m_pEngine->GetCamera(), m_pWindow->GetWindow(), 5, 0.1f);
+    flyEntity.EmplaceComponent<FlyInputComponent>(cameraTransformHandle, m_pWindow->GetWindow(), 5.f, 0.2f);
 
     Entity& lightEntity = m_pEngine->EmplaceEntity("Light");
     
-    Transform lightTransform(glm::vec3(5,5,5), glm::vec3(0,0,0));
+    Transform lightTransform(glm::vec3(-50,50,0), glm::vec3(0,0,0));
     auto lightTransformHandle = lightEntity.EmplaceComponent<TransformComponent>(lightTransform);
     lightEntity.EmplaceComponent<LightComponent>(lightTransformHandle);
 
-    AddTexturedQuad(glm::vec3(5, 0, 0));
+    AddTexturedQuad(glm::vec3(0, 0, 0));
+
 
     AddSpinningTri(glm::vec3(-2, 1, 0));
     AddSpinningTri(glm::vec3(2, 1, 0));
 
-    AddVertexColoredCube(glm::vec3(3, 2, 3));
+    //AddVertexColoredCube(glm::vec3(3, 2, 3));
 
-    AddLitCube(glm::vec3(0, 0, -5));
+    AddLitCube(glm::vec3(0, 0, 0));
 
-    AddFbxModel(glm::vec3(0, 0, 3), "assets/models/cube/cube.fbx");
+    //AddFbxModel(glm::vec3(0, 0, 3), "assets/models/cube/cube.fbx");
     
-    AddFbxModel(glm::vec3(2, -2, 3), "assets/models/ruinedtank/tank.fbx");
+    //AddFbxModel(glm::vec3(2, -2, 3), "assets/models/ruinedtank/tank.fbx");
 
     return true;
 }

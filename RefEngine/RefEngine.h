@@ -35,7 +35,6 @@ public:
     bool Update(double deltaTime);
     void Draw();
 
-    Camera* GetCamera() { return m_pCamera.get(); }
     AssetManager* GetAssetManager() { return m_pAssetManager.get(); }
 	ComponentDatabase* GetComponentDatabase() { return m_pComponentDatabase.get(); }
 
@@ -61,7 +60,6 @@ private:
 	void DrawWorldGrid() const;
 
 	std::unique_ptr<AssetManager> m_pAssetManager;
-	std::unique_ptr<Camera> m_pCamera;
     std::unique_ptr<ComponentDatabase> m_pComponentDatabase;
 	std::unique_ptr<ComponentContainerProcessorManager> m_pUpdateComponentProcessor;
     std::unique_ptr<OpenGLRenderer> m_pRenderer;

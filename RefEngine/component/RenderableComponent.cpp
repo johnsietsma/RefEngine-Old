@@ -19,7 +19,7 @@ void RenderableComponent::Draw(OpenGLRenderer* pRenderer, Camera* pCamera, Compo
 	auto& transform = transformContainer.GetComponent(m_transformComponentHandle.id).GetTransform();
 
     // TODO: Cache this
-    m_pMaterial->UpdateUniforms(pCamera->GetProjectionViewMatrix(), transform.GetMartix());
+    m_pMaterial->UpdateUniforms(pCamera->GetProjectionViewMatrix(), transform.GetMatrix());
     m_pMaterial->BindTexture();
 
     pRenderer->Bind(*m_pMesh);

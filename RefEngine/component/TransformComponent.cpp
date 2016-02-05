@@ -1,37 +1,35 @@
 #include "TransformComponent.h"
 
+#include "entity/Component.h"
+
 #include "imgui.h"
 
 using namespace reng;
 
-void TransformComponent::DrawDebugUI()
+void TransformComponent::DrawDebugUI(ComponentId id)
 {
 	Transform t = GetTransform();
 
-	ImGui::BeginChild("Transform");
+	char name[512];
+	sprintf_s(name, "Transform - %d", id);
 
-	glm::vec3 right = t.GetRight();
-	if (ImGui::DragFloat3("Right", &right[0]))
-	{
-		t.SetRight(right);
-		SetTransform(t);
-	}
+	ImGui::BeginChild(name, ImVec2(250,50));
 
-	glm::vec3 up = t.GetUp();
-	if (ImGui::DragFloat3("Up", &up[0]))
-	{
-		t.SetUp(up);
-		SetTransform(t);
-	}
+	// 
+	glm::vec3 rot = t.GetEulerAngles();
+	rot *= 180 / glm::pi<float>();
 
-	glm::vec3 fwd = t.GetForward();
-	if (ImGui::DragFloat3("Forward", &fwd[0])) {
-		t.SetForward(fwd);
+	if (ImGui::DragFloat3("Rotation", &rot[0])) {
+		rot *= glm::pi<float>() / 180;
+		t.SetEulerAngles(rot);
 		SetTransform(t);
 	}
 
 	glm::vec3 pos = t.GetPosition();
-	ImGui::DragFloat3("Position", &pos[0]);
+	if (ImGui::DragFloat3("Position", &pos[0])) {
+		t.SetPosition(pos);
+		SetTransform(t);
+	}
 
 	ImGui::EndChild();
 }

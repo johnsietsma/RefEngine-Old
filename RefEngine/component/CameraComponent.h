@@ -1,21 +1,37 @@
 #pragma once
 
+#include "component/TransformComponent.h"
+#include "component/UpdateComponent.h"
+
+#include "entity/ComponentHandle.h"
+
+#include <memory>
+
 namespace reng {
 
 class Camera;
 
-class CameraComponent 
+class CameraComponent : UpdateComponent
 {
 public:
-    CameraComponent(glm::vec3 eye, glm::vec3 center, float fov, float aspectRatio) :
-        m_camera(eye, center, fov, aspectRatio)
-    {}
+    CameraComponent(ComponentHandle transformCompnentHandle, std::shared_ptr<Camera> pCamera) :
+		m_transformComponentHandle(transformCompnentHandle),
+		m_pCamera( pCamera )
+    {
+	}
 
-    Camera& GetCamera() { return m_camera;  }
+    Camera* GetCamera() { return m_pCamera.get();  }
+
+	void Update(double deltaTime, ComponentDatabase& database) override
+	{
+		auto& transformComponent = database.GetComponent<TransformComponent>(m_transformComponentHandle);
+		m_pCamera->SetTransform(transformComponent.GetTransform());
+	}
+
 
 protected:
-    Camera m_camera;
-
+	ComponentHandle m_transformComponentHandle;
+    std::shared_ptr<Camera> m_pCamera;
 };
 
 }

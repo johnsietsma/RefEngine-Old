@@ -12,14 +12,19 @@
 
 namespace reng {
 
+typedef size_t EntityId;
+
+
 class Entity
 {
 public:
-    Entity(const char* name, ComponentDatabase* a_pDatabase) :
+    Entity(EntityId id, const char* name, ComponentDatabase* a_pDatabase) :
+		m_id(id),
 		m_name(name),
         m_pDatabase(a_pDatabase)
     {}
 
+	EntityId GetId() const { return m_id; }
 	const std::string& GetName() const { return m_name;  }
 
 	bool HasDebugComponents() const { return m_debugTypeIds.size() > 0; }
@@ -54,7 +59,7 @@ public:
 			if (IsDebugType(componentHandle.typeId)) {
 				auto& componentContainer = database.GetComponentContainer(componentHandle.typeId);
 				void* pComponent = componentContainer.GetComponentPointer(componentHandle.id);
-				dynamic_cast<DebugComponent*>(static_cast<DebugComponent*>(pComponent))->DrawDebugUI();
+				dynamic_cast<DebugComponent*>(static_cast<DebugComponent*>(pComponent))->DrawDebugUI(componentHandle.id);
 			}
 		}
 	}
@@ -75,6 +80,7 @@ private:
 	}
 
 
+	EntityId m_id;
 	std::string m_name;
 	std::vector<ComponentHandle> m_componentHandles;
 	std::vector<ComponentTypeId> m_debugTypeIds; // Keep track of debug types we own.

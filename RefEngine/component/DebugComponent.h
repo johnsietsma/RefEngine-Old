@@ -9,7 +9,7 @@ namespace reng {
 class DebugComponent
 {
 public:
-    virtual void DrawDebugUI() = 0;
+    virtual void DrawDebugUI(ComponentId componentId) = 0;
 };
 
 }
