@@ -7,7 +7,7 @@
 #include "entity/ComponentDatabase.h"
 #include "entity/ComponentHandle.h"
 
-#include "FlyInput.h"
+#include "input/FlyInput_GLFW.h"
 
 #include <memory>
 

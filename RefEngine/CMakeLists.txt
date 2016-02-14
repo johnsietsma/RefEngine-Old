@@ -49,12 +49,12 @@ add_definitions(-DTW_STATIC)
 if( USE_GLFW_WINDOW )
     SET( WINDOW_FILES
         component/DebugUIComponent_GLFW.h
-        debug/imgui_impl_glfw_gl3.h 
-        debug/imgui_impl_glfw_gl3.cpp
         debug/DebugGUI_GLFW.h
         debug/DebugGUI_GLFW.cpp
         input/FlyInput_GLFW.h
         input/FlyInput_GLFW.cpp
+        window/imgui_impl_glfw_gl3.h 
+        window/imgui_impl_glfw_gl3.cpp
         window/RefEngWindow_GLFW.h 
         window/RefEngWindow_GLFW.cpp 
     )

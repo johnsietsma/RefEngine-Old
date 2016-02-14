@@ -1,7 +1,6 @@
 #pragma once
 
 #include "debug/DebugGUI_GLFW.h"
-#include "debug/DebugUI_GLFW.cpp"
 
 #include "entity/Component.h"
 #include "entity/ComponentContainer.h"
@@ -13,30 +12,29 @@
 namespace reng {
 
 
-class DebugComponent : DrawComponent
+class DebugUIComponent : DrawComponent
 {
 public:
-    virtual void DrawDebugUI(ComponentId componentId) = 0;
-
-    DebugComponent() :
-        m_pDebugGUI( std::make_shared<DebugGUI>() )
+    DebugUIComponent(RefEngine* pRefEngine, GLFWwindow* pWindow ) :
+        m_pDebugGUI( std::make_shared<DebugGUI>() ),
+        m_pRefEngine( pRefEngine )
     {
-        m_pDebugGUI->Init();
+        m_pDebugGUI->Init(pWindow);
     }
 
-    ~DebugComponent()
+    ~DebugUIComponent()
     {
         m_pDebugGUI->DeInit();
     }
 
-    void Draw()
+    void Draw(ComponentDatabase& database) override
     {
         m_pDebugGUI->NewFrame();
 
         for (auto& pEntity : m_pRefEngine->GetEntities())
         {
             if (pEntity->HasDebugComponents() && m_pDebugGUI->StartEntity(pEntity->GetId(), pEntity->GetName())) {
-                pEntity->DrawDebugUI(*GetComponentDatabase());
+                pEntity->DrawDebugUI(database);
                 m_pDebugGUI->EndEntity();
             }
         }
@@ -47,8 +45,7 @@ public:
 
 private:
     std::shared_ptr<DebugGUI> m_pDebugGUI;
-
-    std::shared_ptr<RefEngine> m_pRefEngine;
+    RefEngine* m_pRefEngine;
 
 };
 

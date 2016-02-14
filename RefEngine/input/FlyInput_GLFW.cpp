@@ -1,4 +1,4 @@
-#include "FlyInput.h"
+#include "input/FlyInput_GLFW.h"
 
 #include "GLFW/glfw3.h"
 

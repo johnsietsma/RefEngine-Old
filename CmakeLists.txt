@@ -3,6 +3,8 @@ cmake_minimum_required(VERSION 2.8 FATAL_ERROR)
 set(PROJECT_NAME RefEngine)
 project(${PROJECT_NAME})
 
+set(USE_TESTS CACHE BOOL "Include the test project and unit tests.")
+
 set(ASSETS_DIR "${CMAKE_CURRENT_SOURCE_DIR}/assets" CACHE STRING "Path to the assets.")
 set(SHADERS_DIR "${ASSETS_DIR}" CACHE STRING "Path to the shaders.")
 

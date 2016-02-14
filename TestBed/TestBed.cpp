@@ -3,9 +3,9 @@
 #include "AssetManager.h"
 #include "RefEngine.h"
 #include "MaterialManager.h"
-#include "RefEngWindowGLFW.h"
 
 #include "component/CameraComponent.h"
+#include "component/DebugUIComponent_GLFW.h"
 #include "component/FlyInputComponent.h"
 #include "component/LightComponent.h"
 #include "component/RenderableComponent.h"
@@ -59,7 +59,7 @@ public:
         colorPrim.accessor = BufferAccessor(colors, 1);
     }
 
-    void Update(double deltaTime, ComponentDatabase& database ) override 
+    void Update(double deltaTime, ComponentDatabase& database ) override
     {
         accumTime += deltaTime;
         size_t colorsSize = colorPrim.accessor.count;
@@ -83,7 +83,7 @@ private:
 
 
 TestBed::TestBed() :
-    m_pWindow(std::make_unique<RefEngWindowGLFW>())
+    m_pWindow(std::make_unique<RefEngWindow>())
 {}
 
 bool TestBed::Init()
@@ -97,20 +97,23 @@ bool TestBed::Init()
     m_pEngine->RegisterUpdateComponent<VertexColorComponent>();
 
 	glm::vec2 windowSize = m_pWindow->GetSize();
+    
+    Entity& debugUIEnt = m_pEngine->EmplaceEntity("DebugUI");
+    debugUIEnt.EmplaceComponent<DebugUIComponent>( m_pEngine, m_pWindow->GetWindow() );
 
 	// Add a default camera
 	std::shared_ptr<Camera> pCamera = std::make_shared<Camera>(45.f, windowSize.x/windowSize.y, 0.1f, 100.f);
 	Entity& cameraEntity = m_pEngine->EmplaceEntity("Camera");
 	Transform cameraTransform = Transform(glm::vec3(0, 20, 20));
 	cameraTransform.LookAt(glm::vec3(0));
-	auto& cameraTransformHandle = cameraEntity.EmplaceComponent<TransformComponent>(cameraTransform);
+	auto cameraTransformHandle = cameraEntity.EmplaceComponent<TransformComponent>(cameraTransform);
 	cameraEntity.EmplaceComponent<CameraComponent>(cameraTransformHandle, pCamera);
 
     Entity& flyEntity = m_pEngine->EmplaceEntity("FlyInput");
     flyEntity.EmplaceComponent<FlyInputComponent>(cameraTransformHandle, m_pWindow->GetWindow(), 5.f, 0.2f);
 
     Entity& lightEntity = m_pEngine->EmplaceEntity("Light");
-    
+
     Transform lightTransform(glm::vec3(-50,50,0));
 	lightTransform.LookAt(glm::vec3(0));
     auto lightTransformHandle = lightEntity.EmplaceComponent<TransformComponent>(lightTransform);
@@ -127,7 +130,7 @@ bool TestBed::Init()
     AddLitCube(glm::vec3(0, 0, 0));
 
     //AddFbxModel(glm::vec3(0, 0, 3), "assets/models/cube/cube.fbx");
-    
+
     //AddFbxModel(glm::vec3(2, -2, 3), "assets/models/ruinedtank/tank.fbx");
 
     return true;
@@ -211,7 +214,7 @@ void LoadAndSetTexture(AssetManager* pAssetManager, Material* pMaterial, FBXMate
     if( FBXTexture* pFbxTexture = pFbxMaterial->textures[textureType] ) {
         auto texture = pAssetManager->LoadTexture(pFbxTexture->path.c_str(), textureUnit);
         pMaterial->SetSampler(location, texture.textureId, textureUnit);
-        
+
     }
 }
 
@@ -228,21 +231,21 @@ void TestBed::AddFbxModel(glm::vec3 pos, const char* fbxFilename)
 
     auto fbx = std::shared_ptr<FBXFile>(new FBXFile());
     fbx->load(fbxFilename);
-    
+
     auto pAssetManager = m_pEngine->GetAssetManager();
-    
+
     for (uint i = 0; i < fbx->getMeshCount(); i++) {
         FBXMeshNode* pMesh = fbx->getMeshByIndex(i);
         if (pMesh->m_vertices.size() >  0) {
             auto pMaterial = std::make_shared<Material>(*litMaterial); // Take a copy
-            
+
             // Create one mesh instanace for each material
             for( auto pFbxMaterial : pMesh->m_materials )
             {
                 LoadAndSetTexture(pAssetManager, pMaterial.get(), pFbxMaterial, FBXMaterial::DiffuseTexture, WellKnownLocation::DiffuseSampler, (int)WellKnownTextureUnit::Diffuse);
-                
+
                 LoadAndSetTexture(pAssetManager, pMaterial.get(), pFbxMaterial, FBXMaterial::NormalTexture, WellKnownLocation::NormalSampler, (int)WellKnownTextureUnit::Normal);
-            
+
                 const BufferAccessor accessor(pMesh->m_vertices, 1);
                 auto pFbxMesh = Mesh::Create<FBXVertex>(accessor, FBXVertexAttributes, BufferAccessor(pMesh->m_indices, 1));
                 fbxEnt.EmplaceComponent<RenderableComponent>(transformComponentHandle, pFbxMesh, pMaterial);

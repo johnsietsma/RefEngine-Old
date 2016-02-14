@@ -1,4 +1,4 @@
-#include "RefEngWindow.h"
+#include "RefEngWindow_GLFW.h"
 
 #include "RefEngine.h"
 
@@ -58,12 +58,7 @@ bool RefEngWindow::Init()
     glfwMakeContextCurrent(m_pWindow);
     glfwSwapInterval(1);
 
-    m_pRefEngine->Init( std::make_shared<DebugGUI>(m_pWindow) );
-
-    //int width, height;
-    //glfwGetFramebufferSize(m_pWindow, &width, &height);
-
-    //m_pRefEngine->ProcessComponents<DebugComponent, TwBar*>(m_pDebugGUI->GetBar(), DebugComponent::AddDebugVarsProcessor<DebugComponent>);
+    m_pRefEngine->Init(  );
 
     m_isValid = true;
     return true;

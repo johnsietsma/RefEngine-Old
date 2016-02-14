@@ -15,8 +15,8 @@ class RefEngine;
 class RefEngWindow
 {
 public:
-    RefEngWindowGLFW();
-    ~RefEngWindowGLFW();
+    RefEngWindow();
+    ~RefEngWindow();
 
     bool Init();
     void Run();
