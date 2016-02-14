@@ -8,8 +8,6 @@
 #include "component/RenderableComponent.h"
 #include "component/LightComponent.h"
 
-#include "debug/DebugGUI.h"
-
 #include "entity/Entity.h"
 
 #include "graphics/GLHelpers.h"
@@ -27,35 +25,33 @@ using namespace reng;
 RefEngine::RefEngine() :
 	m_pAssetManager(std::make_unique<AssetManager>()),
     m_pComponentDatabase(std::make_unique<ComponentDatabase>()),
-	m_pUpdateComponentProcessor(std::make_unique<ComponentContainerProcessorManager>()),
+    m_pUpdateComponentProcessor(std::make_unique<ComponentContainerProcessorManager>()),
+	m_pDrawComponentProcessor(std::make_unique<ComponentContainerProcessorManager>()),
     m_pRenderer(new OpenGLRenderer())
 {
 }
 
-bool RefEngine::Init(std::shared_ptr<DebugGUI> pDebugGUI )
+bool RefEngine::Init()
 {
-	m_pDebugGUI.swap(pDebugGUI);
-
     if (ogl_LoadFunctions() == ogl_LOAD_FAILED) return false;
 
     float clear = 192 / 255.f;
     glClearColor(clear, clear, clear, 1);
     glEnable(GL_DEPTH_TEST);
-    
+
     printf("Supported GLSL version is %s.\n", (char *)glGetString(GL_SHADING_LANGUAGE_VERSION));
 
 #ifdef _DEBUG
 	GLHelpers::TurnOnDebugLogging();
 #endif
 
-	m_pDebugGUI->Init();
 
     return true;
 }
 
 void RefEngine::DeInit()
 {
-	m_pDebugGUI->DeInit();
+
 }
 
 bool RefEngine::Update(double deltaTime)
@@ -67,18 +63,8 @@ bool RefEngine::Update(double deltaTime)
 void RefEngine::Draw()
 {
 	glClear(GL_COLOR_BUFFER_BIT | GL_DEPTH_BUFFER_BIT);
-    
+
     if( !m_pComponentDatabase->HasComponentContainer<RenderableComponent>() ) return;
-
-	m_pDebugGUI->NewFrame();
-
-	for (auto& pEntity : m_pEntities)
-	{
-		if (pEntity->HasDebugComponents() && m_pDebugGUI->StartEntity(pEntity->GetId(), pEntity->GetName())) {
-			pEntity->DrawDebugUI(*GetComponentDatabase());
-			m_pDebugGUI->EndEntity();
-		}
-	}
 
     glm::vec3 lightDirection;
     glm::vec3 lightColor;
@@ -118,7 +104,7 @@ void RefEngine::Draw()
 		}
     }
 
-    m_pDebugGUI->Draw();
+    m_pDrawComponentProcessor->Process( nullptr, *m_pComponentDatabase.get() );
 }
 
 Entity& RefEngine::EmplaceEntity(const char* pName)

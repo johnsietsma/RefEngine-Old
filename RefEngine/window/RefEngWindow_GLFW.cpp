@@ -1,4 +1,4 @@
-#include "RefEngWindowGLFW.h"
+#include "RefEngWindow.h"
 
 #include "RefEngine.h"
 
@@ -25,18 +25,18 @@ void keyCallback(GLFWwindow* m_pWindow, int key, int /*scanCode*/, int action, i
 }
 
 
-RefEngWindowGLFW::RefEngWindowGLFW() :
+RefEngWindow::RefEngWindow() :
     m_isValid(false),
     m_pRefEngine(std::make_unique<RefEngine>())
 {
 }
 
-RefEngWindowGLFW::~RefEngWindowGLFW()
+RefEngWindow::~RefEngWindow()
 {
     if (m_isValid) Destroy();
 }
 
-bool RefEngWindowGLFW::Init()
+bool RefEngWindow::Init()
 {
     POW2_ASSERT(!m_isValid);
     std::cout << "GLFW: " << glfwGetVersionString() << std::endl;
@@ -64,12 +64,12 @@ bool RefEngWindowGLFW::Init()
     //glfwGetFramebufferSize(m_pWindow, &width, &height);
 
     //m_pRefEngine->ProcessComponents<DebugComponent, TwBar*>(m_pDebugGUI->GetBar(), DebugComponent::AddDebugVarsProcessor<DebugComponent>);
-    
+
     m_isValid = true;
     return true;
 }
 
-void RefEngWindowGLFW::Destroy()
+void RefEngWindow::Destroy()
 {
     POW2_ASSERT(m_isValid);
 
@@ -85,7 +85,7 @@ void RefEngWindowGLFW::Destroy()
     m_isValid = false;
 }
 
-void RefEngWindowGLFW::Run()
+void RefEngWindow::Run()
 {
     POW2_ASSERT_MSG(m_isValid, "Call Init() first and check return code.");
 
@@ -115,7 +115,7 @@ void RefEngWindowGLFW::Run()
     }
 }
 
-glm::vec2 RefEngWindowGLFW::GetSize() const
+glm::vec2 RefEngWindow::GetSize() const
 {
 	int width, height;
 	glfwGetWindowSize(m_pWindow, &width, &height);

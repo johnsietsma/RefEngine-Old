@@ -12,7 +12,7 @@ namespace reng {
 
 class RefEngine;
 
-class RefEngWindowGLFW
+class RefEngWindow
 {
 public:
     RefEngWindowGLFW();

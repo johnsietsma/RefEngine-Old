@@ -23,13 +23,18 @@ set(SHADER_FILES
     ${SHADERS_DIR}/white.frag
 )
 
-set(USE_GLFW_WINDOW TRUE)
-add_subdirectory(dep/glfw)
+if(USE_GLFW_WINDOW)
+    add_subdirectory(dep/glfw)
+endif()
+
 add_subdirectory(dep/imgui)
 
 add_subdirectory(RefEngine)
-add_subdirectory(TestBed)
 
-set( gtest_force_shared_crt ON CACHE BOOL "Always use msvcrt.dll" )
-add_subdirectory(dep/gtest-1.7.0)
-add_subdirectory(RefEngineTests)
+if(USE_TESTS)
+    add_subdirectory(TestBed)
+
+    set( gtest_force_shared_crt ON CACHE BOOL "Always use msvcrt.dll" )
+    add_subdirectory(dep/gtest-1.7.0)
+    add_subdirectory(RefEngineTests)
+endif()
