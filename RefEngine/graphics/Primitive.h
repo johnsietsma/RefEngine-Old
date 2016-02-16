@@ -101,7 +101,7 @@ struct VertexAttribute
         return VertexAttribute(offset, sizeof(T), GLEnum<T>::value, numComponents);
     }
 
-    VertexAttribute(size_t offset, size_t stride, GLenum type, size_t numComponents) :
+    VertexAttribute(size_t offset, size_t stride, GLenum type, int numComponents) :
         accessor( offset, stride, type, numComponents )
     {}
 };

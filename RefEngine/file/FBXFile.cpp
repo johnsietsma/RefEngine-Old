@@ -478,8 +478,8 @@ bool FBXFile::load(
     {
         // store the folder path of the scene
         m_path = a_filename;
-        long iLastForward = m_path.find_last_of('/');
-        long iLastBackward = m_path.find_last_of('\\');
+        size_t iLastForward = m_path.find_last_of('/');
+		size_t iLastBackward = m_path.find_last_of('\\');
         if (iLastForward > iLastBackward)
         {
             m_path.resize(iLastForward + 1);
