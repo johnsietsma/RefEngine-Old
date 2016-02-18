@@ -11,7 +11,7 @@ void TransformComponent::DrawDebugUI(ComponentId id)
 	Transform t = GetTransform();
 
 	char name[512];
-	sprintf(name, "Transform - %ld", id);
+	sprintf(name, "Transform - %zu", id);
 
 	ImGui::BeginChild(name, ImVec2(250,50));
 

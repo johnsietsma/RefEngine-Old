@@ -363,13 +363,13 @@ public:
 	// the ambient light of the scene
 	const glm::vec4&	getAmbientLight() const		{ return m_ambientLight; }
 
-	unsigned int	getMeshCount() const		{ return m_meshes.size(); }
-	unsigned int	getLightCount() const		{ return m_lights.size(); }
-	unsigned int	getCameraCount() const		{ return m_cameras.size(); }
-	unsigned int	getMaterialCount() const	{ return m_materials.size(); }
-	unsigned int	getSkeletonCount() const	{ return m_skeletons.size(); }
-	unsigned int	getAnimationCount() const	{ return m_animations.size(); }
-	unsigned int	getTextureCount() const		{ return m_textures.size(); }
+	size_t	getMeshCount() const		{ return m_meshes.size(); }
+	size_t	getLightCount() const		{ return m_lights.size(); }
+	size_t	getCameraCount() const		{ return m_cameras.size(); }
+	size_t	getMaterialCount() const	{ return m_materials.size(); }
+	size_t	getSkeletonCount() const	{ return m_skeletons.size(); }
+	size_t	getAnimationCount() const	{ return m_animations.size(); }
+	size_t	getTextureCount() const		{ return m_textures.size(); }
 
 	FBXMeshNode*	getMeshByName(const char* a_name);
 	FBXLightNode*	getLightByName(const char* a_name);
@@ -609,6 +609,6 @@ inline FBXSkeleton::~FBXSkeleton()
 {
 	delete[] m_parentIndex;
 	delete[] m_nodes;
-	delete[] m_bones;
-	delete[] m_bindPoses;
+	free(m_bones);
+	free(m_bindPoses);
 }

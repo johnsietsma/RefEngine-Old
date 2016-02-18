@@ -42,7 +42,7 @@ public:
 	TMake Get(TArgs... args) 
 	{
 		// Get a hash value that represents all the params.
-		int hashKey = vhash(args...);
+		size_t hashKey = vhash(args...);
 
 		// Check to see if we already have created this object.
 		if (m_cacheMap.find(hashKey) != m_cacheMap.end()) { return m_cacheMap[hashKey]; }
@@ -66,7 +66,7 @@ public:
 private:
   	std::function<TMake(TArgs...)> m_factoryFunction; // The function that will create the object.
     std::function<void(TMake)> m_destroyFunction;
-	std::map<int, TMake> m_cacheMap; // A map of parameter hashes to created objects.
+	std::map<size_t, TMake> m_cacheMap; // A map of parameter hashes to created objects.
 };
 
 }
