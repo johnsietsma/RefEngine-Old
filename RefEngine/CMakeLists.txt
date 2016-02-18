@@ -1,18 +1,24 @@
 cmake_minimum_required(VERSION 2.8 FATAL_ERROR)
 
 IF(APPLE)
-    SET(FBX_SDK_DIR "/Applications/Autodesk/FBX SDK/2015.1/" CACHE PATH "The location of the FBX SDK" )
-  SET(FBX_LIB_DIR ${FBX_SDK_DIR}/lib/clang/)
+	SET(FBX_SDK_DIR "/Applications/Autodesk/FBX SDK/2015.1/" CACHE PATH "The location of the FBX SDK" )
+	SET(FBX_LIB_DIR ${FBX_SDK_DIR}/lib/clang/)
 ELSE(APPLE)
-	if( MSVC_VERSION EQUAL 1900 )
-		SET(FBX_SDK_DIR "C:/Program Files/Autodesk/FBX/FBX SDK/2016.1.2/" CACHE PATH "The location of the FBX SDK" )
-		SET(FBX_LIB_DIR ${FBX_SDK_DIR}/lib/vs2015/x86/)
-	elseif( MSVC_VERSION EQUAL 1800 )
-		SET(FBX_SDK_DIR "C:/Program Files/Autodesk/FBX/FBX SDK/2015.1/" CACHE PATH "The location of the FBX SDK" )
-		SET(FBX_LIB_DIR ${FBX_SDK_DIR}/lib/vs2013/x86/)
-	else ( MSVC_VERSION EQUAL 1900 )
-		MESSAGE( ERROR "Unsupported Visual Studio version." )
-	endif( MSVC_VERSION EQUAL 1900 )
+    set( MSVC_ARCH x86 )
+    if( CMAKE_CL_64 )
+        set( MSVC_ARCH x64 )
+    endif()
+
+
+   if( MSVC_VERSION EQUAL 1900 )
+        SET(FBX_SDK_DIR "C:/Program Files/Autodesk/FBX/FBX SDK/2016.1.2/" CACHE PATH "The location of the FBX SDK" )
+        SET(FBX_LIB_DIR ${FBX_SDK_DIR}/lib/vs2015/${MSVC_ARCH}/)
+    elseif( MSVC_VERSION EQUAL 1800 )
+        SET(FBX_SDK_DIR "C:/Program Files/Autodesk/FBX/FBX SDK/2015.1/" CACHE PATH "The location of the FBX SDK" )
+        SET(FBX_LIB_DIR ${FBX_SDK_DIR}/lib/vs2013/${MSVC_ARCH}/)
+    else ( MSVC_VERSION EQUAL 1900 )
+        MESSAGE( ERROR "Unsupported Visual Studio version." )
+    endif( MSVC_VERSION EQUAL 1900 )
 ENDIF()
 
 include_directories(../dep/aieutilities)
@@ -20,13 +26,12 @@ include_directories(../dep/glm)
 include_directories(../dep/imgui)
 
 if( USE_GLFW_WINDOW )
-	include_directories(../dep/imgui/examples/opengl3_example/)
-	include_directories(../dep/GLFW/include)
+    include_directories(../dep/imgui/examples/opengl3_example/)
+    include_directories(../dep/GLFW/include)
 endif( USE_GLFW_WINDOW )
 
 include_directories(../dep/FBXLoader)
 include_directories(${FBX_SDK_DIR}/include)
-include_directories(../dep/imgui)
 include_directories(../dep/stb)
 include_directories(src)
 
@@ -39,21 +44,34 @@ IF(APPLE)
     SET(GCC_CHAR_IS_UNSIGNED_CHAR "-funsigned-char")
     SET(STD_C11 "-std=c++11 -stdlib=libc++")
     SET(CMAKE_XCODE_ATTRIBUTE_CLANG_CXX_LIBRARY "libc++")
-    set(CMAKE_XCODE_ATTRIBUTE_CLANG_CXX_LANGUAGE_STANDARD "c++11")
+    SET(CMAKE_XCODE_ATTRIBUTE_CLANG_CXX_LANGUAGE_STANDARD "c++11")
+ELSE()
+	SET(MSVC_OVERLOADSECURE "-D_CRT_SECURE_CPP_OVERLOAD_STANDARD_NAMES")
 ENDIF (APPLE)
 
-set(CMAKE_CXX_FLAGS "${CMAKE_CXX_FLAGS} ${GCC_CHAR_IS_UNSIGNED_CHAR} ${STD_C11}")
+set(CMAKE_CXX_FLAGS "${CMAKE_CXX_FLAGS} ${GCC_CHAR_IS_UNSIGNED_CHAR} ${STD_C11} ${MSVC_OVERLOADSECURE}")
 
 add_definitions(-DGLM_SWIZZLE)
 add_definitions(-DTW_STATIC)
 
 if( USE_GLFW_WINDOW )
-    SET( WINDOW_FILES 
-		RefEngWindowGLFW.h 
-		RefEngWindowGLFW.cpp 
-		imgui_impl_glfw_gl3.h 
-		imgui_impl_glfw_gl3.cpp
-	)
+    SET( WINDOW_FILES
+        component/DebugUIComponent_GLFW.h
+        debug/DebugGUI_GLFW.h
+        debug/DebugGUI_GLFW.cpp
+        input/FlyInput_GLFW.h
+        input/FlyInput_GLFW.cpp
+        window/imgui_impl_glfw_gl3.h 
+        window/imgui_impl_glfw_gl3.cpp
+        window/RefEngWindow_GLFW.h 
+        window/RefEngWindow_GLFW.cpp 
+    )
+elseif( USE_QT_WINDOW )
+    SET( WINDOW_FILES
+        debug/DebugGUI_QT.h
+        debug/DebugGUI_QT.cpp
+    )
+
 endif()
 
 add_library(refeng
@@ -65,8 +83,6 @@ add_library(refeng
     Camera.h
     Color.cpp
     Color.h
-    FlyInput.cpp
-    FlyInput.h
     make_unique.h
     MaterialManager.h
     MaterialManager.cpp
@@ -82,7 +98,7 @@ add_library(refeng
     VariadicHash.h
     
     ${WINDOW_FILES}
-
+    
     component/CameraComponent.h
     component/DebugComponent.h
     component/FlyInputComponent.h
@@ -93,9 +109,6 @@ add_library(refeng
     component/TransformComponent.h
 	component/TransformComponent.cpp
     component/UpdateComponent.h
-
-    debug/DebugGUI.h
-    debug/DebugGUI.cpp
 
     entity/Component.h
     entity/ComponentContainer.h
@@ -143,6 +156,7 @@ source_group( Graphics graphics/ )
 source_group( Utils utils/ )
 
 target_include_directories (refeng PUBLIC ${CMAKE_CURRENT_SOURCE_DIR}\\)
+
 
 target_link_libraries(refeng imgui)
 

@@ -9,7 +9,9 @@
 #include <set>
 
 #define STB_IMAGE_IMPLEMENTATION
+#pragma warning( disable: 4312 )
 #include <stb_image.h>
+#pragma warning( default: 4312 )
 
 #include <glm/gtc/matrix_transform.hpp>
 #include <glm/gtc/matrix_inverse.hpp>
@@ -187,10 +189,10 @@ void LoadVertexColors( FbxGeometryElementVertexColor* pVertexColors, int vertexC
         if( directIndex >= 0 ) {
             FbxColor fbxColour = pVertexColors->GetDirectArray().GetAt(directIndex);
             
-            vertex.colour.x = (float)fbxColour.mRed;
-            vertex.colour.y = (float)fbxColour.mGreen;
-            vertex.colour.z = (float)fbxColour.mBlue;
-            vertex.colour.w = (float)fbxColour.mAlpha;
+            vertex.color.x = (float)fbxColour.mRed;
+            vertex.color.y = (float)fbxColour.mGreen;
+            vertex.color.z = (float)fbxColour.mBlue;
+            vertex.color.w = (float)fbxColour.mAlpha;
         }
     }
 }
@@ -478,8 +480,8 @@ bool FBXFile::load(
     {
         // store the folder path of the scene
         m_path = a_filename;
-        long iLastForward = m_path.find_last_of('/');
-        long iLastBackward = m_path.find_last_of('\\');
+        size_t iLastForward = m_path.find_last_of('/');
+		size_t iLastBackward = m_path.find_last_of('\\');
         if (iLastForward > iLastBackward)
         {
             m_path.resize(iLastForward + 1);
@@ -735,7 +737,7 @@ void FBXFile::extractMeshes(void* a_object)
     FbxGeometryElementVertexColor* fbxColours = pFbxMesh->GetElementVertexColor(0);
     if( fbxColours!=nullptr )
     {
-        meshNode.m_vertexAttributes |= FBXVertex::eCOLOUR;
+        meshNode.m_vertexAttributes |= FBXVertex::eCOLOR;
         LoadVertexColors( fbxColours, vertexCount, meshNode.m_vertices );
     }
     
@@ -746,7 +748,7 @@ void FBXFile::extractMeshes(void* a_object)
         meshNode.m_vertexAttributes |= FBXVertex::eTEXCOORD1;
     }
 
-    FbxGeometryElementUV* fbxTexCoord1 = pFbxMesh->GetElementUV(0);
+    FbxGeometryElementUV* fbxTexCoord1 = pFbxMesh->GetElementUV(1);
     if( fbxTexCoord1 )
     {
         LoadTexCoords( fbxTexCoord1,  pFbxMesh, m_importAssistor->flipTextureY, meshNode.m_vertices, 1);

@@ -32,7 +32,18 @@ public:
     template<typename T>
     ComponentHandle EmplaceComponent() 
     {
-        return EmplaceComponent<T,void>();
+        if (!m_pDatabase->HasComponentContainer<T>()) m_pDatabase->AddComponentContainer<T>();
+        auto& compContainer = m_pDatabase->GetComponentContainer<T>();
+        ComponentId id = compContainer.EmplaceComponent();
+        ComponentTypeId typeId = Component::GetTypeId<T>();
+        auto handle = ComponentHandle( typeId, id );
+        m_componentHandles.push_back(handle);
+        
+        if (std::is_base_of<DebugComponent,T>::value) {
+            AddDebugType<T>( typeId );
+        }
+        
+        return handle;
     }
 
     template<typename T, class ...TArgs>

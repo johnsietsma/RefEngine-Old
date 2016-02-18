@@ -1,5 +1,5 @@
 # AIETestBed
-My playground for AIE material
+My playground for trying out graphics and engine techniques. Definitely not best practices!
 
 # Dependencies
 You must install the FBX SDK. If you install to a non-default location please update the path in RefEngine/RefEngine/CMakeLists.txt

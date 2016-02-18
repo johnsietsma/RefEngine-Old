@@ -44,14 +44,14 @@ struct BufferAccessor
     {}
 
     // Create a new BufferAccessor without a Buffer bound to it. Useful to describe data before it's available.
-    BufferAccessor(size_t a_byteOffset, size_t a_byteStride, GLenum a_type, int a_count) :
+    BufferAccessor(size_t a_byteOffset, int a_byteStride, GLenum a_type, int a_count) :
         byteOffset(a_byteOffset),
         byteStride(a_byteStride),
         type(a_type),
         count(a_count)
     {}
 
-    BufferAccessor(const Buffer& a_buffer, size_t a_byteOffset, size_t a_byteStride, GLenum a_type, int a_count) :
+    BufferAccessor(const Buffer& a_buffer, size_t a_byteOffset, int a_byteStride, GLenum a_type, int a_count) :
         buffer(a_buffer),
         byteOffset(a_byteOffset),
         byteStride(a_byteStride),
@@ -79,13 +79,13 @@ struct BufferAccessor
             0,
             sizeof(T) * elementsPerComponent,
             GLEnum<T>::value,
-            vectorBuffer.size() / elementsPerComponent
+            static_cast<int>(vectorBuffer.size() / elementsPerComponent)
         )
     {}
 
     Buffer buffer;
     size_t byteOffset;  // Offset into the buffer
-    size_t byteStride;  // Stride of the component in the buffer, eg VEC3 may have a stride of 4*3=12 bytes
+    int byteStride;  // Stride of the component in the buffer, eg VEC3 may have a stride of 4*3=12 bytes
     GLenum type;        // The type of data stored in the buffer, eg GL_FLOAT.
     int count; // num of attributes, not bytes
 };
@@ -101,7 +101,7 @@ struct VertexAttribute
         return VertexAttribute(offset, sizeof(T), GLEnum<T>::value, numComponents);
     }
 
-    VertexAttribute(size_t offset, size_t stride, GLenum type, size_t numComponents) :
+    VertexAttribute(size_t offset, int stride, GLenum type, int numComponents) :
         accessor( offset, stride, type, numComponents )
     {}
 };

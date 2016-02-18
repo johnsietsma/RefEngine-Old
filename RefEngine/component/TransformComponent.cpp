@@ -11,11 +11,11 @@ void TransformComponent::DrawDebugUI(ComponentId id)
 	Transform t = GetTransform();
 
 	char name[512];
-	sprintf_s(name, "Transform - %d", id);
+	sprintf(name, "Transform - %zu", id);
 
 	ImGui::BeginChild(name, ImVec2(250,50));
 
-	// 
+	//
 	glm::vec3 rot = t.GetEulerAngles();
 	rot *= 180 / glm::pi<float>();
 
@@ -33,3 +33,4 @@ void TransformComponent::DrawDebugUI(ComponentId id)
 
 	ImGui::EndChild();
 }
+

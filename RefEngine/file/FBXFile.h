@@ -18,11 +18,10 @@ struct ImportAssistor;
 class FBXVertex
 {
 public:
-
 	enum VertexAttributeFlags
 	{
 		ePOSITION = (1 << 0),
-		eCOLOUR = (1 << 1),
+		eCOLOR = (1 << 1),
 		eNORMAL = (1 << 2),
 		eTANGENT = (1 << 3),
 		eBINORMAL = (1 << 4),
@@ -32,24 +31,11 @@ public:
 		eTEXCOORD2 = (1 << 8),
 	};
 
-	enum class Offsets
-	{
-		PositionOffset = 0,
-		ColourOffset = PositionOffset + sizeof(glm::vec4),
-		NormalOffset = ColourOffset + sizeof(glm::vec4),
-		TangentOffset = NormalOffset + sizeof(glm::vec4),
-		BiNormalOffset = TangentOffset + sizeof(glm::vec4),
-		IndicesOffset = BiNormalOffset + sizeof(glm::vec4),
-		WeightsOffset = IndicesOffset + sizeof(glm::vec4),
-		TexCoord1Offset = WeightsOffset + sizeof(glm::vec4),
-		TexCoord2Offset = TexCoord1Offset + sizeof(glm::vec2),
-	};
-
 	FBXVertex();
 	~FBXVertex();
 
 	glm::vec4	position;
-	glm::vec4	colour;
+	glm::vec4	color;
 	glm::vec4	normal;
 	glm::vec4	tangent;
 	glm::vec4	binormal;
@@ -68,19 +54,18 @@ public:
 	ALIGNED_DELETE_OP
 };
 
-enum class Offsets1
+enum class FbxVertexOffset : size_t
 {
-	PositionOffset = 0,
-	ColourOffset = offsetof(class FBXVertex, colour),
-	NormalOffset = offsetof(class FBXVertex, normal),
-	TangentOffset = offsetof(class FBXVertex, tangent),
-	BiNormalOffset = offsetof(class FBXVertex, binormal),
-	IndicesOffset = offsetof(class FBXVertex, indices),
-	WeightsOffset = offsetof(class FBXVertex, weights),
-	TexCoord1Offset = offsetof(class FBXVertex, texCoord1),
-	TexCoord2Offset = offsetof(class FBXVertex, texCoord2)
+    Position = 0,
+    Color = offsetof(class FBXVertex, color),
+    Normal = offsetof(class FBXVertex, normal),
+    Tangent = offsetof(class FBXVertex, tangent),
+    BiNormal = offsetof(class FBXVertex, binormal),
+    Indices = offsetof(class FBXVertex, indices),
+    Weights = offsetof(class FBXVertex, weights),
+    TexCoord1 = offsetof(class FBXVertex, texCoord1),
+    TexCoord2 = offsetof(class FBXVertex, texCoord2)
 };
-
 
 struct FBXTexture
 {
@@ -363,13 +348,13 @@ public:
 	// the ambient light of the scene
 	const glm::vec4&	getAmbientLight() const		{ return m_ambientLight; }
 
-	unsigned int	getMeshCount() const		{ return m_meshes.size(); }
-	unsigned int	getLightCount() const		{ return m_lights.size(); }
-	unsigned int	getCameraCount() const		{ return m_cameras.size(); }
-	unsigned int	getMaterialCount() const	{ return m_materials.size(); }
-	unsigned int	getSkeletonCount() const	{ return m_skeletons.size(); }
-	unsigned int	getAnimationCount() const	{ return m_animations.size(); }
-	unsigned int	getTextureCount() const		{ return m_textures.size(); }
+	size_t	getMeshCount() const		{ return m_meshes.size(); }
+	size_t	getLightCount() const		{ return m_lights.size(); }
+	size_t	getCameraCount() const		{ return m_cameras.size(); }
+	size_t	getMaterialCount() const	{ return m_materials.size(); }
+	size_t	getSkeletonCount() const	{ return m_skeletons.size(); }
+	size_t	getAnimationCount() const	{ return m_animations.size(); }
+	size_t	getTextureCount() const		{ return m_textures.size(); }
 
 	FBXMeshNode*	getMeshByName(const char* a_name);
 	FBXLightNode*	getLightByName(const char* a_name);
@@ -441,7 +426,7 @@ private:
 //////////////////////////////////////////////////////////////////////////
 inline FBXVertex::FBXVertex()
 	: position(0, 0, 0, 1),
-	colour(1, 1, 1, 1),
+	color(1, 1, 1, 1),
 	normal(0, 0, 0, 0),
 	tangent(0, 0, 0, 0),
 	binormal(0, 0, 0, 0),
@@ -609,6 +594,6 @@ inline FBXSkeleton::~FBXSkeleton()
 {
 	delete[] m_parentIndex;
 	delete[] m_nodes;
-	delete[] m_bones;
-	delete[] m_bindPoses;
+	free(m_bones);
+	free(m_bindPoses);
 }

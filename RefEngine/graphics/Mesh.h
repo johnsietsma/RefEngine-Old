@@ -29,7 +29,7 @@ public:
     /**
      * Create a mesh from vertex data.
      * Optionally pass in index data to create an indexed mesh.
-     * Optionall pass in vertex attributes to use more then just vertex position data.
+     * Optionally pass in vertex attributes to use more then just vertex position data.
      */
     template<typename VertT>
     static std::shared_ptr<Mesh> Create( 

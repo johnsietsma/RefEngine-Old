@@ -43,7 +43,7 @@ size_t vhash(const T& t)
 template<typename T, typename... Ts>
 size_t vhash(const T& t, const Ts&... ts)
 {
-    int hash = std::hash<T>()(t);
+    size_t hash = std::hash<T>()(t);
     return internal::jenkins_rev_mix32(hash) ^ vhash(ts...);
 }
 

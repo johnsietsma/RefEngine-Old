@@ -1,6 +1,6 @@
 #pragma once
 
-#include "RefEngWindowGLFW.h"
+#include "window/RefEngWindow_GLFW.h"
 
 #include <memory>
 
@@ -25,6 +25,6 @@ private:
     void AddLitCube( glm::vec3 pos );
     void AddFbxModel( glm::vec3 pos, const char* fbxPath );
 
-    std::unique_ptr<reng::RefEngWindowGLFW> m_pWindow;
+    std::unique_ptr<reng::RefEngWindow> m_pWindow;
     reng::RefEngine* m_pEngine;
 };

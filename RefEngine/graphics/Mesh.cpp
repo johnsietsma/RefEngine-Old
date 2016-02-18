@@ -69,7 +69,7 @@ std::shared_ptr<Mesh> Mesh::Create(std::vector<Primitive>& primitives,  const Bu
         for (uint i = 0; i < prim.vertexAttributes.size(); i++) {
             auto attrib = prim.vertexAttributes[i].accessor;
 
-            int offset = attrib.byteOffset == 0 ? totalOffset : attrib.byteOffset;
+            size_t offset = attrib.byteOffset == 0 ? totalOffset : attrib.byteOffset;
 
             glEnableVertexAttribArray(attribLocation);
             // We get the stride from the Primitive, not the attribute.
