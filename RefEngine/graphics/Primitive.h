@@ -79,7 +79,7 @@ struct BufferAccessor
             0,
             sizeof(T) * elementsPerComponent,
             GLEnum<T>::value,
-            vectorBuffer.size() / elementsPerComponent
+            static_cast<int>(vectorBuffer.size() / elementsPerComponent)
         )
     {}
 

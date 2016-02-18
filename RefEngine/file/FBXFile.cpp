@@ -189,10 +189,10 @@ void LoadVertexColors( FbxGeometryElementVertexColor* pVertexColors, int vertexC
         if( directIndex >= 0 ) {
             FbxColor fbxColour = pVertexColors->GetDirectArray().GetAt(directIndex);
             
-            vertex.colour.x = (float)fbxColour.mRed;
-            vertex.colour.y = (float)fbxColour.mGreen;
-            vertex.colour.z = (float)fbxColour.mBlue;
-            vertex.colour.w = (float)fbxColour.mAlpha;
+            vertex.color.x = (float)fbxColour.mRed;
+            vertex.color.y = (float)fbxColour.mGreen;
+            vertex.color.z = (float)fbxColour.mBlue;
+            vertex.color.w = (float)fbxColour.mAlpha;
         }
     }
 }
@@ -737,7 +737,7 @@ void FBXFile::extractMeshes(void* a_object)
     FbxGeometryElementVertexColor* fbxColours = pFbxMesh->GetElementVertexColor(0);
     if( fbxColours!=nullptr )
     {
-        meshNode.m_vertexAttributes |= FBXVertex::eCOLOUR;
+        meshNode.m_vertexAttributes |= FBXVertex::eCOLOR;
         LoadVertexColors( fbxColours, vertexCount, meshNode.m_vertices );
     }
     
