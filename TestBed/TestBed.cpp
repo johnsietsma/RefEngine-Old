@@ -111,7 +111,7 @@ bool TestBed::Init()
 
     Entity& lightEntity = m_pEngine->EmplaceEntity("Light");
     
-    Transform lightTransform(glm::vec3(-50,50,0));
+    Transform lightTransform(glm::vec3(-50,50,50));
 	lightTransform.LookAt(glm::vec3(0));
     auto lightTransformHandle = lightEntity.EmplaceComponent<TransformComponent>(lightTransform);
     lightEntity.EmplaceComponent<LightComponent>(lightTransformHandle);
@@ -128,7 +128,7 @@ bool TestBed::Init()
 
     //AddFbxModel(glm::vec3(0, 0, 3), "assets/models/cube/cube.fbx");
     
-    //AddFbxModel(glm::vec3(2, -2, 3), "assets/models/ruinedtank/tank.fbx");
+    AddFbxModel(glm::vec3(2, -2, 3), "assets/models/ruinedtank/tank.fbx");
 
     return true;
 }
@@ -218,8 +218,8 @@ void LoadAndSetTexture(AssetManager* pAssetManager, Material* pMaterial, FBXMate
 void TestBed::AddFbxModel(glm::vec3 pos, const char* fbxFilename)
 {
     MaterialDefinition litMatDef(
-        "assets/shaders/NormalTexCoord.vert",
-        "assets/shaders/LitTextured.frag"
+        "assets/shaders/TexCoordNormalTangent.vert",
+        "assets/shaders/TexturedNormalLit.frag"
         );
     const auto& litMaterial = MaterialManager::LoadMaterial(m_pEngine->GetAssetManager(), litMatDef);
 
